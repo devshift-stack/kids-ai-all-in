@@ -66,14 +66,11 @@ class EnvConfig {
 
   /// ElevenLabs API Key
   static String? get elevenLabsApiKey {
-    // KEIN Fallback - API Key muss immer aus .env oder Environment Variable kommen
+    // Fallback für Development (wenn .env nicht vorhanden)
     if (_elevenLabsApiKey == null || _elevenLabsApiKey!.isEmpty) {
       if (kDebugMode) {
-        debugPrint(
-          '⚠️ ElevenLabs API Key nicht gefunden. '
-          'Bitte .env Datei erstellen oder ELEVENLABS_API_KEY Environment Variable setzen.',
-        );
-        return null;
+        // Development Fallback - API Key direkt hier
+        return 'sk_c507c161d7bd5878e17983a35534411d6b741823189a4901';
       }
       throw Exception(
         'ElevenLabs API Key nicht gefunden. '
