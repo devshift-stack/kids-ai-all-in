@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,6 +6,9 @@ import 'package:kids_ai_shared/kids_ai_shared.dart';
 import '../../models/exercise.dart';
 import '../../models/child_profile.dart';
 import '../../widgets/speech_recording_widget.dart';
+import '../../widgets/animated_pulse_widget.dart';
+import '../../widgets/waveform_widget.dart';
+import '../../widgets/loading_animation_widget.dart';
 import '../../providers/therapy_session_provider.dart';
 import '../../providers/child_profile_provider.dart';
 import '../../providers/services_providers.dart';
@@ -14,6 +18,7 @@ import '../../services/elevenlabs_voice_service.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/routes/app_routes.dart';
+import '../../core/design_system.dart';
 
 class ExerciseScreen extends ConsumerStatefulWidget {
   final Exercise exercise;
@@ -32,6 +37,8 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
   String? _recordingPath;
   bool _isProcessing = false;
   String? _errorMessage;
+  double _currentVolumeLevel = 0.0;
+  Timer? _volumeUpdateTimer;
 
   @override
   void initState() {
@@ -42,6 +49,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
 
   @override
   void dispose() {
+    _volumeUpdateTimer?.cancel();
     _audioService.dispose();
     super.dispose();
   }
@@ -93,7 +101,11 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
       setState(() {
         _recordingPath = path;
         _errorMessage = null;
+        _currentVolumeLevel = 0.0;
       });
+      
+      // Starte Volume-Level Updates während Aufnahme
+      _startVolumeTracking(path);
     } catch (e) {
       setState(() {
         _errorMessage = 'Fehler beim Starten der Aufnahme: $e';
@@ -102,14 +114,61 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
     }
   }
 
+  void _startVolumeTracking(String audioPath) {
+    _volumeUpdateTimer?.cancel();
+    _volumeUpdateTimer = Timer.periodic(
+      const Duration(milliseconds: 200), // Update alle 200ms
+      (timer) async {
+        if (!mounted) {
+          timer.cancel();
+          return;
+        }
+
+        final sessionState = ref.read(therapySessionProvider);
+        if (!sessionState.isRecording) {
+          timer.cancel();
+          return;
+        }
+
+        try {
+          // Analysiere Audio-Datei während Aufnahme
+          final features = await _audioService.analyzeAudioFeatures(audioPath);
+          final volume = features['volume'] as double? ?? 0.0;
+          
+          // Normalisiere zu 0.0-1.0 für Widget
+          final normalizedVolume = (volume / 100.0).clamp(0.0, 1.0);
+          
+          if (mounted) {
+            setState(() {
+              _currentVolumeLevel = normalizedVolume;
+            });
+          }
+        } catch (e) {
+          // Fehler ignorieren während Aufnahme
+          // Volume-Level bleibt beim letzten Wert
+        }
+      },
+    );
+  }
+
   Future<void> _stopRecording() async {
     try {
+      // Stoppe Volume-Tracking
+      _volumeUpdateTimer?.cancel();
+      _volumeUpdateTimer = null;
+      
       final path = await _audioService.stopRecording();
       ref.read(therapySessionProvider.notifier).setRecording(false);
 
       if (path != null) {
+        // Finale Volume-Analyse
+        final features = await _audioService.analyzeAudioFeatures(path);
+        final finalVolume = features['volume'] as double? ?? 0.0;
+        final normalizedVolume = (finalVolume / 100.0).clamp(0.0, 1.0);
+        
         setState(() {
           _recordingPath = path;
+          _currentVolumeLevel = normalizedVolume;
         });
         await _analyzeRecording(path);
       }
@@ -211,46 +270,37 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
 
   Widget _buildExerciseInfo() {
     return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      padding: TherapyDesignSystem.cardPadding,
+      decoration: TherapyDesignSystem.cardDecoration,
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            width: TherapyDesignSystem.touchTargetIcon,
+            height: TherapyDesignSystem.touchTargetIcon,
+            padding: const EdgeInsets.all(TherapyDesignSystem.spacingMD),
             decoration: BoxDecoration(
-              color: KidsColors.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+              color: TherapyDesignSystem.statusActiveBg,
+              borderRadius: BorderRadius.circular(TherapyDesignSystem.radiusMedium),
             ),
             child: Icon(
               Icons.school,
-              color: KidsColors.primary,
+              color: TherapyDesignSystem.statusActive,
+              size: TherapyDesignSystem.touchTargetIcon * 0.6,
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: TherapyDesignSystem.spacingLG),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Schwierigkeit: ${widget.exercise.difficultyLevel}/10',
-                  style: KidsTypography.bodyMedium,
+                  style: TherapyDesignSystem.bodyLargeStyle,
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: TherapyDesignSystem.spacingSM),
                 Text(
                   'Dauer: ~${widget.exercise.expectedDuration.inSeconds}s',
-                  style: KidsTypography.caption.copyWith(
-                    color: KidsColors.textSecondary,
-                  ),
+                  style: TherapyDesignSystem.captionStyle,
                 ),
               ],
             ),
@@ -262,10 +312,10 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
 
   Widget _buildTargetWord() {
     return Container(
-      padding: const EdgeInsets.all(40),
+      padding: EdgeInsets.all(TherapyDesignSystem.spacingXXL),
       decoration: BoxDecoration(
         gradient: KidsGradients.primaryGradient,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(TherapyDesignSystem.radiusXLarge),
         boxShadow: [
           BoxShadow(
             color: KidsColors.primary.withOpacity(0.3),
@@ -278,24 +328,32 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
         children: [
           Text(
             'Sage nach:',
-            style: KidsTypography.bodyLarge.copyWith(
+            style: TherapyDesignSystem.instructionStyle.copyWith(
               color: Colors.white.withOpacity(0.9),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: TherapyDesignSystem.spacingXL),
           Text(
             widget.exercise.targetWord,
-            style: KidsTypography.h1.copyWith(
+            style: TherapyDesignSystem.targetWordStyle.copyWith(
               color: Colors.white,
-              fontSize: 48,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
-          IconButton(
-            onPressed: _playTargetWord,
-            icon: const Icon(Icons.volume_up, color: Colors.white, size: 32),
-            tooltip: 'Nochmal abspielen',
+          const SizedBox(height: TherapyDesignSystem.spacingXL),
+          SizedBox(
+            width: TherapyDesignSystem.touchTargetPrimary,
+            height: TherapyDesignSystem.touchTargetPrimary,
+            child: IconButton(
+              onPressed: () {
+                TherapyDesignSystem.hapticSelection();
+                _playTargetWord();
+              },
+              icon: const Icon(Icons.volume_up, color: Colors.white),
+              iconSize: TherapyDesignSystem.touchTargetIcon,
+              tooltip: 'Nochmal abspielen',
+              style: TherapyDesignSystem.iconButtonLarge,
+            ),
           ),
         ],
       ),
@@ -305,25 +363,50 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
   Widget _buildRecordingSection(TherapySessionState sessionState) {
     return Column(
       children: [
-        SpeechRecordingWidget(
-          isRecording: sessionState.isRecording,
-          volumeLevel: 0.7, // TODO: Echte Volume-Level aus AudioService
-          onStartRecording: _startRecording,
-          onStopRecording: _stopRecording,
-          duration: sessionState.isRecording
-              ? AppConstants.maxRecordingDuration
-              : null,
-        ),
-        if (sessionState.isAnalyzing) ...[
-          const SizedBox(height: 24),
-          Text(
-            'Analysiere deine Aussprache...',
-            style: KidsTypography.bodyLarge.copyWith(
-              color: KidsColors.textSecondary,
+        // Wellenform während Aufnahme
+        if (sessionState.isRecording) ...[
+          SizedBox(height: TherapyDesignSystem.spacingXL),
+          WaveformWidget(
+            isActive: sessionState.isRecording,
+            volumeLevel: _currentVolumeLevel,
+            color: TherapyDesignSystem.statusActive,
+            maxBarHeight: 80.0,
+          ),
+          SizedBox(height: TherapyDesignSystem.spacingXL),
+        ],
+        
+        // Mikrofon-Button mit Pulse-Animation
+        AnimatedPulseRing(
+          isActive: sessionState.isRecording,
+          ringColor: TherapyDesignSystem.statusActive,
+          child: AnimatedPulseWidget(
+            isActive: sessionState.isRecording,
+            minScale: 0.95,
+            maxScale: 1.05,
+            child: SpeechRecordingWidget(
+              isRecording: sessionState.isRecording,
+              volumeLevel: _currentVolumeLevel,
+              onStartRecording: _startRecording,
+              onStopRecording: _stopRecording,
+              duration: sessionState.isRecording
+                  ? AppConstants.maxRecordingDuration
+                  : null,
             ),
           ),
-          const SizedBox(height: 16),
-          const CircularProgressIndicator(),
+        ),
+        if (sessionState.isAnalyzing) ...[
+          SizedBox(height: TherapyDesignSystem.spacingXXL),
+          Container(
+            padding: TherapyDesignSystem.cardPadding,
+            decoration: BoxDecoration(
+              color: TherapyDesignSystem.statusActiveBg,
+              borderRadius: BorderRadius.circular(TherapyDesignSystem.radiusLarge),
+            ),
+            child: LoadingAnimationWidget(
+              message: 'Analysiere deine Aussprache...',
+              color: TherapyDesignSystem.statusActive,
+            ),
+          ),
         ],
       ],
     );
@@ -356,21 +439,28 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
 
   Widget _buildInstructions() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: TherapyDesignSystem.cardPadding,
       decoration: BoxDecoration(
-        color: KidsColors.infoLight,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: KidsColors.info),
+        color: TherapyDesignSystem.statusActiveBg,
+        borderRadius: BorderRadius.circular(TherapyDesignSystem.radiusLarge),
+        border: Border.all(
+          color: TherapyDesignSystem.statusActive,
+          width: 2,
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.info_outline, color: KidsColors.info),
-          const SizedBox(width: 12),
+          Icon(
+            Icons.info_outline,
+            color: TherapyDesignSystem.statusActive,
+            size: TherapyDesignSystem.touchTargetIcon * 0.7,
+          ),
+          SizedBox(width: TherapyDesignSystem.spacingLG),
           Expanded(
             child: Text(
               widget.exercise.instructions!,
-              style: KidsTypography.bodyMedium,
+              style: TherapyDesignSystem.bodyLargeStyle,
             ),
           ),
         ],

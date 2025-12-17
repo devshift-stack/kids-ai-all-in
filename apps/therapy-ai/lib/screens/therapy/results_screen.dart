@@ -4,7 +4,9 @@ import 'package:kids_ai_shared/kids_ai_shared.dart';
 import '../../models/exercise.dart';
 import '../../models/speech_analysis_result.dart';
 import '../../widgets/pronunciation_feedback_widget.dart';
+import '../../widgets/success_animation_widget.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/design_system.dart';
 
 class ResultsScreen extends ConsumerWidget {
   final Exercise exercise;
@@ -27,28 +29,35 @@ class ResultsScreen extends ConsumerWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(TherapyDesignSystem.spacingXL),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Success Animation (wenn erfolgreich)
+              if (result.isSuccessful)
+                SizedBox(
+                  height: 200,
+                  child: SuccessAnimationWidget(),
+                ),
+              
               // Success/Failure Header
               _buildResultHeader(),
-              const SizedBox(height: 32),
+              SizedBox(height: TherapyDesignSystem.spacingXL),
 
               // Pronunciation Feedback Widget
               PronunciationFeedbackWidget(
                 result: result,
                 targetWord: exercise.targetWord,
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: TherapyDesignSystem.spacingXL),
 
               // Detailed Metrics
               _buildDetailedMetrics(),
-              const SizedBox(height: 32),
+              SizedBox(height: TherapyDesignSystem.spacingXL),
 
               // Recommendations
               if (result.recommendations.isNotEmpty) _buildRecommendations(),
-              const SizedBox(height: 32),
+              SizedBox(height: TherapyDesignSystem.spacingXL),
 
               // Action Buttons
               _buildActionButtons(context),
@@ -61,17 +70,35 @@ class ResultsScreen extends ConsumerWidget {
 
   Widget _buildResultHeader() {
     final isSuccess = result.isSuccessful;
+    final statusColor = isSuccess
+        ? TherapyDesignSystem.statusSuccess
+        : TherapyDesignSystem.statusWarning;
+    
+    // Haptic Feedback bei Erfolg
+    if (isSuccess) {
+      TherapyDesignSystem.hapticSuccess();
+    }
+    
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(TherapyDesignSystem.spacingXXL),
       decoration: BoxDecoration(
-        gradient: isSuccess
-            ? KidsGradients.successGradient
-            : KidsGradients.warningGradient,
-        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isSuccess
+              ? [
+                  TherapyDesignSystem.statusSuccess,
+                  TherapyDesignSystem.statusSuccessLight,
+                ]
+              : [
+                  TherapyDesignSystem.statusWarning,
+                  TherapyDesignSystem.statusWarningLight,
+                ],
+        ),
+        borderRadius: BorderRadius.circular(TherapyDesignSystem.radiusXLarge),
         boxShadow: [
           BoxShadow(
-            color: (isSuccess ? KidsColors.success : KidsColors.warning)
-                .withOpacity(0.3),
+            color: statusColor.withOpacity(0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -81,15 +108,17 @@ class ResultsScreen extends ConsumerWidget {
         children: [
           Text(
             isSuccess ? '🎉 Sehr gut!' : '👍 Weiter so!',
-            style: KidsTypography.h1.copyWith(
+            style: TherapyDesignSystem.h1Style.copyWith(
               color: Colors.white,
+              fontSize: 56,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: TherapyDesignSystem.spacingLG),
           Text(
             result.feedbackMessage,
-            style: KidsTypography.bodyLarge.copyWith(
-              color: Colors.white.withOpacity(0.9),
+            style: TherapyDesignSystem.bodyLargeStyle.copyWith(
+              color: Colors.white.withOpacity(0.95),
+              fontSize: 28,
             ),
             textAlign: TextAlign.center,
           ),
@@ -100,44 +129,34 @@ class ResultsScreen extends ConsumerWidget {
 
   Widget _buildDetailedMetrics() {
     return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      padding: TherapyDesignSystem.cardPadding,
+      decoration: TherapyDesignSystem.cardDecoration,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Detaillierte Analyse',
-            style: KidsTypography.h3,
+            style: TherapyDesignSystem.h3Style,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: TherapyDesignSystem.spacingXL),
           _buildMetricRow(
             'Aussprache',
             '${result.pronunciationScore.toInt()}%',
-            result.pronunciationScore,
+            result.pronunciationScore / 100,
           ),
-          const Divider(),
+          Divider(height: TherapyDesignSystem.spacingXL),
           _buildMetricRow(
             'Lautstärke',
             '${result.volumeLevel.toInt()} dB',
             result.volumeLevel / 100,
           ),
-          const Divider(),
+          Divider(height: TherapyDesignSystem.spacingXL),
           _buildMetricRow(
             'Artikulation',
             '${result.articulationScore.toInt()}%',
             result.articulationScore / 100,
           ),
-          const Divider(),
+          Divider(height: TherapyDesignSystem.spacingXL),
           _buildMetricRow(
             'Ähnlichkeit',
             '${(result.similarityScore * 100).toInt()}%',
@@ -149,8 +168,14 @@ class ResultsScreen extends ConsumerWidget {
   }
 
   Widget _buildMetricRow(String label, String value, double progress) {
+    final progressColor = progress >= 0.8
+        ? TherapyDesignSystem.statusSuccess
+        : progress >= 0.6
+            ? TherapyDesignSystem.statusWarning
+            : TherapyDesignSystem.statusError;
+    
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: EdgeInsets.symmetric(vertical: TherapyDesignSystem.spacingLG),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -159,26 +184,29 @@ class ResultsScreen extends ConsumerWidget {
             children: [
               Text(
                 label,
-                style: KidsTypography.bodyMedium,
+                style: TherapyDesignSystem.bodyLargeStyle,
               ),
               Text(
                 value,
-                style: KidsTypography.bodyMedium.copyWith(
+                style: TherapyDesignSystem.bodyLargeStyle.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: KidsColors.primary,
+                  color: TherapyDesignSystem.statusActive,
+                  fontSize: 28,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          LinearProgressIndicator(
-            value: progress.clamp(0.0, 1.0),
-            backgroundColor: KidsColors.gray200,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              progress >= 0.7 ? KidsColors.success : KidsColors.warning,
+          SizedBox(height: TherapyDesignSystem.spacingMD),
+          Container(
+            height: TherapyDesignSystem.progressBarHeightLarge,
+            decoration: TherapyDesignSystem.progressBarDecoration,
+            child: FractionallySizedBox(
+              alignment: Alignment.centerLeft,
+              widthFactor: progress.clamp(0.0, 1.0),
+              child: Container(
+                decoration: TherapyDesignSystem.progressBarFillDecoration(progressColor),
+              ),
             ),
-            minHeight: 8,
-            borderRadius: BorderRadius.circular(4),
           ),
         ],
       ),
@@ -187,43 +215,50 @@ class ResultsScreen extends ConsumerWidget {
 
   Widget _buildRecommendations() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: TherapyDesignSystem.cardPadding,
       decoration: BoxDecoration(
-        color: KidsColors.infoLight,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: KidsColors.info),
+        color: TherapyDesignSystem.statusActiveBg,
+        borderRadius: BorderRadius.circular(TherapyDesignSystem.radiusLarge),
+        border: Border.all(
+          color: TherapyDesignSystem.statusActive,
+          width: 2,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.lightbulb_outline, color: KidsColors.info),
-              const SizedBox(width: 8),
+              Icon(
+                Icons.lightbulb_outline,
+                color: TherapyDesignSystem.statusActive,
+                size: TherapyDesignSystem.touchTargetIcon * 0.7,
+              ),
+              SizedBox(width: TherapyDesignSystem.spacingMD),
               Text(
                 'Empfehlungen',
-                style: KidsTypography.h3.copyWith(
-                  color: KidsColors.info,
+                style: TherapyDesignSystem.h3Style.copyWith(
+                  color: TherapyDesignSystem.statusActive,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: TherapyDesignSystem.spacingLG),
           ...result.recommendations.map((rec) => Padding(
-                padding: const EdgeInsets.only(top: 8),
+                padding: EdgeInsets.only(top: TherapyDesignSystem.spacingMD),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(
                       Icons.check_circle,
-                      size: 16,
-                      color: KidsColors.info,
+                      size: TherapyDesignSystem.touchTargetIcon * 0.4,
+                      color: TherapyDesignSystem.statusActive,
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: TherapyDesignSystem.spacingMD),
                     Expanded(
                       child: Text(
                         rec,
-                        style: KidsTypography.bodyMedium,
+                        style: TherapyDesignSystem.bodyLargeStyle,
                       ),
                     ),
                   ],
@@ -241,34 +276,41 @@ class ResultsScreen extends ConsumerWidget {
           width: double.infinity,
           child: ElevatedButton(
             onPressed: () {
+              TherapyDesignSystem.hapticSelection();
               Navigator.of(context).pop();
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: KidsColors.primary,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+            style: TherapyDesignSystem.primaryButtonLarge.copyWith(
+              minimumSize: MaterialStateProperty.all(
+                Size(double.infinity, TherapyDesignSystem.touchTargetPrimary),
               ),
             ),
             child: Text(
               result.needsRepetition ? 'Nochmal versuchen' : 'Nächste Übung',
-              style: KidsTypography.button.copyWith(
-                color: Colors.white,
-              ),
+              style: TherapyDesignSystem.buttonStyle,
             ),
           ),
         ),
         if (result.needsRepetition) ...[
-          const SizedBox(height: 12),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pop(); // Zurück zur Übungs-Liste
-            },
-            child: Text(
-              'Überspringen',
-              style: KidsTypography.bodyLarge.copyWith(
-                color: KidsColors.textSecondary,
+          SizedBox(height: TherapyDesignSystem.spacingLG),
+          SizedBox(
+            width: double.infinity,
+            height: TherapyDesignSystem.touchTargetSecondary,
+            child: TextButton(
+              onPressed: () {
+                TherapyDesignSystem.hapticSelection();
+                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Zurück zur Übungs-Liste
+              },
+              style: TextButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(TherapyDesignSystem.radiusLarge),
+                ),
+              ),
+              child: Text(
+                'Überspringen',
+                style: TherapyDesignSystem.bodyLargeStyle.copyWith(
+                  color: KidsColors.textSecondary,
+                ),
               ),
             ),
           ),

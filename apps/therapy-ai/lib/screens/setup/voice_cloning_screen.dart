@@ -110,8 +110,8 @@ class _VoiceCloningScreenState extends ConsumerState<VoiceCloningScreen> {
         _isProcessing = false;
       });
 
-      // TODO: Speichere voiceId im ChildProfile
-      // await ref.read(childProfileProvider.notifier).updateVoiceId(voiceId);
+      // Speichere voiceId im ChildProfile
+      await ref.read(childProfileProvider.notifier).updateVoiceId(voiceId);
 
       if (mounted) {
         _showSuccessDialog();

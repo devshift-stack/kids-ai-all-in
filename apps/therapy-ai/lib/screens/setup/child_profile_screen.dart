@@ -69,8 +69,8 @@ class _ChildProfileScreenState extends ConsumerState<ChildProfileScreen> {
         createdAt: DateTime.now(),
       );
 
-      // TODO: Speichere Profil in Firebase/Hive
-      // await ref.read(childProfileProvider.notifier).saveProfile(profile);
+      // Speichere Profil
+      await ref.read(childProfileProvider.notifier).saveProfile(profile);
 
       if (mounted) {
         Navigator.of(context).pushReplacementNamed(AppRoutes.voiceCloning);

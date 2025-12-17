@@ -1,97 +1,119 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:kids_ai_shared/kids_ai_shared.dart';
 
-/// Design System für Therapy AI App
+/// Enhanced Design System für Therapy AI
 /// Optimiert für 4-jährige Kinder mit Hörverlust
 class TherapyDesignSystem {
   TherapyDesignSystem._();
 
-  // ========== Colors ==========
+  // ============================================================
+  // TOUCH TARGETS (WCAG AAA für Kinder)
+  // ============================================================
   
-  /// Primärfarbe - Vertrauen und Ruhe
-  static const Color primaryBlue = Color(0xFF4A90E2);
+  /// Minimale Touch-Target-Größe für primäre Buttons
+  static const double touchTargetPrimary = 80.0; // 80x80px
   
-  /// Sekundärfarbe - Energie und Motivation
-  static const Color secondaryOrange = Color(0xFFFF6B35);
+  /// Minimale Touch-Target-Größe für sekundäre Buttons
+  static const double touchTargetSecondary = 64.0; // 64x64px
   
-  /// Erfolg - Positive Verstärkung
-  static const Color successGreen = Color(0xFF52C41A);
+  /// Minimale Touch-Target-Größe für Icons
+  static const double touchTargetIcon = 56.0; // 56x56px
   
-  /// Warnung - Aufmerksamkeit
-  static const Color warningYellow = Color(0xFFFFA502);
+  /// Minimale Touch-Target-Größe für kleine Buttons
+  static const double touchTargetSmall = 48.0; // 48x48px (Minimum)
   
-  /// Fehler - Vorsichtig verwenden
-  static const Color errorRed = Color(0xFFFF4757);
-  
-  /// Hintergrund - Reduziert Ermüdung
-  static const Color backgroundLight = Color(0xFFF8F9FA);
-  
-  /// Text - Hoher Kontrast
-  static const Color textDark = Color(0xFF2C3E50);
-  static const Color textMedium = Color(0xFF7F8C8D);
-  static const Color textLight = Color(0xFFBDC3C7);
-  
-  /// Surface
-  static const Color surfaceWhite = Color(0xFFFFFFFF);
-  static const Color surfaceGray = Color(0xFFECF0F1);
+  /// Abstand zwischen Touch-Targets
+  static const double touchTargetSpacing = 24.0;
 
-  // ========== Typography ==========
+  // ============================================================
+  // TYPOGRAPHY (Optimiert für 4-Jährige)
+  // ============================================================
   
-  /// Hauptüberschriften (Titel)
-  static const TextStyle headingLarge = TextStyle(
-    fontSize: 40,
+  /// Target Words (z.B. "MAMA") - Sehr groß
+  static const TextStyle targetWordStyle = TextStyle(
+    fontSize: 64.0,
     fontWeight: FontWeight.bold,
     height: 1.2,
-    color: textDark,
-    letterSpacing: -0.5,
+    letterSpacing: 2.0,
+    color: KidsColors.textPrimary,
   );
   
-  static const TextStyle headingMedium = TextStyle(
-    fontSize: 32,
+  /// Hauptüberschriften (H1)
+  static const TextStyle h1Style = TextStyle(
+    fontSize: 48.0,
     fontWeight: FontWeight.bold,
     height: 1.2,
-    color: textDark,
-    letterSpacing: -0.5,
+    color: KidsColors.textPrimary,
   );
   
-  static const TextStyle headingSmall = TextStyle(
-    fontSize: 24,
+  /// Sekundäre Überschriften (H2)
+  static const TextStyle h2Style = TextStyle(
+    fontSize: 40.0,
     fontWeight: FontWeight.bold,
-    height: 1.2,
-    color: textDark,
+    height: 1.3,
+    color: KidsColors.textPrimary,
   );
   
-  /// Anweisungen
-  static const TextStyle instruction = TextStyle(
-    fontSize: 28,
+  /// Tertiäre Überschriften (H3)
+  static const TextStyle h3Style = TextStyle(
+    fontSize: 32.0,
     fontWeight: FontWeight.w600,
     height: 1.4,
-    color: textDark,
+    color: KidsColors.textPrimary,
   );
   
-  /// Body Text
-  static const TextStyle bodyLarge = TextStyle(
-    fontSize: 20,
-    fontWeight: FontWeight.normal,
-    height: 1.5,
-    color: textDark,
+  /// Anweisungen (z.B. "Sag nach:")
+  static const TextStyle instructionStyle = TextStyle(
+    fontSize: 32.0,
+    fontWeight: FontWeight.w600,
+    height: 1.4,
+    color: KidsColors.textPrimary,
   );
   
-  static const TextStyle bodyMedium = TextStyle(
-    fontSize: 18,
+  /// Body Large
+  static const TextStyle bodyLargeStyle = TextStyle(
+    fontSize: 24.0,
+    fontWeight: FontWeight.normal,
+    height: 1.6,
+    color: KidsColors.textPrimary,
+  );
+  
+  /// Body Medium
+  static const TextStyle bodyMediumStyle = TextStyle(
+    fontSize: 20.0,
     fontWeight: FontWeight.normal,
     height: 1.5,
-    color: textDark,
+    color: KidsColors.textPrimary,
+  );
+  
+  /// Body Small
+  static const TextStyle bodySmallStyle = TextStyle(
+    fontSize: 18.0,
+    fontWeight: FontWeight.normal,
+    height: 1.4,
+    color: KidsColors.textSecondary,
   );
   
   /// Button Text
-  static const TextStyle buttonText = TextStyle(
-    fontSize: 24,
+  static const TextStyle buttonStyle = TextStyle(
+    fontSize: 24.0,
     fontWeight: FontWeight.w600,
-    height: 1.2,
+    height: 1.4,
     color: Colors.white,
   );
+  
+  /// Caption
+  static const TextStyle captionStyle = TextStyle(
+    fontSize: 18.0,
+    fontWeight: FontWeight.normal,
+    height: 1.4,
+    color: KidsColors.textSecondary,
+  );
 
-  // ========== Spacing ==========
+  // ============================================================
+  // SPACING SYSTEM (Generous für Klarheit)
+  // ============================================================
   
   static const double spacingXS = 4.0;
   static const double spacingSM = 8.0;
@@ -99,33 +121,53 @@ class TherapyDesignSystem {
   static const double spacingLG = 24.0;
   static const double spacingXL = 32.0;
   static const double spacingXXL = 48.0;
+  static const double spacingXXXL = 64.0; // Für große Abstände
 
-  // ========== Border Radius ==========
+  // ============================================================
+  // BORDER RADIUS
+  // ============================================================
   
-  static const double radiusSmall = 8.0;
+  static const double radiusSmall = 12.0;
   static const double radiusMedium = 16.0;
   static const double radiusLarge = 24.0;
   static const double radiusXLarge = 32.0;
-  static const double radiusRound = 999.0;
 
-  // ========== Touch Targets ==========
+  // ============================================================
+  // STATUS COLORS (Farbcodierung)
+  // ============================================================
   
-  /// Minimum Touch-Target Größe für Kinder (WCAG AAA)
-  static const double minTouchTarget = 48.0;
+  /// Erfolg / Bereit
+  static const Color statusSuccess = Color(0xFF52C41A);
+  static const Color statusSuccessLight = Color(0xFFB7EB8F);
+  static const Color statusSuccessBg = Color(0xFFF6FFED);
   
-  /// Große Touch-Targets für wichtige Aktionen
-  static const double largeTouchTarget = 80.0;
+  /// Warte / In Bearbeitung
+  static const Color statusWarning = Color(0xFFFFA502);
+  static const Color statusWarningLight = Color(0xFFFFE58F);
+  static const Color statusWarningBg = Color(0xFFFFFBE6);
   
-  /// Extra große Touch-Targets für primäre Aktionen
-  static const double extraLargeTouchTarget = 100.0;
+  /// Aktiv / Aufnahme läuft
+  static const Color statusActive = Color(0xFF4A90E2);
+  static const Color statusActiveLight = Color(0xFF91D5FF);
+  static const Color statusActiveBg = Color(0xFFE6F7FF);
+  
+  /// Inaktiv / Pausiert
+  static const Color statusInactive = Color(0xFFBFBFBF);
+  static const Color statusInactiveLight = Color(0xFFE8E8E8);
+  static const Color statusInactiveBg = Color(0xFFF5F5F5);
+  
+  /// Fehler (sparsam verwenden!)
+  static const Color statusError = Color(0xFFFF4757);
+  static const Color statusErrorLight = Color(0xFFFF9999);
+  static const Color statusErrorBg = Color(0xFFFFECEC);
 
-  // ========== Button Styles ==========
+  // ============================================================
+  // BUTTON STYLES
+  // ============================================================
   
-  /// Großer primärer Button
+  /// Großer primärer Button (80x80px minimum)
   static ButtonStyle get primaryButtonLarge => ElevatedButton.styleFrom(
-    backgroundColor: primaryBlue,
-    foregroundColor: Colors.white,
-    minimumSize: const Size(largeTouchTarget, largeTouchTarget),
+    minimumSize: const Size(touchTargetPrimary, touchTargetPrimary),
     padding: const EdgeInsets.symmetric(
       horizontal: spacingXL,
       vertical: spacingLG,
@@ -133,15 +175,14 @@ class TherapyDesignSystem {
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(radiusLarge),
     ),
+    backgroundColor: KidsColors.primary,
     elevation: 4,
-    textStyle: buttonText,
+    textStyle: buttonStyle,
   );
   
-  /// Großer sekundärer Button
-  static ButtonStyle get secondaryButtonLarge => ElevatedButton.styleFrom(
-    backgroundColor: secondaryOrange,
-    foregroundColor: Colors.white,
-    minimumSize: const Size(largeTouchTarget, largeTouchTarget),
+  /// Großer sekundärer Button (64x64px minimum)
+  static ButtonStyle get secondaryButtonLarge => OutlinedButton.styleFrom(
+    minimumSize: const Size(touchTargetSecondary, touchTargetSecondary),
     padding: const EdgeInsets.symmetric(
       horizontal: spacingXL,
       vertical: spacingLG,
@@ -149,99 +190,91 @@ class TherapyDesignSystem {
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(radiusLarge),
     ),
-    elevation: 4,
-    textStyle: buttonText,
+    side: const BorderSide(color: KidsColors.primary, width: 3),
+    textStyle: buttonStyle.copyWith(color: KidsColors.primary),
   );
   
-  /// Erfolgs-Button
-  static ButtonStyle get successButton => ElevatedButton.styleFrom(
-    backgroundColor: successGreen,
-    foregroundColor: Colors.white,
-    minimumSize: const Size(minTouchTarget, minTouchTarget),
-    padding: const EdgeInsets.all(spacingMD),
+  /// Großer Icon-Button (80x80px)
+  static ButtonStyle get iconButtonLarge => IconButton.styleFrom(
+    minimumSize: const Size(touchTargetPrimary, touchTargetPrimary),
+    padding: const EdgeInsets.all(spacingLG),
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(radiusMedium),
+      borderRadius: BorderRadius.circular(radiusLarge),
     ),
-    elevation: 2,
-    textStyle: buttonText.copyWith(fontSize: 20),
   );
 
-  // ========== Card Styles ==========
+  // ============================================================
+  // PROGRESS BAR STYLES
+  // ============================================================
+  
+  /// Großer Fortschrittsbalken
+  static const double progressBarHeight = 16.0;
+  static const double progressBarHeightLarge = 24.0;
+  
+  static BoxDecoration get progressBarDecoration => BoxDecoration(
+    borderRadius: BorderRadius.circular(radiusMedium),
+    color: statusInactiveBg,
+  );
+  
+  static BoxDecoration progressBarFillDecoration(Color color) => BoxDecoration(
+    borderRadius: BorderRadius.circular(radiusMedium),
+    color: color,
+  );
+
+  // ============================================================
+  // CARD STYLES
+  // ============================================================
   
   static BoxDecoration get cardDecoration => BoxDecoration(
-    color: surfaceWhite,
+    color: Colors.white,
     borderRadius: BorderRadius.circular(radiusLarge),
     boxShadow: [
       BoxShadow(
-        color: Colors.black.withValues(alpha: 0.1),
-        blurRadius: 10,
+        color: Colors.black.withOpacity(0.08),
+        blurRadius: 16,
         offset: const Offset(0, 4),
       ),
     ],
   );
+  
+  static EdgeInsets get cardPadding => const EdgeInsets.all(spacingXL);
 
-  // ========== Progress Bar Styles ==========
+  // ============================================================
+  // HAPTIC FEEDBACK
+  // ============================================================
   
-  static BoxDecoration get progressBarBackground => BoxDecoration(
-    color: surfaceGray,
-    borderRadius: BorderRadius.circular(radiusRound),
-  );
-  
-  static BoxDecoration progressBarFill(Color color) => BoxDecoration(
-    color: color,
-    borderRadius: BorderRadius.circular(radiusRound),
-  );
-
-  // ========== Feedback Colors ==========
-  
-  static Color getFeedbackColor(double score) {
-    if (score >= 80) return successGreen;
-    if (score >= 60) return warningYellow;
-    return errorRed;
+  /// Leichte Vibration für Erfolg
+  static Future<void> hapticSuccess() async {
+    await HapticFeedback.lightImpact();
   }
   
-  static Color getStatusColor(FeedbackStatus status) {
-    switch (status) {
-      case FeedbackStatus.success:
-        return successGreen;
-      case FeedbackStatus.warning:
-        return warningYellow;
-      case FeedbackStatus.error:
-        return errorRed;
-      case FeedbackStatus.info:
-        return primaryBlue;
-    }
+  /// Mittlere Vibration für wichtige Aktionen
+  static Future<void> hapticMedium() async {
+    await HapticFeedback.mediumImpact();
   }
-}
-
-/// Feedback Status für visuelle Indikatoren
-enum FeedbackStatus {
-  success,
-  warning,
-  error,
-  info,
-}
-
-/// Button Größen
-enum ButtonSize {
-  small,   // 48x48px
-  medium,  // 64x64px
-  large,   // 80x80px
-  extraLarge, // 100x100px
-}
-
-extension ButtonSizeExtension on ButtonSize {
-  double get size {
-    switch (this) {
-      case ButtonSize.small:
-        return TherapyDesignSystem.minTouchTarget;
-      case ButtonSize.medium:
-        return 64.0;
-      case ButtonSize.large:
-        return TherapyDesignSystem.largeTouchTarget;
-      case ButtonSize.extraLarge:
-        return TherapyDesignSystem.extraLargeTouchTarget;
-    }
+  
+  /// Starke Vibration für Fehler (sparsam!)
+  static Future<void> hapticError() async {
+    await HapticFeedback.heavyImpact();
   }
-}
+  
+  /// Selektion Feedback
+  static Future<void> hapticSelection() async {
+    await HapticFeedback.selectionClick();
+  }
 
+  // ============================================================
+  // ANIMATION DURATIONS
+  // ============================================================
+  
+  static const Duration animationFast = Duration(milliseconds: 200);
+  static const Duration animationMedium = Duration(milliseconds: 300);
+  static const Duration animationSlow = Duration(milliseconds: 400);
+  static const Duration animationVerySlow = Duration(milliseconds: 600);
+  
+  /// Pulse Animation für aktive Elemente
+  static const Duration pulseDuration = Duration(milliseconds: 1000);
+  
+  /// Success Animation
+  static const Duration successAnimationDuration = Duration(milliseconds: 1500);
+}

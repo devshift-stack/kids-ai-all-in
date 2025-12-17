@@ -11,6 +11,7 @@ import '../../widgets/exercise_card_widget.dart';
 import '../../widgets/progress_chart_widget.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/routes/app_routes.dart';
+import '../../core/design_system.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -119,7 +120,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              // TODO: Settings Screen
+              TherapyDesignSystem.hapticSelection();
+              Navigator.of(context).pushNamed(AppRoutes.settings);
             },
           ),
         ],
@@ -128,20 +130,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         onRefresh: _loadData,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(TherapyDesignSystem.spacingXL),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Progress Overview
               if (_progressStats != null) _buildProgressOverview(),
-              const SizedBox(height: 32),
+              SizedBox(height: TherapyDesignSystem.spacingXL),
 
               // Available Exercises
               Text(
                 'Verfügbare Übungen',
-                style: KidsTypography.h2,
+                style: TherapyDesignSystem.h2Style,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: TherapyDesignSystem.spacingXL),
               if (_availableExercises.isEmpty)
                 _buildEmptyState()
               else
@@ -149,10 +151,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       padding: const EdgeInsets.only(bottom: 16),
                       child: ExerciseCardWidget(
                         exercise: exercise,
-                        onTap: () => _startExercise(exercise),
+                        onTap: () {
+                          TherapyDesignSystem.hapticSelection();
+                          _startExercise(exercise);
+                        },
                       ),
                     )),
-              const SizedBox(height: 32),
+              SizedBox(height: TherapyDesignSystem.spacingXL),
 
               // Quick Stats
               _buildQuickStats(profile),
