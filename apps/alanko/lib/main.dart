@@ -202,7 +202,7 @@ class _AppStartupState extends ConsumerState<AppStartup>
           ),
         ),
         child: Center(
-          child: AnimatedBuilder(
+          child: CustomAnimatedBuilder(
             listenable: _controller,
             builder: (context, child) {
               return Opacity(
@@ -277,11 +277,11 @@ class _AppStartupState extends ConsumerState<AppStartup>
   }
 }
 
-class AnimatedBuilder extends AnimatedWidget {
+class CustomAnimatedBuilder extends AnimatedWidget {
   final Widget Function(BuildContext context, Widget? child) builder;
   final Widget? child;
 
-  const AnimatedBuilder({
+  const CustomAnimatedBuilder({
     super.key,
     required super.listenable,
     required this.builder,
