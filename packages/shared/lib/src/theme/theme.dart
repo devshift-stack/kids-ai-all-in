@@ -61,7 +61,7 @@ class KidsTheme {
           horizontal: KidsSpacing.lg,
           vertical: KidsSpacing.md,
         ),
-        minimumSize: Size(0, KidsSpacing.buttonMd),
+        minimumSize: Size(0, KidsSpacing.buttonHeightMd),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(KidsSpacing.radiusMd),
         ),
@@ -82,7 +82,7 @@ class KidsTheme {
           horizontal: KidsSpacing.lg,
           vertical: KidsSpacing.md,
         ),
-        minimumSize: Size(0, KidsSpacing.buttonMd),
+        minimumSize: Size(0, KidsSpacing.buttonHeightMd),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(KidsSpacing.radiusMd),
         ),
@@ -156,7 +156,7 @@ class KidsTheme {
         borderSide: const BorderSide(color: KidsColors.error, width: 2),
       ),
       hintStyle: KidsTypography.bodyMedium.copyWith(
-        color: KidsColors.textDisabled,
+        color: KidsColors.textMuted,
       ),
     );
   }

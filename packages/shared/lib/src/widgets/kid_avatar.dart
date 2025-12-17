@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 import '../theme/spacing.dart';
 import '../theme/gradients.dart';
+import '../theme/shadows.dart';
 
 /// Avatar-Größen
 enum KidAvatarSize {
@@ -159,7 +160,7 @@ class KidAvatar extends StatelessWidget {
                 width: borderWidth,
               )
             : null,
-        boxShadow: KidsShadows.sm,
+        boxShadow: KidsShadows.card,
       ),
       child: ClipOval(
         child: _buildContent(),
@@ -467,7 +468,7 @@ class _LiankoAvatarState extends State<LiankoAvatar>
         decoration: BoxDecoration(
           gradient: KidsGradients.primary,
           shape: BoxShape.circle,
-          boxShadow: KidsShadows.lg,
+          boxShadow: KidsShadows.elevated,
         ),
         child: Center(
           child: Text(

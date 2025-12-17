@@ -72,4 +72,73 @@ class KidsShadows {
 
   /// Kein Schatten
   static List<BoxShadow> get none => [];
+
+  // ============================================================
+  // SIZE VARIANTS (für Kompatibilität)
+  // ============================================================
+
+  /// Kleiner Schatten
+  static List<BoxShadow> get sm => [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.03),
+          blurRadius: 6,
+          offset: const Offset(0, 2),
+        ),
+      ];
+
+  /// Mittlerer Schatten
+  static List<BoxShadow> get md => card;
+
+  /// Großer Schatten
+  static List<BoxShadow> get lg => [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.08),
+          blurRadius: 16,
+          offset: const Offset(0, 8),
+        ),
+      ];
+
+  /// Extra großer Schatten
+  static List<BoxShadow> get xl => elevated;
+
+  // ============================================================
+  // COLOR VARIANTS (für Kompatibilität)
+  // ============================================================
+
+  /// Primary-Farbe Schatten
+  static List<BoxShadow> get primary => [
+        BoxShadow(
+          color: KidsColors.primary.withValues(alpha: 0.25),
+          blurRadius: 12,
+          offset: const Offset(0, 6),
+        ),
+      ];
+
+  /// Success-Farbe Schatten
+  static List<BoxShadow> get success => [
+        BoxShadow(
+          color: KidsColors.success.withValues(alpha: 0.25),
+          blurRadius: 12,
+          offset: const Offset(0, 6),
+        ),
+      ];
+
+  /// Accent-Farbe Schatten
+  static List<BoxShadow> get accent => [
+        BoxShadow(
+          color: KidsColors.accent.withValues(alpha: 0.25),
+          blurRadius: 12,
+          offset: const Offset(0, 6),
+        ),
+      ];
+
+  /// Innerer kleiner Schatten
+  static List<BoxShadow> get innerSm => [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.03),
+          blurRadius: 2,
+          offset: const Offset(0, 1),
+          spreadRadius: -1,
+        ),
+      ];
 }

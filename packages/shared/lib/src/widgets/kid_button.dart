@@ -3,6 +3,7 @@ import '../theme/colors.dart';
 import '../theme/spacing.dart';
 import '../theme/typography.dart';
 import '../theme/gradients.dart';
+import '../theme/shadows.dart';
 
 /// Button-Varianten
 enum KidButtonVariant {
@@ -215,16 +216,16 @@ class _KidButtonState extends State<KidButton>
     }
 
     if (_isPressed) {
-      return KidsShadows.sm;
+      return KidsShadows.card;
     }
 
     switch (widget.variant) {
       case KidButtonVariant.primary:
-        return KidsShadows.primary;
+        return KidsShadows.button;
       case KidButtonVariant.secondary:
       case KidButtonVariant.accent:
       case KidButtonVariant.success:
-        return KidsShadows.md;
+        return KidsShadows.elevated;
       default:
         return KidsShadows.none;
     }
@@ -450,7 +451,7 @@ class _KidIconButtonState extends State<KidIconButton>
             boxShadow: widget.variant != KidButtonVariant.ghost &&
                     widget.variant != KidButtonVariant.outline &&
                     !widget.isDisabled
-                ? KidsShadows.sm
+                ? KidsShadows.card
                 : null,
           ),
           child: Icon(

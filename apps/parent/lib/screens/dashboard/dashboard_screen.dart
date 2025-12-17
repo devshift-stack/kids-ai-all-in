@@ -42,7 +42,7 @@ class DashboardScreen extends ConsumerWidget {
         ),
         error: (error, _) => Center(
           child: Text(
-            'Fehler: $error',
+            'Greška: $error',
             style: const TextStyle(color: KidsColors.error),
           ),
         ),
@@ -119,7 +119,7 @@ class DashboardScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'Noch keine Kinder',
+              'Još nema djece',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -128,7 +128,7 @@ class DashboardScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Füge dein erstes Kind hinzu, um die Lern-Apps zu verbinden.',
+              'Dodajte svoje prvo dijete da povežete aplikacije za učenje.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -143,7 +143,7 @@ class DashboardScreen extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
               icon: const Icon(Icons.add),
-              label: const Text('Kind hinzufügen'),
+              label: const Text('Dodaj dijete'),
             ),
           ],
         ),

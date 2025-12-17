@@ -65,12 +65,12 @@ class ModernCard extends StatelessWidget {
       case 0:
         return KidsShadows.none;
       case 1:
-        return KidsShadows.sm;
+        return KidsShadows.card;
       case 2:
-        return KidsShadows.xl; // shadow-xl für modernes Design
+        return KidsShadows.elevated; // shadow-xl für modernes Design
       case 3:
         return [
-          ...KidsShadows.xl,
+          ...KidsShadows.elevated,
           BoxShadow(
             color: KidsColors.primary.withValues(alpha: 0.1),
             blurRadius: 20,
@@ -78,7 +78,7 @@ class ModernCard extends StatelessWidget {
           ),
         ];
       default:
-        return KidsShadows.xl;
+        return KidsShadows.elevated;
     }
   }
 }

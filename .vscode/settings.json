@@ -1,0 +1,9 @@
+{
+  "git.repository": "devshift-stack/Li-KI-Trainig",
+  "git.remote": "origin",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true
+  }
+}
+

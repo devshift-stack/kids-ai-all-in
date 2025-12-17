@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kids_ai_shared/kids_ai_shared.dart';
+import 'package:kids_ai_shared/src/theme/shadows.dart';
+import 'package:kids_ai_shared/src/theme/theme.dart';
 
 /// Lianko App Theme
 /// Verwendet das gemeinsame Design-System aus kids_ai_shared

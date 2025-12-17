@@ -31,6 +31,13 @@ class KidsGradients {
     end: Alignment.bottomRight,
   );
 
+  /// Character-Gradient (für Alanko/Lianko)
+  static const LinearGradient character = LinearGradient(
+    colors: [KidsColors.primary, KidsColors.secondary],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
   // ============================================================
   // SPECIAL GRADIENTS
   // ============================================================
@@ -134,96 +141,4 @@ class KidsGradients {
       radius: 0.5,
     );
   }
-}
-
-/// Kids AI Schatten
-class KidsShadows {
-  KidsShadows._();
-
-  // ============================================================
-  // BOX SHADOWS
-  // ============================================================
-
-  /// Kein Schatten
-  static const List<BoxShadow> none = [];
-
-  /// Subtiler Schatten
-  static const List<BoxShadow> sm = [
-    BoxShadow(
-      color: Color(0x0A000000),
-      blurRadius: 4,
-      offset: Offset(0, 2),
-    ),
-  ];
-
-  /// Mittlerer Schatten
-  static const List<BoxShadow> md = [
-    BoxShadow(
-      color: Color(0x14000000),
-      blurRadius: 8,
-      offset: Offset(0, 4),
-    ),
-  ];
-
-  /// Großer Schatten
-  static const List<BoxShadow> lg = [
-    BoxShadow(
-      color: Color(0x1A000000),
-      blurRadius: 16,
-      offset: Offset(0, 8),
-    ),
-  ];
-
-  /// Extra großer Schatten (für Modals)
-  static const List<BoxShadow> xl = [
-    BoxShadow(
-      color: Color(0x24000000),
-      blurRadius: 24,
-      offset: Offset(0, 12),
-    ),
-  ];
-
-  // ============================================================
-  // COLORED SHADOWS
-  // ============================================================
-
-  /// Primärfarben-Schatten
-  static List<BoxShadow> primary = [
-    BoxShadow(
-      color: KidsColors.primary.withValues(alpha: 0.3),
-      blurRadius: 12,
-      offset: const Offset(0, 6),
-    ),
-  ];
-
-  /// Erfolgs-Schatten
-  static List<BoxShadow> success = [
-    BoxShadow(
-      color: KidsColors.success.withValues(alpha: 0.3),
-      blurRadius: 12,
-      offset: const Offset(0, 6),
-    ),
-  ];
-
-  /// Akzent-Schatten
-  static List<BoxShadow> accent = [
-    BoxShadow(
-      color: KidsColors.accent.withValues(alpha: 0.3),
-      blurRadius: 12,
-      offset: const Offset(0, 6),
-    ),
-  ];
-
-  // ============================================================
-  // INNER SHADOWS (für gedrückte Buttons)
-  // ============================================================
-
-  static List<BoxShadow> innerSm = const [
-    BoxShadow(
-      color: Color(0x1A000000),
-      blurRadius: 4,
-      offset: Offset(0, 2),
-      spreadRadius: -2,
-    ),
-  ];
 }
