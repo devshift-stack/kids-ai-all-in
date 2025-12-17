@@ -1,0 +1,12 @@
+{
+  "app_name": "Callcenter AI",
+  "greeting": "Hello! I'm Lisa, your sales consultant.",
+  "listening": "Listening...",
+  "processing": "Processing...",
+  "send_message": "Send message",
+  "voice_input": "Voice input",
+  "text_input": "Text input",
+  "error_no_api_key": "API key not configured",
+  "error_generic": "An error occurred. Please try again."
+}
+
