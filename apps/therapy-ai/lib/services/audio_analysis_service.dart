@@ -13,6 +13,7 @@ class AudioAnalysisService {
   final AudioPlayer _audioPlayer = AudioPlayer();
   bool _isRecording = false;
   String? _currentRecordingPath;
+  Future<void>? _recordingTimeoutFuture;
 
   /// Startet Audio-Aufnahme
   /// 
@@ -53,9 +54,9 @@ class AudioAnalysisService {
 
       // Stoppe nach maximaler Dauer (falls angegeben)
       if (duration != null) {
-        Future.delayed(duration, () {
+        _recordingTimeoutFuture = Future.delayed(duration, () async {
           if (_isRecording) {
-            stopRecording();
+            await stopRecording();
           }
         });
       }
@@ -75,6 +76,9 @@ class AudioAnalysisService {
     }
 
     try {
+      // Cancel timeout future falls vorhanden
+      _recordingTimeoutFuture = null;
+
       final path = await _recorder.stop();
       _isRecording = false;
       _currentRecordingPath = null;
@@ -82,6 +86,7 @@ class AudioAnalysisService {
     } catch (e) {
       _isRecording = false;
       _currentRecordingPath = null;
+      _recordingTimeoutFuture = null;
       throw Exception('Fehler beim Stoppen der Aufnahme: $e');
     }
   }

@@ -165,6 +165,9 @@ class _AppStartupState extends ConsumerState<AppStartup>
     final box = await Hive.openBox('child_profile');
     final profileExists = box.get('profile') != null;
 
+    // Box schließen, um Resource Leak zu vermeiden
+    await box.close();
+
     if (profileExists) {
       Navigator.of(context).pushReplacementNamed('/home');
     } else {
