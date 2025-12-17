@@ -10,6 +10,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_performance/firebase_performance.dart';
+import 'package:kids_ai_shared/kids_ai_shared.dart';
 import 'firebase_options.dart';
 
 import 'core/theme/app_theme.dart';
@@ -219,7 +220,7 @@ class _AppStartupState extends ConsumerState<AppStartup>
           ),
         ),
         child: Center(
-          child: AnimatedBuilder(
+          child: KidsAnimatedBuilder(
             listenable: _controller,
             builder: (context, child) {
               return Opacity(
@@ -294,19 +295,4 @@ class _AppStartupState extends ConsumerState<AppStartup>
   }
 }
 
-class AnimatedBuilder extends AnimatedWidget {
-  final Widget Function(BuildContext context, Widget? child) builder;
-  final Widget? child;
-
-  const AnimatedBuilder({
-    super.key,
-    required super.listenable,
-    required this.builder,
-    this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return builder(context, child);
-  }
-}
+// AnimatedBuilder moved to kids_ai_shared package as KidsAnimatedBuilder
