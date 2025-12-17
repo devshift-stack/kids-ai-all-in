@@ -301,9 +301,9 @@ class ProgressTrackingService {
         final data = doc.data();
         return {
           'id': doc.id,
-          'exerciseId': data['exerciseId'],
-          'result': data['result'],
-          'timestamp': data['timestamp'],
+          'exerciseId': (data as Map<String, dynamic>)['exerciseId'],
+          'result': (data as Map<String, dynamic>)['result'],
+          'timestamp': (data as Map<String, dynamic>)['timestamp'],
         };
       }).toList();
     } catch (e) {

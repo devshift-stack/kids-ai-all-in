@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:kids_ai_shared/kids_ai_shared.dart';
-import '../../../services/elevenlabs_voice_service.dart';
-import '../../../core/theme/app_theme.dart';
-import '../../../core/constants/app_constants.dart';
-import '../../../core/routes/app_routes.dart';
+import '../../services/elevenlabs_voice_service.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/constants/app_constants.dart';
+import '../../core/routes/app_routes.dart';
+import '../../providers/child_profile_provider.dart';
 
 class VoiceCloningScreen extends ConsumerStatefulWidget {
   const VoiceCloningScreen({super.key});
