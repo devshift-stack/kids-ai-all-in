@@ -66,11 +66,18 @@ class EnvConfig {
 
   /// ElevenLabs API Key
   static String? get elevenLabsApiKey {
-    // Fallback für Development (wenn .env nicht vorhanden)
+    // KEIN Fallback - API Key muss immer aus .env oder Environment Variable kommen
+    // Sicherheit: API Keys dürfen niemals hardcodiert werden!
     if (_elevenLabsApiKey == null || _elevenLabsApiKey!.isEmpty) {
       if (kDebugMode) {
-        // Development Fallback - API Key direkt hier
-        return 'sk_c507c161d7bd5878e17983a35534411d6b741823189a4901';
+        debugPrint(
+          '⚠️ ElevenLabs API Key nicht gefunden. '
+          'Bitte .env Datei erstellen oder ELEVENLABS_API_KEY Environment Variable setzen.',
+        );
+        debugPrint(
+          '📝 Anleitung: Erstelle apps/therapy-ai/.env mit: ELEVENLABS_API_KEY=dein_api_key',
+        );
+        return null;
       }
       throw Exception(
         'ElevenLabs API Key nicht gefunden. '
