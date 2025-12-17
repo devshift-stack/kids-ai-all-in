@@ -243,20 +243,20 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(TherapyDesignSystem.spacingXL), // 32px
           child: Column(
             children: [
               // Exercise Info
               _buildExerciseInfo(),
-              const SizedBox(height: 32),
+              SizedBox(height: TherapyDesignSystem.spacingXXL), // 48px
 
               // Target Word Display
               _buildTargetWord(),
-              const SizedBox(height: 32),
+              SizedBox(height: TherapyDesignSystem.spacingXXL), // 48px
 
               // Recording Widget
               _buildRecordingSection(sessionState),
-              const SizedBox(height: 24),
+              SizedBox(height: TherapyDesignSystem.spacingXL), // 32px
 
               // Error Message
               if (_errorMessage != null) _buildErrorMessage(),

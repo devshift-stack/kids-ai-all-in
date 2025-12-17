@@ -195,8 +195,8 @@ class _AnimatedPulseRingState extends State<AnimatedPulseRing>
             animation: _controller,
             builder: (context, child) {
               return Container(
-                width: TherapyDesignSystem.touchTargetPrimary * _scaleAnimation.value,
-                height: TherapyDesignSystem.touchTargetPrimary * _scaleAnimation.value,
+                width: TherapyDesignSystem.touchTargetPrimary * _scaleAnimation.value, // 100px * scale
+                height: TherapyDesignSystem.touchTargetPrimary * _scaleAnimation.value, // 100px * scale
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(

@@ -136,19 +136,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             children: [
               // Progress Overview
               if (_progressStats != null) _buildProgressOverview(),
-              SizedBox(height: TherapyDesignSystem.spacingXL),
+              SizedBox(height: TherapyDesignSystem.spacingXXL), // 48px
 
               // Available Exercises
               Text(
                 'Verfügbare Übungen',
                 style: TherapyDesignSystem.h2Style,
               ),
-              SizedBox(height: TherapyDesignSystem.spacingXL),
+              SizedBox(height: TherapyDesignSystem.spacingXXL), // 48px
               if (_availableExercises.isEmpty)
                 _buildEmptyState()
               else
                 ..._availableExercises.map((exercise) => Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
+                      padding: EdgeInsets.only(bottom: TherapyDesignSystem.spacingLG), // 24px
                       child: ExerciseCardWidget(
                         exercise: exercise,
                         onTap: () {
@@ -157,7 +157,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         },
                       ),
                     )),
-              SizedBox(height: TherapyDesignSystem.spacingXL),
+              SizedBox(height: TherapyDesignSystem.spacingXXL), // 48px
 
               // Quick Stats
               _buildQuickStats(profile),
