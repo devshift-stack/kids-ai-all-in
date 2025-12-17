@@ -2,6 +2,14 @@
 library kids_ai_shared;
 
 // ============================================================
+// WIDGETS
+// ============================================================
+export 'src/widgets/category_card.dart';
+export 'src/widgets/kid_avatar.dart';
+export 'src/widgets/kid_button.dart';
+export 'src/widgets/kid_card.dart';
+
+// ============================================================
 // AUDIO SERVICES - Text-to-Speech (Ausgabe)
 // ============================================================
 export 'src/audio/pre_recorded_audio_service.dart';
