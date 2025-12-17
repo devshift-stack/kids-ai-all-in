@@ -1,5 +1,6 @@
-package com.alanko.ai
+package com.lik.app
 
 import io.flutter.embedding.android.FlutterActivity
 
 class MainActivity : FlutterActivity()
+

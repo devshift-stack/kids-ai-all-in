@@ -12,7 +12,7 @@ import 'firebase_options.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/env_config.dart';
-import 'screens/setup/child_profile_screen.dart';
+import 'core/routes/app_routes.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -89,6 +89,8 @@ class TherapyAIApp extends ConsumerWidget {
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
+      initialRoute: AppRoutes.splash,
+      onGenerateRoute: AppRoutes.generateRoute,
       home: const AppStartup(),
     );
   }
@@ -158,19 +160,16 @@ class _AppStartupState extends ConsumerState<AppStartup>
     }
   }
 
-  void _navigateToApp() {
-    // For now, navigate to child profile setup
-    // Later, check if profile exists and navigate accordingly
-    Navigator.of(context).pushReplacement(
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            const ChildProfileScreen(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
-        transitionDuration: const Duration(milliseconds: 800),
-      ),
-    );
+  void _navigateToApp() async {
+    // Prüfe ob Profil existiert
+    final box = await Hive.openBox('child_profile');
+    final profileExists = box.get('profile') != null;
+
+    if (profileExists) {
+      Navigator.of(context).pushReplacementNamed('/home');
+    } else {
+      Navigator.of(context).pushReplacementNamed('/child-profile');
+    }
   }
 
   @override

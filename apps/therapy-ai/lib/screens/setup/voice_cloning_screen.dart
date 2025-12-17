@@ -6,6 +6,7 @@ import 'package:kids_ai_shared/kids_ai_shared.dart';
 import '../../../services/elevenlabs_voice_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/routes/app_routes.dart';
 
 class VoiceCloningScreen extends ConsumerStatefulWidget {
   const VoiceCloningScreen({super.key});
@@ -135,7 +136,7 @@ class _VoiceCloningScreenState extends ConsumerState<VoiceCloningScreen> {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              Navigator.of(context).pushReplacementNamed('/home');
+              Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
             },
             child: const Text('Weiter'),
           ),
@@ -256,7 +257,7 @@ class _VoiceCloningScreenState extends ConsumerState<VoiceCloningScreen> {
                 Center(
                   child: TextButton(
                     onPressed: () {
-                      Navigator.of(context).pushReplacementNamed('/home');
+                      Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
                     },
                     child: Text(
                       'Überspringen',

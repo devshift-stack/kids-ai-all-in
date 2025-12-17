@@ -13,6 +13,7 @@ import '../../services/audio_analysis_service.dart';
 import '../../services/elevenlabs_voice_service.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/routes/app_routes.dart';
 
 class ExerciseScreen extends ConsumerStatefulWidget {
   final Exercise exercise;
@@ -145,7 +146,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
 
       if (mounted) {
         Navigator.of(context).pushNamed(
-          '/exercise-result',
+          AppRoutes.exerciseResult,
           arguments: {
             'exercise': widget.exercise,
             'result': result,

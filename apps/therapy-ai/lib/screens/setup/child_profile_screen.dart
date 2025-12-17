@@ -5,6 +5,7 @@ import 'package:kids_ai_shared/kids_ai_shared.dart';
 import '../../../models/child_profile.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/routes/app_routes.dart';
 
 class ChildProfileScreen extends ConsumerStatefulWidget {
   const ChildProfileScreen({super.key});
@@ -72,7 +73,7 @@ class _ChildProfileScreenState extends ConsumerState<ChildProfileScreen> {
       // await ref.read(childProfileProvider.notifier).saveProfile(profile);
 
       if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/voice-cloning');
+        Navigator.of(context).pushReplacementNamed(AppRoutes.voiceCloning);
       }
     } catch (e) {
       if (mounted) {
