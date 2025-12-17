@@ -1,0 +1,57 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Alanko Development",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define=GEMINI_API_KEY=AIzaSyD5jBRl-Ti0r_uSyx5JW24H3CySQ8RWrS8"
+      ],
+      "cwd": "${workspaceFolder}/apps/alanko"
+    },
+    {
+      "name": "Alanko Development (aus .env)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define=GEMINI_API_KEY=${env:GEMINI_API_KEY}"
+      ],
+      "cwd": "${workspaceFolder}/apps/alanko"
+    },
+    {
+      "name": "Alanko Production",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define=GEMINI_API_KEY=${env:GEMINI_API_KEY}",
+        "--release"
+      ],
+      "cwd": "${workspaceFolder}/apps/alanko"
+    },
+    {
+      "name": "Alanko (Ohne AI - Zum Testen)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define=GEMINI_API_KEY="
+      ],
+      "cwd": "${workspaceFolder}/apps/alanko"
+    },
+    {
+      "name": "Alanko Profile",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define=GEMINI_API_KEY=AIzaSyD5jBRl-Ti0r_uSyx5JW24H3CySQ8RWrS8",
+        "--profile"
+      ],
+      "cwd": "${workspaceFolder}/apps/alanko"
+    }
+  ]
+}

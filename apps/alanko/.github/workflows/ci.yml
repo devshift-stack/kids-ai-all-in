@@ -32,7 +32,12 @@ jobs:
       continue-on-error: true
     
     - name: Build APK
-      run: flutter build apk --release
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      run: |
+        flutter build apk \
+          --dart-define=GEMINI_API_KEY=$GEMINI_API_KEY \
+          --release
     
     - name: Upload APK
       uses: actions/upload-artifact@v4
@@ -59,7 +64,12 @@ jobs:
       run: flutter pub get
     
     - name: Build APK
-      run: flutter build apk --release
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      run: |
+        flutter build apk \
+          --dart-define=GEMINI_API_KEY=$GEMINI_API_KEY \
+          --release
     
     - name: Upload to Firebase App Distribution
       uses: wzieba/Firebase-Distribution-Github-Action@v1
