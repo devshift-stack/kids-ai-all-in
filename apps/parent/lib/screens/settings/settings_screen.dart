@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:kids_ai_shared/kids_ai_shared.dart';
 import '../../providers/pin_provider.dart';
 import 'co_parent_screen.dart';
 
@@ -88,122 +89,62 @@ class SettingsScreen extends ConsumerWidget {
     final notifNotifier = ref.read(notificationSettingsProvider.notifier);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: const Text(
-          'Einstellungen',
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _buildSection(
-            title: 'Familie',
-            children: [
-              _buildSettingTile(
-                icon: Icons.people,
-                title: 'Elternteile verwalten',
-                subtitle: 'Weiteren Elternteil einladen',
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const CoParentScreen()),
-                ),
-              ),
-            ],
+      backgroundColor: KidsColors.background,
+      appBar: ModernNavBar(
+        title: 'Postavke',
+        actions: [
+          NavButton(
+            icon: Icons.home,
+            onTap: () {
+              Navigator.pop(context);
+            },
           ),
-          const SizedBox(height: 16),
-          _buildSection(
-            title: 'Sicherheit',
-            children: [
-              _buildSettingTile(
-                icon: Icons.lock,
-                title: 'PIN-Schutz',
-                subtitle: pinConfig.isPinEnabled ? 'Aktiviert' : 'Deaktiviert',
-                trailing: Switch(
-                  value: pinConfig.isPinEnabled,
-                  onChanged: (value) {
-                    if (value) {
-                      _showSetPinDialog(context, ref);
-                    } else {
-                      _showDisablePinDialog(context, ref);
-                    }
-                  },
-                  activeTrackColor: const Color(0xFF6C63FF),
-                ),
-              ),
-              if (pinConfig.isPinEnabled)
-                _buildSettingTile(
-                  icon: Icons.edit,
-                  title: 'PIN ändern',
-                  subtitle: 'Neuen PIN festlegen',
-                  onTap: () => _showChangePinDialog(context, ref),
-                ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _buildSection(
-            title: 'Benachrichtigungen',
-            children: [
-              _buildSettingTile(
-                icon: Icons.notifications,
-                title: 'Push-Benachrichtigungen',
-                subtitle: notifSettings.enabled ? 'Aktiviert' : 'Deaktiviert',
-                trailing: Switch(
-                  value: notifSettings.enabled,
-                  onChanged: (value) => notifNotifier.setEnabled(value),
-                  activeTrackColor: const Color(0xFF6C63FF),
-                ),
-              ),
-              if (notifSettings.enabled) ...[
-                _buildSettingTile(
-                  icon: Icons.child_care,
-                  title: 'Aktivitäts-Benachrichtigungen',
-                  subtitle: 'Wenn Kind spielt oder Pause macht',
-                  trailing: Switch(
-                    value: notifSettings.activityAlerts,
-                    onChanged: (value) => notifNotifier.setActivityAlerts(value),
-                    activeTrackColor: const Color(0xFF6C63FF),
-                  ),
-                ),
-                _buildSettingTile(
-                  icon: Icons.summarize,
-                  title: 'Täglicher Bericht',
-                  subtitle: 'Zusammenfassung am Abend',
-                  trailing: Switch(
-                    value: notifSettings.dailyReport,
-                    onChanged: (value) => notifNotifier.setDailyReport(value),
-                    activeTrackColor: const Color(0xFF6C63FF),
-                  ),
-                ),
-                _buildSettingTile(
-                  icon: Icons.devices,
-                  title: 'Geräte-Benachrichtigungen',
-                  subtitle: 'Wenn Gerät verbunden/getrennt wird',
-                  trailing: Switch(
-                    value: notifSettings.deviceAlerts,
-                    onChanged: (value) => notifNotifier.setDeviceAlerts(value),
-                    activeTrackColor: const Color(0xFF6C63FF),
-                  ),
-                ),
-              ],
-            ],
-          ),
-          const SizedBox(height: 16),
-          _buildSection(
-            title: 'Sprache',
-            children: [
-              _buildSettingTile(
-                icon: Icons.language,
-                title: 'App-Sprache',
-                subtitle: _getCurrentLanguageName(context),
-                onTap: () => _showLanguageDialog(context),
-              ),
-            ],
+          NavButton(
+            icon: Icons.settings,
+            onTap: () {},
           ),
         ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Postavke',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: KidsColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 32),
+            // Profile Section
+            _buildProfileSection(),
+            const SizedBox(height: 24),
+            // Time Limits Section
+            _buildTimeLimitsSection(),
+            const SizedBox(height: 24),
+            // Notifications Section
+            _buildNotificationsSection(ref, notifSettings, notifNotifier),
+            const SizedBox(height: 24),
+            // Content Controls Section
+            _buildContentControlsSection(),
+            const SizedBox(height: 24),
+            // Audio Settings Section
+            _buildAudioSettingsSection(),
+            const SizedBox(height: 24),
+            // Security Section
+            _buildSecuritySection(context, ref, pinConfig),
+            const SizedBox(height: 24),
+            // Family Section
+            _buildFamilySection(context),
+            const SizedBox(height: 24),
+            // Language Section
+            _buildLanguageSection(context),
+            const SizedBox(height: 100),
+          ],
+        ),
       ),
     );
   }
@@ -297,55 +238,505 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSection({
-    required String title,
-    required List<Widget> children,
+  // Profile Section (v0 Design)
+  Widget _buildProfileSection() {
+    return ModernCard(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.person, size: 20, color: KidsColors.textSecondary),
+              const SizedBox(width: 8),
+              const Text(
+                'Profil',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: KidsColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Column(
+            children: [
+              _buildInputField(
+                label: 'Ime djeteta',
+                value: 'Max Mustermann',
+                onChanged: (value) {},
+              ),
+              const SizedBox(height: 16),
+              _buildInputField(
+                label: 'Godine',
+                value: '8',
+                keyboardType: TextInputType.number,
+                onChanged: (value) {},
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: KidsColors.primary,
+                ),
+                child: const Text('Ažuriraj profil'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Time Limits Section (v0 Design)
+  Widget _buildTimeLimitsSection() {
+    return ModernCard(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.access_time, size: 20, color: KidsColors.textSecondary),
+              const SizedBox(width: 8),
+              const Text(
+                'Vremenska ograničenja',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: KidsColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Column(
+            children: [
+              _buildSwitchRow(
+                title: 'Dnevno vremensko ograničenje',
+                subtitle: 'Maksimalno trajanje korištenja dnevno',
+                trailing: Row(
+                  children: [
+                    SizedBox(
+                      width: 60,
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
+                        decoration: InputDecoration(
+                          hintText: '60',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Min',
+                      style: TextStyle(color: KidsColors.textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(height: 32),
+              _buildSwitchRow(
+                title: 'Podsjetnik za pauzu',
+                subtitle: 'Podsjetite nakon 30 minuta na pauzu',
+                trailing: Switch(
+                  value: true,
+                  onChanged: (value) {},
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Notifications Section (v0 Design)
+  Widget _buildNotificationsSection(
+    WidgetRef ref,
+    NotificationSettings notifSettings,
+    NotificationSettingsNotifier notifNotifier,
+  ) {
+    return ModernCard(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.notifications, size: 20, color: KidsColors.textSecondary),
+              const SizedBox(width: 8),
+              const Text(
+                'Obavještenja',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: KidsColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Column(
+            children: [
+              _buildSwitchRow(
+                title: 'Izvještaji o napretku',
+                subtitle: 'Sedmični pregled putem emaila',
+                trailing: Switch(
+                  value: notifSettings.dailyReport,
+                  onChanged: (value) => notifNotifier.setDailyReport(value),
+                ),
+              ),
+              const Divider(height: 32),
+              _buildSwitchRow(
+                title: 'Uspjesi',
+                subtitle: 'Obavijesti o novim značkama',
+                trailing: Switch(
+                  value: notifSettings.activityAlerts,
+                  onChanged: (value) => notifNotifier.setActivityAlerts(value),
+                ),
+              ),
+              const Divider(height: 32),
+              _buildSwitchRow(
+                title: 'Podsjetnici za aktivnosti',
+                subtitle: 'Pošalji dnevni podsjetnik za učenje',
+                trailing: Switch(
+                  value: notifSettings.enabled,
+                  onChanged: (value) => notifNotifier.setEnabled(value),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Content Controls Section (v0 Design)
+  Widget _buildContentControlsSection() {
+    return ModernCard(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.visibility, size: 20, color: KidsColors.textSecondary),
+              const SizedBox(width: 8),
+              const Text(
+                'Postavke sadržaja',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: KidsColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Column(
+            children: [
+              _buildSwitchRow(
+                title: 'Sadržaj prilagođen godinama',
+                subtitle: 'Prikaži samo sadržaj za uzrasnu grupu',
+                trailing: Switch(
+                  value: true,
+                  onChanged: (value) {},
+                ),
+              ),
+              const Divider(height: 32),
+              _buildSwitchRow(
+                title: 'AI podrška',
+                subtitle: 'Aktiviraj personalizirane prijedloge za učenje',
+                trailing: Switch(
+                  value: true,
+                  onChanged: (value) {},
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Audio Settings Section (v0 Design)
+  Widget _buildAudioSettingsSection() {
+    return ModernCard(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.volume_up, size: 20, color: KidsColors.textSecondary),
+              const SizedBox(width: 8),
+              const Text(
+                'Audio i TTS',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: KidsColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Column(
+            children: [
+              _buildSwitchRow(
+                title: 'Tekst-u-govor',
+                subtitle: 'Automatski čitaj tekstove',
+                trailing: Switch(
+                  value: true,
+                  onChanged: (value) {},
+                ),
+              ),
+              const Divider(height: 32),
+              _buildSwitchRow(
+                title: 'Zvučni efekti',
+                subtitle: 'Puštaj zvukove pri uspjesima',
+                trailing: Switch(
+                  value: true,
+                  onChanged: (value) {},
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Security Section (v0 Design)
+  Widget _buildSecuritySection(
+    BuildContext context,
+    WidgetRef ref,
+    PinConfigNotifier pinConfig,
+  ) {
+    return ModernCard(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.lock, size: 20, color: KidsColors.textSecondary),
+              const SizedBox(width: 8),
+              const Text(
+                'Sigurnost',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: KidsColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Column(
+            children: [
+              _buildSwitchRow(
+                title: 'PIN zaštita za roditeljski pristup',
+                subtitle: 'Zaštiti pristup kontrolnoj tabli',
+                trailing: Switch(
+                  value: pinConfig.isPinEnabled,
+                  onChanged: (value) {
+                    if (value) {
+                      _showSetPinDialog(context, ref);
+                    } else {
+                      _showDisablePinDialog(context, ref);
+                    }
+                  },
+                ),
+              ),
+              if (pinConfig.isPinEnabled) ...[
+                const Divider(height: 32),
+                _buildInputField(
+                  label: 'Postavi novi PIN',
+                  value: '',
+                  obscureText: true,
+                  hintText: '••••',
+                  onChanged: (value) {},
+                ),
+                const SizedBox(height: 16),
+                OutlinedButton(
+                  onPressed: () => _showChangePinDialog(context, ref),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: KidsColors.secondary,
+                    side: const BorderSide(color: KidsColors.secondary),
+                  ),
+                  child: const Text('Promijeni PIN'),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Family Section
+  Widget _buildFamilySection(BuildContext context) {
+    return ModernCard(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.people, size: 20, color: KidsColors.textSecondary),
+              const SizedBox(width: 8),
+              const Text(
+                'Familija',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: KidsColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          ListTile(
+            leading: const Icon(Icons.people, color: KidsColors.textPrimary),
+            title: const Text(
+              'Elternteile verwalten',
+              style: TextStyle(color: KidsColors.textPrimary),
+            ),
+            subtitle: const Text(
+              'Weiteren Elternteil einladen',
+              style: TextStyle(color: KidsColors.textSecondary),
+            ),
+            trailing: const Icon(Icons.chevron_right, color: KidsColors.textSecondary),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const CoParentScreen()),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Language Section
+  Widget _buildLanguageSection(BuildContext context) {
+    return ModernCard(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.language, size: 20, color: KidsColors.textSecondary),
+              const SizedBox(width: 8),
+              const Text(
+                'Jezik',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: KidsColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          ListTile(
+            leading: const Icon(Icons.language, color: KidsColors.textPrimary),
+            title: const Text(
+              'App-Sprache',
+              style: TextStyle(color: KidsColors.textPrimary),
+            ),
+            subtitle: Text(
+              _getCurrentLanguageName(context),
+              style: const TextStyle(color: KidsColors.textSecondary),
+            ),
+            trailing: const Icon(Icons.chevron_right, color: KidsColors.textSecondary),
+            onTap: () => _showLanguageDialog(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Helper Widgets
+  Widget _buildInputField({
+    required String label,
+    required String value,
+    String? hintText,
+    bool obscureText = false,
+    TextInputType? keyboardType,
+    required void Function(String) onChanged,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 8),
-          child: Text(
-            title,
-            style: TextStyle(
-              color: Colors.white.withValues(alpha:0.5),
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: KidsColors.textPrimary,
           ),
         ),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha:0.05),
-            borderRadius: BorderRadius.circular(16),
+        const SizedBox(height: 8),
+        TextField(
+          controller: TextEditingController(text: value),
+          obscureText: obscureText,
+          keyboardType: keyboardType,
+          decoration: InputDecoration(
+            hintText: hintText,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: KidsColors.border),
+            ),
+            filled: true,
+            fillColor: KidsColors.surface,
           ),
-          child: Column(children: children),
+          onChanged: onChanged,
         ),
       ],
     );
   }
 
-  Widget _buildSettingTile({
-    required IconData icon,
+  Widget _buildSwitchRow({
     required String title,
     required String subtitle,
-    VoidCallback? onTap,
-    Widget? trailing,
-    Color? textColor,
+    required Widget trailing,
   }) {
-    return ListTile(
-      leading: Icon(icon, color: textColor ?? Colors.white70),
-      title: Text(
-        title,
-        style: TextStyle(color: textColor ?? Colors.white),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: TextStyle(color: Colors.white.withValues(alpha:0.5), fontSize: 12),
-      ),
-      trailing: trailing ?? const Icon(Icons.chevron_right, color: Colors.white24),
-      onTap: onTap,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: KidsColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: KidsColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+        trailing,
+      ],
     );
   }
 

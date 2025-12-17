@@ -45,6 +45,12 @@ export 'src/widgets/category_card.dart';
 export 'src/widgets/animated_builder.dart';
 export 'src/widgets/modern_card.dart';
 export 'src/widgets/modern_nav.dart';
+export 'src/widgets/modern_progress.dart';
+export 'src/widgets/modern_badge.dart';
+export 'src/widgets/progress_item.dart';
+export 'src/widgets/activity_item.dart';
+export 'src/widgets/badge_card.dart';
+export 'src/widgets/weekly_overview.dart';
 
 // ============================================================
 // OFFLINE SYNC
