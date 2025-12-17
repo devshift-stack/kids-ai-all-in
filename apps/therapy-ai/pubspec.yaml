@@ -1,5 +1,5 @@
 name: therapy_ai
-description: AI-Powered Therapy App for children with hearing impairment
+description: Li KI Training - AI-Powered Therapy App for children with hearing impairment
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -33,7 +33,7 @@ dependencies:
   # Audio & Voice
   flutter_tts: ^4.0.2
   just_audio: ^0.9.36
-  record: ^5.1.0
+  record: ^6.1.2
   audio_session: ^0.1.18
   permission_handler: ^11.3.0
   file_picker: ^8.1.2

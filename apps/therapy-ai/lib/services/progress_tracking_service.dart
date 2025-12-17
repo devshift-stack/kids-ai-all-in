@@ -289,7 +289,7 @@ class ProgressTrackingService {
       }
 
       final snapshot = await query.get();
-      return snapshot.docs.map((doc) => {
+      return snapshot.docs.map((doc) {
         final data = doc.data();
         return {
           'id': doc.id,
