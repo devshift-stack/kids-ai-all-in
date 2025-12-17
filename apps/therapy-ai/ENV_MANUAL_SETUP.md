@@ -15,7 +15,9 @@ Da die `.env` Datei aus Sicherheitsgründen nicht automatisch erstellt werden ka
    ```bash
    cat > .env << 'EOF'
    # Therapy AI - Environment Variables
-   ELEVENLABS_API_KEY=sk_c507c161d7bd5878e17983a35534411d6b741823189a4901
+   # WICHTIG: Ersetze YOUR_ELEVENLABS_API_KEY mit deinem echten API Key
+   # Du findest deinen API Key hier: https://elevenlabs.io/app/settings/api-keys
+   ELEVENLABS_API_KEY=YOUR_ELEVENLABS_API_KEY
    ELEVENLABS_API_BASE_URL=https://api.elevenlabs.io/v1
    APP_ENV=development
    DEBUG_MODE=true
@@ -31,11 +33,11 @@ Da die `.env` Datei aus Sicherheitsgründen nicht automatisch erstellt werden ka
    - Kopiere den Inhalt von oben hinein
    - Speichere im Verzeichnis `apps/therapy-ai/`
 
-## ✅ Alternative: API Key ist bereits gespeichert
+## ⚠️ WICHTIG: API Key muss gesetzt werden
 
-**Gute Nachricht:** Der API Key ist bereits als Development-Fallback in `EnvConfig` gespeichert!
+**Sicherheitshinweis:** Der API Key muss immer über die `.env` Datei oder Environment-Variablen gesetzt werden. Es gibt keinen hardcodierten Fallback mehr.
 
-Die App funktioniert auch ohne `.env` Datei im Debug-Mode. Für Production sollte die `.env` Datei jedoch erstellt werden.
+Die App funktioniert nur, wenn der API Key korrekt gesetzt ist.
 
 ## 🔍 Prüfen ob es funktioniert
 
