@@ -220,7 +220,7 @@ class _AppStartupState extends ConsumerState<AppStartup>
           ),
         ),
         child: Center(
-          child: KidsAnimatedBuilder(
+          child: CustomAnimatedBuilder(
             listenable: _controller,
             builder: (context, child) {
               return Opacity(
@@ -230,29 +230,45 @@ class _AppStartupState extends ConsumerState<AppStartup>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Logo placeholder - replace with actual logo
+                      // App Logo
                       Container(
                         width: 150,
                         height: 150,
                         decoration: BoxDecoration(
-                          gradient: AppTheme.alanGradient,
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: AppTheme.primaryColor.withOpacity(0.3),
+                              color: AppTheme.primaryColor.withValues(alpha: 0.3),
                               blurRadius: 30,
                               offset: const Offset(0, 10),
                             ),
                           ],
                         ),
-                        child: const Center(
-                          child: Text(
-                            'A',
-                            style: TextStyle(
-                              fontSize: 72,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+                        child: ClipOval(
+                          child: Image.asset(
+                            'assets/images/logo_256.png',
+                            width: 150,
+                            height: 150,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              // Fallback falls Asset nicht gefunden
+                              return Container(
+                                decoration: BoxDecoration(
+                                  gradient: AppTheme.alanGradient,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    'A',
+                                    style: TextStyle(
+                                      fontSize: 72,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -278,7 +294,7 @@ class _AppStartupState extends ConsumerState<AppStartup>
                           height: 40,
                           child: CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              AppTheme.primaryColor.withOpacity(0.5),
+                              AppTheme.primaryColor.withValues(alpha: 0.5),
                             ),
                             strokeWidth: 3,
                           ),
@@ -295,4 +311,19 @@ class _AppStartupState extends ConsumerState<AppStartup>
   }
 }
 
-// AnimatedBuilder moved to kids_ai_shared package as KidsAnimatedBuilder
+class CustomAnimatedBuilder extends AnimatedWidget {
+  final Widget Function(BuildContext context, Widget? child) builder;
+  final Widget? child;
+
+  const CustomAnimatedBuilder({
+    super.key,
+    required super.listenable,
+    required this.builder,
+    this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return builder(context, child);
+  }
+}

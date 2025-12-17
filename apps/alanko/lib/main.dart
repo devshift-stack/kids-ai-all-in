@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,6 +15,7 @@ import 'core/theme/app_theme.dart';
 import 'services/age_adaptive_service.dart';
 import 'services/user_profile_service.dart';
 import 'services/firebase_service.dart';
+import 'services/parent_child_service.dart';
 import 'screens/language_selection/language_selection_screen.dart';
 import 'screens/profile_selection/profile_selection_screen.dart';
 
@@ -137,16 +140,104 @@ class _AppStartupState extends ConsumerState<AppStartup>
   }
 
   Future<void> _initializeApp() async {
+    // #region agent log
+    try {
+      final logFile = File('/Users/dsselmanovic/cursor project/kids-ai-all-in/.cursor/debug.log');
+      final logData = jsonEncode({
+        'location': 'main.dart:139',
+        'message': 'App initialization started',
+        'data': {},
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+        'sessionId': 'debug-session',
+        'runId': 'run1',
+        'hypothesisId': 'A'
+      });
+      await logFile.writeAsString('$logData\n', mode: FileMode.append);
+    } catch (_) {}
+    // #endregion
+    
     // Initialize Firebase services
     final firebaseService = ref.read(firebaseServiceProvider);
+
+    // #region agent log
+    try {
+      final logFile = File('/Users/dsselmanovic/cursor project/kids-ai-all-in/.cursor/debug.log');
+      final logData = jsonEncode({
+        'location': 'main.dart:147',
+        'message': 'Firebase service obtained',
+        'data': {'isSignedIn': firebaseService.isSignedIn},
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+        'sessionId': 'debug-session',
+        'runId': 'run1',
+        'hypothesisId': 'A'
+      });
+      await logFile.writeAsString('$logData\n', mode: FileMode.append);
+    } catch (_) {}
+    // #endregion
 
     // Enable offline mode
     await firebaseService.enableOfflineMode();
 
+    // #region agent log
+    try {
+      final logFile = File('/Users/dsselmanovic/cursor project/kids-ai-all-in/.cursor/debug.log');
+      final logData = jsonEncode({
+        'location': 'main.dart:160',
+        'message': 'Offline mode enabled',
+        'data': {},
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+        'sessionId': 'debug-session',
+        'runId': 'run1',
+        'hypothesisId': 'A'
+      });
+      await logFile.writeAsString('$logData\n', mode: FileMode.append);
+    } catch (_) {}
+    // #endregion
+
     // Sign in anonymously to Firebase
     if (!firebaseService.isSignedIn) {
       await firebaseService.signInAnonymously();
+      
+      // #region agent log
+      try {
+        final logFile = File('/Users/dsselmanovic/cursor project/kids-ai-all-in/.cursor/debug.log');
+        final logData = jsonEncode({
+          'location': 'main.dart:171',
+          'message': 'Anonymous sign-in completed',
+          'data': {'userId': firebaseService.currentUser?.uid},
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+          'sessionId': 'debug-session',
+          'runId': 'run1',
+          'hypothesisId': 'A'
+        });
+        await logFile.writeAsString('$logData\n', mode: FileMode.append);
+      } catch (_) {}
+      // #endregion
     }
+
+    // Initialize Parent-Child Service (für parentId/childId)
+    final parentChildService = ref.read(parentChildServiceProvider);
+    await parentChildService.initialize();
+
+    // #region agent log
+    try {
+      final logFile = File('/Users/dsselmanovic/cursor project/kids-ai-all-in/.cursor/debug.log');
+      final logData = jsonEncode({
+        'location': 'main.dart:186',
+        'message': 'ParentChildService initialized',
+        'data': {
+          'parentId': parentChildService.parentId,
+          'childId': parentChildService.activeChildId,
+          'hasLinkedChildren': parentChildService.hasLinkedChildren
+        },
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+        'sessionId': 'debug-session',
+        'runId': 'run1',
+        'hypothesisId': 'A'
+      });
+      await logFile.writeAsString('$logData\n', mode: FileMode.append);
+    } catch (_) {}
+    // #endregion
 
     // Simulate initialization time for splash effect
     await Future.delayed(const Duration(seconds: 2));
@@ -154,6 +245,22 @@ class _AppStartupState extends ConsumerState<AppStartup>
     if (mounted) {
       setState(() => _isInitialized = true);
       _navigateToApp();
+      
+      // #region agent log
+      try {
+        final logFile = File('/Users/dsselmanovic/cursor project/kids-ai-all-in/.cursor/debug.log');
+        final logData = jsonEncode({
+          'location': 'main.dart:207',
+          'message': 'App initialization completed, navigating',
+          'data': {},
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+          'sessionId': 'debug-session',
+          'runId': 'run1',
+          'hypothesisId': 'A'
+        });
+        await logFile.writeAsString('$logData\n', mode: FileMode.append);
+      } catch (_) {}
+      // #endregion
     }
   }
 
@@ -197,7 +304,7 @@ class _AppStartupState extends ConsumerState<AppStartup>
           ),
         ),
         child: Center(
-          child: KidsAnimatedBuilder(
+          child: CustomAnimatedBuilder(
             listenable: _controller,
             builder: (context, child) {
               return Opacity(
@@ -207,12 +314,11 @@ class _AppStartupState extends ConsumerState<AppStartup>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Logo placeholder - replace with actual logo
+                      // App Logo
                       Container(
                         width: 150,
                         height: 150,
                         decoration: BoxDecoration(
-                          gradient: AppTheme.alanGradient,
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
@@ -222,14 +328,31 @@ class _AppStartupState extends ConsumerState<AppStartup>
                             ),
                           ],
                         ),
-                        child: const Center(
-                          child: Text(
-                            'A',
-                            style: TextStyle(
-                              fontSize: 72,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+                        child: ClipOval(
+                          child: Image.asset(
+                            'assets/images/logo_256.png',
+                            width: 150,
+                            height: 150,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              // Fallback falls Asset nicht gefunden
+                              return Container(
+                                decoration: BoxDecoration(
+                                  gradient: AppTheme.alanGradient,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    'A',
+                                    style: TextStyle(
+                                      fontSize: 72,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -272,4 +395,19 @@ class _AppStartupState extends ConsumerState<AppStartup>
   }
 }
 
-// AnimatedBuilder moved to kids_ai_shared package as KidsAnimatedBuilder
+class CustomAnimatedBuilder extends AnimatedWidget {
+  final Widget Function(BuildContext context, Widget? child) builder;
+  final Widget? child;
+
+  const CustomAnimatedBuilder({
+    super.key,
+    required super.listenable,
+    required this.builder,
+    this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return builder(context, child);
+  }
+}

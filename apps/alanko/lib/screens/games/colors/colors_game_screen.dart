@@ -315,7 +315,7 @@ class _ColorsGameScreenState extends ConsumerState<ColorsGameScreen>
     return Center(
       child: GestureDetector(
         onTap: _repeatSound,
-        child: AnimatedBuilder(
+        child: CustomAnimatedBuilder(
           listenable: Listenable.merge([_bounceController, _pulseController]),
           builder: (context, child) {
             return Transform.scale(
@@ -450,11 +450,11 @@ class _ColorsGameScreenState extends ConsumerState<ColorsGameScreen>
   }
 }
 
-class AnimatedBuilder extends AnimatedWidget {
+class CustomAnimatedBuilder extends AnimatedWidget {
   final Widget Function(BuildContext context, Widget? child) builder;
   final Widget? child;
 
-  const AnimatedBuilder({
+  const CustomAnimatedBuilder({
     super.key,
     required super.listenable,
     required this.builder,

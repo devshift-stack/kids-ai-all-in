@@ -329,7 +329,7 @@ class _LettersGameScreenState extends ConsumerState<LettersGameScreen>
     return Center(
       child: GestureDetector(
         onTap: _repeatSound,
-        child: AnimatedBuilder(
+        child: CustomAnimatedBuilder(
           listenable: _bounceController,
           builder: (context, child) {
             return Transform.scale(
@@ -430,11 +430,11 @@ class _LettersGameScreenState extends ConsumerState<LettersGameScreen>
   }
 }
 
-class AnimatedBuilder extends AnimatedWidget {
+class CustomAnimatedBuilder extends AnimatedWidget {
   final Widget Function(BuildContext context, Widget? child) builder;
   final Widget? child;
 
-  const AnimatedBuilder({
+  const CustomAnimatedBuilder({
     super.key,
     required super.listenable,
     required this.builder,
