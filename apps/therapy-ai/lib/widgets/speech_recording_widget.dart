@@ -89,27 +89,27 @@ class _SpeechRecordingWidgetState extends State<SpeechRecordingWidget>
               return Transform.scale(
                 scale: widget.isRecording ? _pulseAnimation.value : 1.0,
                 child: Container(
-                  width: TherapyDesignSystem.extraLargeTouchTarget,
-                  height: TherapyDesignSystem.extraLargeTouchTarget,
+                  width: TherapyDesignSystem.touchTargetPrimary, // 100x100px
+                  height: TherapyDesignSystem.touchTargetPrimary, // 100x100px
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: widget.isRecording
-                        ? TherapyDesignSystem.errorRed
-                        : TherapyDesignSystem.primaryBlue,
+                        ? TherapyDesignSystem.statusError // 🔴 Rot während Aufnahme
+                        : TherapyDesignSystem.statusActive, // 🔵 Blau wenn bereit
                     boxShadow: [
                       BoxShadow(
                         color: (widget.isRecording
-                                ? TherapyDesignSystem.errorRed
-                                : TherapyDesignSystem.primaryBlue)
-                            .withValues(alpha: 0.4),
-                        blurRadius: 30,
-                        spreadRadius: 10,
+                                ? TherapyDesignSystem.statusError
+                                : TherapyDesignSystem.statusActive)
+                            .withValues(alpha: 0.5), // Erhöhte Sichtbarkeit
+                        blurRadius: 40, // Größerer Schatten
+                        spreadRadius: 15, // Mehr Spread
                       ),
                     ],
                   ),
                   child: Icon(
                     widget.isRecording ? Icons.stop : Icons.mic,
-                    size: 60,
+                    size: 64, // Größeres Icon (von 60 auf 64)
                     color: Colors.white,
                   ),
                 ),
@@ -118,12 +118,12 @@ class _SpeechRecordingWidgetState extends State<SpeechRecordingWidget>
           ),
         ),
 
-        const SizedBox(height: TherapyDesignSystem.spacingXL),
+        SizedBox(height: TherapyDesignSystem.spacingXXL), // 48px
 
         // Wellenform-Visualisierung
         if (widget.isRecording) ...[
           _buildWaveform(),
-          const SizedBox(height: TherapyDesignSystem.spacingLG),
+          SizedBox(height: TherapyDesignSystem.spacingXL), // 32px
           // Dauer-Anzeige
           if (widget.duration != null)
             Text(
@@ -136,8 +136,8 @@ class _SpeechRecordingWidgetState extends State<SpeechRecordingWidget>
           // Anweisung
           Text(
             'Drücke den Button zum Sprechen',
-            style: TherapyDesignSystem.instruction.copyWith(
-              color: TherapyDesignSystem.textSecondary,
+            style: TherapyDesignSystem.instructionStyle.copyWith(
+              color: KidsColors.textSecondary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -148,9 +148,9 @@ class _SpeechRecordingWidgetState extends State<SpeechRecordingWidget>
 
   Widget _buildWaveform() {
     return Container(
-      height: 100,
+      height: 120, // Größer (von 100 auf 120)
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: TherapyDesignSystem.spacingMD),
       child: AnimatedBuilder(
         animation: _waveAnimation,
         builder: (context, child) {
@@ -186,8 +186,8 @@ class WaveformPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = TherapyDesignSystem.primaryBlue
-      ..strokeWidth = 4
+      ..color = TherapyDesignSystem.statusActive // 🔵 Blau für aktive Aufnahme
+      ..strokeWidth = 6 // Dicker (von 4 auf 6)
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
