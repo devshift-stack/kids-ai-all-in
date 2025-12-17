@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kids_ai_shared/kids_ai_shared.dart';
 import '../../providers/children_provider.dart';
 import '../../models/child.dart';
 import '../children/add_child_screen.dart';
@@ -15,21 +16,17 @@ class DashboardScreen extends ConsumerWidget {
     final childrenAsync = ref.watch(childrenProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: const Text(
-          'Kids AI Dashboard',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
+      backgroundColor: KidsColors.background,
+      appBar: ModernNavBar(
+        title: 'Kids AI Roditelj',
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings, color: Colors.white70),
-            onPressed: () {
+          NavButton(
+            icon: Icons.home,
+            onTap: () {},
+          ),
+          NavButton(
+            icon: Icons.settings,
+            onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const SettingsScreen()),
@@ -41,18 +38,18 @@ class DashboardScreen extends ConsumerWidget {
       body: childrenAsync.when(
         data: (children) => _buildContent(context, ref, children),
         loading: () => const Center(
-          child: CircularProgressIndicator(color: Colors.white),
+          child: CircularProgressIndicator(color: KidsColors.primary),
         ),
         error: (error, _) => Center(
           child: Text(
             'Fehler: $error',
-            style: const TextStyle(color: Colors.redAccent),
+            style: const TextStyle(color: KidsColors.error),
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _navigateToAddChild(context),
-        backgroundColor: const Color(0xFF6C63FF),
+        backgroundColor: KidsColors.primary,
         icon: const Icon(Icons.add),
         label: const Text('Kind hinzufügen'),
       ),
@@ -90,15 +87,15 @@ class DashboardScreen extends ConsumerWidget {
             Icon(
               Icons.child_care,
               size: 80,
-              color: Colors.white.withValues(alpha:0.3),
+              color: KidsColors.textMuted,
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Noch keine Kinder',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: KidsColors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
@@ -107,14 +104,14 @@ class DashboardScreen extends ConsumerWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.white.withValues(alpha:0.6),
+                color: KidsColors.textSecondary,
               ),
             ),
             const SizedBox(height: 32),
             ElevatedButton.icon(
               onPressed: () => _navigateToAddChild(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6C63FF),
+                backgroundColor: KidsColors.primary,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
               icon: const Icon(Icons.add),
@@ -131,19 +128,19 @@ class DashboardScreen extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Willkommen zurück!',
+          'Rodiiteljska kontrolna tabla',
           style: TextStyle(
-            fontSize: 16,
-            color: Colors.white.withValues(alpha:0.6),
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+            color: KidsColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
         Text(
-          '$childCount ${childCount == 1 ? 'Kind' : 'Kinder'} verwaltet',
-          style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+          'Pratite napredak vašeg djeteta u učenju',
+          style: TextStyle(
+            fontSize: 18,
+            color: KidsColors.textSecondary,
           ),
         ),
       ],

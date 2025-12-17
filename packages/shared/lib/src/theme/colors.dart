@@ -6,23 +6,23 @@ class KidsColors {
   KidsColors._();
 
   // ============================================================
-  // PRIMARY COLORS
+  // PRIMARY COLORS (OKLCH-basiert aus v0-kids-ai-ui)
   // ============================================================
 
-  /// Hauptfarbe - Freundliches Violett
-  static const Color primary = Color(0xFF6C5CE7);
+  /// Hauptfarbe - OKLCH(0.58 0.2 260) - Violett/Blau
+  static const Color primary = Color(0xFF7B68EE); // ~oklch(0.58 0.2 260)
   static const Color primaryLight = Color(0xFF9B8FF2);
-  static const Color primaryDark = Color(0xFF4A3FC4);
+  static const Color primaryDark = Color(0xFF5B4FC4);
 
-  /// Sekundärfarbe - Fröhliches Türkis
-  static const Color secondary = Color(0xFF00CEC9);
-  static const Color secondaryLight = Color(0xFF55E6E3);
-  static const Color secondaryDark = Color(0xFF00A8A5);
+  /// Sekundärfarbe - OKLCH(0.72 0.18 340) - Pink
+  static const Color secondary = Color(0xFFFF6B9D); // ~oklch(0.72 0.18 340)
+  static const Color secondaryLight = Color(0xFFFF8FB3);
+  static const Color secondaryDark = Color(0xFFE84A7A);
 
-  /// Akzentfarbe - Warmes Orange
-  static const Color accent = Color(0xFFFDAA4C);
-  static const Color accentLight = Color(0xFFFFBE71);
-  static const Color accentDark = Color(0xFFE88E2E);
+  /// Akzentfarbe - OKLCH(0.65 0.22 200) - Cyan
+  static const Color accent = Color(0xFF00D4AA); // ~oklch(0.65 0.22 200)
+  static const Color accentLight = Color(0xFF55E6C1);
+  static const Color accentDark = Color(0xFF00B894);
 
   // ============================================================
   // FEEDBACK COLORS
@@ -52,13 +52,14 @@ class KidsColors {
   // NEUTRAL COLORS
   // ============================================================
 
-  /// Hintergrund
-  static const Color background = Color(0xFFF8F9FE);
+  /// Hintergrund - OKLCH(0.98 0.01 280) - Sehr helles Lila-Weiß
+  static const Color background = Color(0xFFFAF9FC); // ~oklch(0.98 0.01 280)
   static const Color backgroundAlt = Color(0xFFFFFFFF);
 
-  /// Oberflächen
+  /// Oberflächen - Weiß mit Transparenz für Backdrop Blur
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceVariant = Color(0xFFF0F2F8);
+  static const Color surfaceVariant = Color(0xFFF5F4F8);
+  static const Color surfaceTransparent = Color(0xF2FFFFFF); // 95% Opacity für backdrop blur
 
   /// Text
   static const Color textPrimary = Color(0xFF2D3436);

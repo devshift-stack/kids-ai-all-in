@@ -43,6 +43,8 @@ export 'src/widgets/kid_card.dart';
 export 'src/widgets/kid_avatar.dart';
 export 'src/widgets/category_card.dart';
 export 'src/widgets/animated_builder.dart';
+export 'src/widgets/modern_card.dart';
+export 'src/widgets/modern_nav.dart';
 
 // ============================================================
 // OFFLINE SYNC

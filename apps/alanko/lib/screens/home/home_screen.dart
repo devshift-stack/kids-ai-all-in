@@ -53,14 +53,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFE8F4FD),
-              Color(0xFFF8F9FF),
-            ],
-          ),
+          gradient: KidsGradients.mainBackground,
         ),
         child: SafeArea(
           child: Column(
