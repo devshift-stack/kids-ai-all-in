@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 import '../theme/spacing.dart';
@@ -34,23 +35,42 @@ class ModernNavBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
       ),
-      child: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        title: Text(
-          title,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: isTransparent ? Colors.white : KidsColors.textPrimary,
-          ),
-        ),
-        actions: actions,
-        iconTheme: IconThemeData(
-          color: isTransparent ? Colors.white : KidsColors.textPrimary,
-        ),
-      ),
+      child: isTransparent
+          ? ClipRRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  title: Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  actions: actions,
+                  iconTheme: const IconThemeData(color: Colors.white),
+                ),
+              ),
+            )
+          : AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              title: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: KidsColors.textPrimary,
+                ),
+              ),
+              actions: actions,
+              iconTheme: const IconThemeData(color: KidsColors.textPrimary),
+            ),
     );
   }
 

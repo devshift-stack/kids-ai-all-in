@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 import '../theme/spacing.dart';
 import '../theme/shadows.dart';
+import 'modern_progress.dart';
 
 /// Modern Card mit Backdrop Blur (v0-kids-ai-ui Design)
 class ModernCard extends StatelessWidget {
@@ -129,14 +130,11 @@ class ActivityCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           // Progress Bar
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: progress,
-              minHeight: 8,
-              backgroundColor: KidsColors.surfaceVariant,
-              valueColor: AlwaysStoppedAnimation<Color>(color),
-            ),
+          ModernProgress(
+            value: progress,
+            height: 8,
+            color: color,
+            animated: true,
           ),
           const SizedBox(height: 8),
           // Progress Text
@@ -243,16 +241,11 @@ class ChallengeCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    minHeight: 8,
-                    backgroundColor: KidsColors.surfaceVariant,
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      KidsColors.primary,
-                    ),
-                  ),
+                child: ModernProgress(
+                  value: progress,
+                  height: 8,
+                  color: KidsColors.primary,
+                  animated: true,
                 ),
               ),
               const SizedBox(width: 12),
