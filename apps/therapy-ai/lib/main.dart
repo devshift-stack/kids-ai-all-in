@@ -4,15 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:kids_ai_shared/kids_ai_shared.dart';
 import 'firebase_options.dart';
-
 import 'core/theme/app_theme.dart';
-import 'core/env_config.dart';
-import 'core/routes/app_routes.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,9 +26,6 @@ Future<void> main() async {
   // Initialize Hive for local storage
   await Hive.initFlutter();
 
-  // Initialize SharedPreferences
-  final prefs = await SharedPreferences.getInstance();
-
   // Set preferred orientations for children
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -45,7 +37,7 @@ Future<void> main() async {
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: AppTheme.backgroundColor,
+      systemNavigationBarColor: Colors.white,
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
@@ -63,47 +55,40 @@ Future<void> main() async {
       path: 'assets/locales',
       fallbackLocale: const Locale('bs'),
       startLocale: const Locale('bs'),
-      child: ProviderScope(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-        ],
-        child: const TherapyAIApp(),
+      child: const ProviderScope(
+        child: TherapyAIApp(),
       ),
     ),
   );
 }
 
-class TherapyAIApp extends ConsumerWidget {
+class TherapyAIApp extends StatelessWidget {
   const TherapyAIApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeModeProvider);
-
+  Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Therapy AI',
+      title: 'Li KI Training',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: themeMode,
+      themeMode: ThemeMode.light,
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
-      initialRoute: AppRoutes.splash,
-      onGenerateRoute: AppRoutes.generateRoute,
       home: const AppStartup(),
     );
   }
 }
 
-class AppStartup extends ConsumerStatefulWidget {
+class AppStartup extends StatefulWidget {
   const AppStartup({super.key});
 
   @override
-  ConsumerState<AppStartup> createState() => _AppStartupState();
+  State<AppStartup> createState() => _AppStartupState();
 }
 
-class _AppStartupState extends ConsumerState<AppStartup>
+class _AppStartupState extends State<AppStartup>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
@@ -137,20 +122,6 @@ class _AppStartupState extends ConsumerState<AppStartup>
   }
 
   Future<void> _initializeApp() async {
-    // Initialize Environment Configuration
-    await EnvConfig.initialize();
-    
-    // Initialize Firebase services
-    final firebaseService = ref.read(firebaseServiceProvider);
-
-    // Enable offline mode
-    await firebaseService.enableOfflineMode();
-
-    // Sign in anonymously to Firebase
-    if (!firebaseService.isSignedIn) {
-      await firebaseService.signInAnonymously();
-    }
-
     // Simulate initialization time for splash effect
     await Future.delayed(const Duration(seconds: 2));
 
@@ -165,10 +136,12 @@ class _AppStartupState extends ConsumerState<AppStartup>
     final box = await Hive.openBox('child_profile');
     final profileExists = box.get('profile') != null;
 
-    if (profileExists) {
-      Navigator.of(context).pushReplacementNamed('/home');
-    } else {
-      Navigator.of(context).pushReplacementNamed('/child-profile');
+    if (mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => const MinimalHomeScreen(),
+        ),
+      );
     }
   }
 
@@ -220,9 +193,9 @@ class _AppStartupState extends ConsumerState<AppStartup>
                         ),
                         child: const Center(
                           child: Text(
-                            'TA',
+                            'LiK',
                             style: TextStyle(
-                              fontSize: 72,
+                              fontSize: 48,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
@@ -231,7 +204,7 @@ class _AppStartupState extends ConsumerState<AppStartup>
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        'Therapy AI',
+                        'Li KI Training',
                         style: Theme.of(context).textTheme.displayMedium?.copyWith(
                               color: AppTheme.primaryColor,
                               fontWeight: FontWeight.bold,
@@ -241,7 +214,7 @@ class _AppStartupState extends ConsumerState<AppStartup>
                       Text(
                         'AI-Powered Speech Therapy',
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: AppTheme.textSecondary,
+                              color: Colors.grey,
                             ),
                       ),
                       const SizedBox(height: 48),
@@ -268,3 +241,55 @@ class _AppStartupState extends ConsumerState<AppStartup>
   }
 }
 
+class MinimalHomeScreen extends StatelessWidget {
+  const MinimalHomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Li KI Training'),
+        backgroundColor: AppTheme.primaryColor,
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.construction,
+                size: 80,
+                color: AppTheme.primaryColor,
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'App in Entwicklung',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.primaryColor,
+                    ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Diese App wird derzeit entwickelt und ist bald verfügbar.',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Colors.grey[600],
+                    ),
+              ),
+              const SizedBox(height: 32),
+              Text(
+                'Version 1.0.0',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.grey,
+                    ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
