@@ -63,28 +63,61 @@ class YouTubeRewardService extends ChangeNotifier {
   String? _childId;
   String? _parentId;
   StreamSubscription<DocumentSnapshot>? _settingsSubscription;
+  Completer<void>? _initializationCompleter;
+  bool _isInitializing = false;
   
   /// Initialisiert den Service für ein Kind
   Future<void> initialize(String childId, {String? parentId}) async {
-    _childId = childId;
-    _parentId = parentId;
-    await _loadLocalState();
-    _listenToSettings();
+    // Prüfe ob bereits mit gleichen Parametern initialisiert
+    if (_childId == childId && _parentId == parentId && _initializationCompleter == null) {
+      return; // Bereits initialisiert mit gleichen Parametern
+    }
+    
+    // Wenn Initialisierung bereits läuft, warte auf Abschluss
+    if (_isInitializing && _initializationCompleter != null) {
+      return _initializationCompleter!.future;
+    }
+    
+    // Starte neue Initialisierung
+    _isInitializing = true;
+    _initializationCompleter = Completer<void>();
+    
+    try {
+      // Lokale Variablen verwenden, um Race Condition zu vermeiden
+      final localChildId = childId;
+      final localParentId = parentId;
+      
+      // Setze Felder erst nach erfolgreicher Initialisierung
+      _childId = localChildId;
+      _parentId = localParentId;
+      
+      // Verwende lokale Variablen für async Operationen
+      await _loadLocalState(localChildId);
+      _listenToSettings(localChildId, localParentId);
+      
+      _initializationCompleter!.complete();
+    } catch (e) {
+      _initializationCompleter!.completeError(e);
+      rethrow;
+    } finally {
+      _isInitializing = false;
+      _initializationCompleter = null;
+    }
   }
   
   /// Lädt lokalen Status aus SharedPreferences
-  Future<void> _loadLocalState() async {
+  Future<void> _loadLocalState(String childId) async {
     final prefs = await SharedPreferences.getInstance();
     final today = DateTime.now().toIso8601String().split('T')[0];
-    final savedDate = prefs.getString('youtube_date_$_childId');
+    final savedDate = prefs.getString('youtube_date_$childId');
     
     if (savedDate == today) {
-      _watchedMinutesToday = prefs.getInt('youtube_watched_$_childId') ?? 0;
+      _watchedMinutesToday = prefs.getInt('youtube_watched_$childId') ?? 0;
     } else {
       // Neuer Tag - Reset
       _watchedMinutesToday = 0;
-      await prefs.setString('youtube_date_$_childId', today);
-      await prefs.setInt('youtube_watched_$_childId', 0);
+      await prefs.setString('youtube_date_$childId', today);
+      await prefs.setInt('youtube_watched_$childId', 0);
     }
     
     _updateCanWatch();
