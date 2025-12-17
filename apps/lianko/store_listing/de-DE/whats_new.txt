@@ -1,0 +1,10 @@
+🆕 NEU IN DIESER VERSION:
+
+• Premium-Features: Batterie-Erinnerung, Audiogramm-Import
+• Logopädie-Modus: Verbindung mit Therapeuten
+• PDF-Export für Ärzte
+• Verbessertes Hörgeräte-Erkennung
+• 6 Sprachen jetzt vollständig unterstützt
+• Push-Benachrichtigungen für Eltern
+• Offline-Modus verbessert
+• Fehlerbehebungen und Performance

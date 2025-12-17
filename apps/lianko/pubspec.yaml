@@ -1,0 +1,124 @@
+name: lianko_ai
+description: Lianko AI - Educational app for children ages 3-12 with AI voice assistant
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Shared Code
+  kids_ai_shared:
+    git:
+      url: https://github.com/devshift-stack/Kids-AI-Shared.git
+
+  # Firebase
+  firebase_core: ^3.8.1
+  cloud_firestore: ^5.6.0
+  firebase_auth: ^5.5.0
+  firebase_storage: ^12.4.0
+  firebase_analytics: ^11.4.0
+  firebase_crashlytics: ^4.3.0
+  firebase_performance: ^0.10.1+1
+
+  # File System
+  path_provider: ^2.1.2
+
+  # State Management
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+
+  # Localization
+  easy_localization: ^3.0.3
+
+  # Audio & Voice
+  flutter_tts: ^4.0.2
+  just_audio: ^0.9.36
+  speech_to_text: ^7.0.0
+  audio_session: ^0.1.18
+
+  # UI & Animations
+  lottie: ^3.1.0
+  flutter_animate: ^4.5.0
+  animated_text_kit: ^4.2.2
+  shimmer: ^3.0.0
+  flutter_svg: ^2.0.9
+  cached_network_image: ^3.3.1
+
+  # Local Storage
+  hive_flutter: ^1.1.0
+  shared_preferences: ^2.2.2
+
+  # Utils
+  intl: ^0.20.2
+  uuid: ^4.3.3
+  equatable: ^2.0.5
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.8.1
+  dio: ^5.4.0
+  connectivity_plus: ^5.0.2
+  package_info_plus: ^8.0.0
+
+  # AI
+  google_generative_ai: ^0.4.6
+
+  # Hearing Aid Detection (Lianko)
+  camera: ^0.10.5+9
+  google_mlkit_face_detection: ^0.10.0
+  image: ^4.1.7
+  url_launcher: ^6.2.5
+
+  # Premium Features (Lianko)
+  pdf: ^3.10.8
+  share_plus: ^7.2.2
+  image_picker: ^1.0.7
+
+  # Icons & Fonts
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.8
+  freezed: ^2.4.6
+  json_serializable: ^6.7.1
+  riverpod_generator: ^2.3.9
+  mocktail: ^1.0.3
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/locales/
+    # Communication (Zeig-Sprech)
+    - assets/communication/schmerzen/
+    - assets/communication/essen/
+    - assets/communication/trinken/
+    - assets/communication/gefuehle/
+    - assets/communication/aktivitaeten/
+    - assets/communication/toilette/
+    - assets/communication/hilfe/
+    - assets/communication/janein/
+    - assets/communication/menschen/
+    - assets/communication/orte/
+    # Vocabulary
+    - assets/vocabulary/tiere/
+    - assets/vocabulary/familie/
+    - assets/vocabulary/essen/
+    - assets/vocabulary/koerper/
+    - assets/vocabulary/farben/
+    - assets/vocabulary/zahlen/
+    # Syllables & Stories
+    - assets/syllables/
+    - assets/stories/
+    - assets/stories/der_kleine_hund/
+    - assets/stories/die_bunte_katze/
+    # Games
+    - assets/games/

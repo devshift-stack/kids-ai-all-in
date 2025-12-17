@@ -1,0 +1,158 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================================
+    // HELPER FUNCTIONS
+    // ============================================================
+
+    // Check if user is authenticated (including anonymous)
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Check if user owns this document (uid matches doc id)
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Validate required string field
+    function hasString(field) {
+      return field in request.resource.data &&
+             request.resource.data[field] is string &&
+             request.resource.data[field].size() > 0;
+    }
+
+    // Validate required int field
+    function hasInt(field) {
+      return field in request.resource.data &&
+             request.resource.data[field] is int;
+    }
+
+    // ============================================================
+    // CHILDREN COLLECTION (Child Profiles)
+    // ============================================================
+
+    match /children/{userId} {
+      // User can only read/write their own profile
+      allow read: if isOwner(userId);
+
+      // Create: Must be owner, must have required fields
+      allow create: if isOwner(userId) &&
+                       hasString('name') &&
+                       hasInt('age') &&
+                       request.resource.data.age >= 3 &&
+                       request.resource.data.age <= 12 &&
+                       hasString('preferredLanguage');
+
+      // Update: Must be owner
+      allow update: if isOwner(userId);
+
+      // Delete: Not allowed (preserve child data)
+      allow delete: if false;
+
+      // --------------------------------------------------------
+      // PROGRESS SUBCOLLECTION (Learning Progress Entries)
+      // --------------------------------------------------------
+
+      match /progress/{progressId} {
+        allow read: if isOwner(userId);
+
+        // Create progress entry with validation
+        allow create: if isOwner(userId) &&
+                         hasString('topic') &&
+                         hasInt('score') &&
+                         hasInt('totalQuestions') &&
+                         request.resource.data.score >= 0 &&
+                         request.resource.data.totalQuestions > 0 &&
+                         request.resource.data.score <= request.resource.data.totalQuestions;
+
+        // No updates or deletes to progress (immutable log)
+        allow update, delete: if false;
+      }
+
+      // --------------------------------------------------------
+      // STATS SUBCOLLECTION (Aggregated Statistics per Topic)
+      // --------------------------------------------------------
+
+      match /stats/{topic} {
+        allow read: if isOwner(userId);
+
+        // Create/Update stats
+        allow create, update: if isOwner(userId) &&
+                                 hasString('topic') &&
+                                 hasInt('totalAttempts') &&
+                                 hasInt('totalScore') &&
+                                 hasInt('totalPossible') &&
+                                 request.resource.data.totalAttempts >= 0 &&
+                                 request.resource.data.totalScore >= 0 &&
+                                 request.resource.data.totalPossible >= 0;
+
+        // No deletes
+        allow delete: if false;
+      }
+
+      // --------------------------------------------------------
+      // EVENTS SUBCOLLECTION (Analytics Events)
+      // --------------------------------------------------------
+
+      match /events/{eventId} {
+        allow read: if isOwner(userId);
+
+        // Create events with basic validation
+        allow create: if isOwner(userId) &&
+                         hasString('name');
+
+        // No updates or deletes (immutable log)
+        allow update, delete: if false;
+      }
+
+      // --------------------------------------------------------
+      // SETTINGS SUBCOLLECTION (Parent-controlled settings)
+      // --------------------------------------------------------
+
+      match /settings/{settingId} {
+        // Child can read settings (e.g., YouTube settings)
+        allow read: if isOwner(userId);
+
+        // Only parent can write settings (via linkedChildren)
+        // For now, allow owner to write (will be restricted via parent link later)
+        allow write: if isOwner(userId);
+      }
+    }
+
+    // ============================================================
+    // PARENTS COLLECTION (for Parent Dashboard)
+    // ============================================================
+
+    match /parents/{parentId} {
+      // Parent can read/write own profile
+      allow read, write: if isOwner(parentId);
+
+      // Linked children subcollection
+      match /linkedChildren/{childId} {
+        allow read: if isOwner(parentId);
+        allow write: if isOwner(parentId);
+      }
+    }
+
+    // ============================================================
+    // GLOBAL CONTENT (read-only for all authenticated users)
+    // ============================================================
+
+    match /content/{document=**} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Only admin via console
+    }
+
+    match /stories/{document=**} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    match /games/{document=**} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+  }
+}
