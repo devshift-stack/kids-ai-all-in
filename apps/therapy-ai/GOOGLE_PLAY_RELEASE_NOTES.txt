@@ -1,0 +1,11 @@
+Willkommen bei Li KI Training!
+
+Diese App unterstützt Kinder mit Hörbeeinträchtigungen bei der Sprachtherapie.
+
+Aktuelle Version (1.0.0):
+• Erste Veröffentlichung
+• Grundlegende App-Struktur
+• App befindet sich noch in aktiver Entwicklung
+
+Weitere Features werden in zukünftigen Updates hinzugefügt.
+
