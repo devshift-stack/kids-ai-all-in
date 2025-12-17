@@ -22,7 +22,9 @@ cat > "$ENV_FILE" << 'EOF'
 # WICHTIG: Diese Datei wird nicht committed (.gitignore)
 
 # ElevenLabs API Configuration
-ELEVENLABS_API_KEY=sk_c507c161d7bd5878e17983a35534411d6b741823189a4901
+# WICHTIG: Ersetze YOUR_ELEVENLABS_API_KEY mit deinem echten API Key
+# Du findest deinen API Key hier: https://elevenlabs.io/app/settings/api-keys
+ELEVENLABS_API_KEY=YOUR_ELEVENLABS_API_KEY
 ELEVENLABS_API_BASE_URL=https://api.elevenlabs.io/v1
 
 # App Configuration
@@ -37,5 +39,6 @@ ENABLE_OFFLINE_MODE=true
 EOF
 
 echo "✅ .env Datei erfolgreich erstellt in: $ENV_FILE"
-echo "✅ ElevenLabs API Key wurde gespeichert"
+echo "⚠️  WICHTIG: Bitte öffne die .env Datei und setze deinen ElevenLabs API Key!"
+echo "   Du findest deinen API Key hier: https://elevenlabs.io/app/settings/api-keys"
 
