@@ -90,8 +90,8 @@ class EnvConfig {
     // Fallback für Development (wenn .env nicht vorhanden)
     if (_openAiApiKey == null || _openAiApiKey!.isEmpty) {
       if (kDebugMode) {
-        // Development Fallback - API Key direkt hier
-        return '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';
+        // Development Fallback - Set via .env file
+        return null;
       }
       throw Exception(
         'OpenAI API Key nicht gefunden. '
