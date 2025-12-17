@@ -5,9 +5,12 @@ import '../config/api_config.dart';
 import 'user_profile_service.dart';
 
 class GeminiService {
-  // API Key wird über ApiConfig verwaltet
-  // Siehe: lib/config/api_config.dart und README_API_SETUP.md
-  String get _apiKey => apiConfig.geminiApiKey;
+  // API Key über --dart-define=GEMINI_API_KEY=xxx setzen
+  // Für Entwicklung: flutter run --dart-define=GEMINI_API_KEY=your_key_here
+  static const String _apiKey = String.fromEnvironment(
+    'GEMINI_API_KEY',
+    defaultValue: '',
+  );
 
   GenerativeModel? _model;
   ChatSession? _chat;
@@ -18,13 +21,8 @@ class GeminiService {
   }
 
   void _initModel() {
-    if (!apiConfig.hasGeminiKey) {
-      if (kDebugMode) {
-        print('⚠️ Gemini API Key nicht gesetzt!');
-        print('   Nutze: flutter run --dart-define=GEMINI_API_KEY=your_key');
-        print('   Oder siehe: README_API_SETUP.md');
-        apiConfig.printDebugInfo();
-      }
+    if (_apiKey.isEmpty) {
+      debugPrint('⚠️ Gemini API Key nicht gesetzt! Nutze: flutter run --dart-define=GEMINI_API_KEY=your_key');
       return;
     }
 

@@ -49,6 +49,10 @@ export 'src/notifications/push_notification_service.dart';
 export 'src/widgets/kid_button.dart';
 export 'src/widgets/kid_card.dart';
 export 'src/widgets/kid_avatar.dart';
+export 'src/widgets/category_card.dart';
+export 'src/widgets/animated_builder.dart';
+export 'src/widgets/modern_card.dart';
+export 'src/widgets/modern_nav.dart';
 
 // ============================================================
 // OFFLINE SYNC
@@ -64,3 +68,8 @@ export 'src/error/error_handling_service.dart';
 // UTILS
 // ============================================================
 export 'src/utils/game_utils.dart';
+
+// ============================================================
+// AI SERVICES
+// ============================================================
+export 'src/services/gemini_service.dart';

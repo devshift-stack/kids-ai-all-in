@@ -291,7 +291,7 @@ class _YouTubeRewardScreenState extends ConsumerState<YouTubeRewardScreen> {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: isSelected 
-                            ? AppTheme.primaryColor.withOpacity(0.1)
+                            ? AppTheme.primaryColor.withValues(alpha: 0.1)
                             : Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
@@ -349,7 +349,7 @@ class _YouTubeRewardScreenState extends ConsumerState<YouTubeRewardScreen> {
 
   Widget _buildTaskOverlay(YouTubeRewardService service) {
     return Container(
-      color: Colors.black.withOpacity(0.8),
+      color: Colors.black.withValues(alpha: 0.8),
       child: Center(
         child: Container(
           margin: const EdgeInsets.all(24),
@@ -423,7 +423,7 @@ class _YouTubeRewardScreenState extends ConsumerState<YouTubeRewardScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.4),
+              color: color.withValues(alpha: 0.4),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),

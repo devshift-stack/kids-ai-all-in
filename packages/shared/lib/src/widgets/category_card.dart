@@ -1,27 +1,9 @@
 import 'package:flutter/material.dart';
-import '../theme/theme.dart';
 
-/// CategoryCard Widget
-/// Wiederverwendbare Karten-Komponente für Kategorien in allen Kids AI Apps
+/// A card widget for displaying learning categories in Kids AI apps.
 /// 
-/// Features:
-/// - Icon und Titel
-/// - Fortschrittsanzeige (optional)
-/// - Gesperrt-Status mit Lock-Overlay
-/// - Anpassbare Farben
-/// - Konsistentes Design mit KidsTheme
-/// 
-/// Verwendung:
-/// ```dart
-/// CategoryCard(
-///   title: 'Buchstaben',
-///   icon: Icons.abc,
-///   color: Colors.blue,
-///   onTap: () => Navigator.push(...),
-///   progress: 75, // Optional
-///   isLocked: false, // Optional
-/// )
-/// ```
+/// Used in home screens to show game categories like Letters, Numbers, Colors, etc.
+/// Supports progress indication and lock state for premium/locked content.
 class CategoryCard extends StatelessWidget {
   /// Title displayed on the card
   final String title;
@@ -40,6 +22,12 @@ class CategoryCard extends StatelessWidget {
   
   /// Optional progress percentage (0-100)
   final int? progress;
+  
+  /// Border radius for the card (default: 16)
+  final double borderRadius;
+  
+  /// Box shadow for the card
+  final List<BoxShadow>? boxShadow;
 
   const CategoryCard({
     super.key,
@@ -49,17 +37,27 @@ class CategoryCard extends StatelessWidget {
     required this.onTap,
     this.isLocked = false,
     this.progress,
+    this.borderRadius = 16,
+    this.boxShadow,
   });
 
   @override
   Widget build(BuildContext context) {
+    final effectiveShadow = boxShadow ?? [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: 0.08),
+        blurRadius: 10,
+        offset: const Offset(0, 4),
+      ),
+    ];
+
     return GestureDetector(
       onTap: isLocked ? null : onTap,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: KidsSpacing.borderRadiusLg,
-          boxShadow: KidsShadows.card,
+          borderRadius: BorderRadius.circular(borderRadius),
+          boxShadow: effectiveShadow,
         ),
         child: Stack(
           children: [
@@ -71,7 +69,7 @@ class CategoryCard extends StatelessWidget {
                 right: 0,
                 child: ClipRRect(
                   borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(KidsSpacing.radiusLg),
+                    bottom: Radius.circular(borderRadius),
                   ),
                   child: LinearProgressIndicator(
                     value: progress! / 100,
@@ -96,7 +94,7 @@ class CategoryCard extends StatelessWidget {
                       height: 44,
                       decoration: BoxDecoration(
                         color: color.withValues(alpha: 0.15),
-                        borderRadius: KidsSpacing.borderRadiusMd,
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
                         icon,
@@ -114,8 +112,8 @@ class CategoryCard extends StatelessWidget {
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: isLocked
-                          ? KidsColors.textSecondary
-                          : KidsColors.textPrimary,
+                          ? Colors.grey.shade500
+                          : Colors.grey.shade800,
                     ),
                     textAlign: TextAlign.center,
                     maxLines: 2,
@@ -131,12 +129,12 @@ class CategoryCard extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.7),
-                    borderRadius: KidsSpacing.borderRadiusLg,
+                    borderRadius: BorderRadius.circular(borderRadius),
                   ),
                   child: Center(
                     child: Icon(
                       Icons.lock,
-                      color: KidsColors.textSecondary,
+                      color: Colors.grey.shade500,
                       size: 24,
                     ),
                   ),

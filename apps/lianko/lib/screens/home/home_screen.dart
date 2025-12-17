@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:kids_ai_shared/kids_ai_shared.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/age_adaptive_service.dart';
 import '../../services/alan_voice_service.dart';
 import '../../widgets/alan/alan_character.dart';
-import '../../widgets/common/category_card.dart';
 import '../games/letters/letters_game_screen.dart';
 import '../games/numbers/numbers_game_screen.dart';
 import '../games/colors/colors_game_screen.dart';
@@ -45,14 +45,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFE8F4FD),
-              Color(0xFFF8F9FF),
-            ],
-          ),
+          gradient: KidsGradients.mainBackground,
         ),
         child: SafeArea(
           child: Column(

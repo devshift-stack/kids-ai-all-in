@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,16 +27,80 @@ class ParentChildService extends ChangeNotifier {
   Future<void> initialize() async {
     if (_isInitialized) return;
     
+    // #region agent log
+    try {
+      final logFile = File('/Users/dsselmanovic/cursor project/kids-ai-all-in/.cursor/debug.log');
+      final logData = jsonEncode({
+        'location': 'parent_child_service.dart:28',
+        'message': 'ParentChildService.initialize() called',
+        'data': {'isInitialized': _isInitialized},
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+        'sessionId': 'debug-session',
+        'runId': 'run1',
+        'hypothesisId': 'A'
+      });
+      await logFile.writeAsString('$logData\n', mode: FileMode.append);
+    } catch (_) {}
+    // #endregion
+    
     final prefs = await SharedPreferences.getInstance();
     _parentId = prefs.getString('parent_id');
     _activeChildId = prefs.getString('active_child_id');
     
+    // #region agent log
+    try {
+      final logFile = File('/Users/dsselmanovic/cursor project/kids-ai-all-in/.cursor/debug.log');
+      final logData = jsonEncode({
+        'location': 'parent_child_service.dart:40',
+        'message': 'Loaded parentId and childId from SharedPreferences',
+        'data': {'parentId': _parentId, 'activeChildId': _activeChildId},
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+        'sessionId': 'debug-session',
+        'runId': 'run1',
+        'hypothesisId': 'A'
+      });
+      await logFile.writeAsString('$logData\n', mode: FileMode.append);
+    } catch (_) {}
+    // #endregion
+    
     if (_parentId != null) {
       await _loadLinkedChildren();
+      
+      // #region agent log
+      try {
+        final logFile = File('/Users/dsselmanovic/cursor project/kids-ai-all-in/.cursor/debug.log');
+        final logData = jsonEncode({
+          'location': 'parent_child_service.dart:52',
+          'message': 'Linked children loaded',
+          'data': {'linkedChildrenCount': _linkedChildren.length},
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+          'sessionId': 'debug-session',
+          'runId': 'run1',
+          'hypothesisId': 'A'
+        });
+        await logFile.writeAsString('$logData\n', mode: FileMode.append);
+      } catch (_) {}
+      // #endregion
     }
     
     _isInitialized = true;
     notifyListeners();
+    
+    // #region agent log
+    try {
+      final logFile = File('/Users/dsselmanovic/cursor project/kids-ai-all-in/.cursor/debug.log');
+      final logData = jsonEncode({
+        'location': 'parent_child_service.dart:62',
+        'message': 'ParentChildService initialization completed',
+        'data': {'isInitialized': _isInitialized, 'hasParentId': _parentId != null, 'hasChildId': _activeChildId != null},
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+        'sessionId': 'debug-session',
+        'runId': 'run1',
+        'hypothesisId': 'A'
+      });
+      await logFile.writeAsString('$logData\n', mode: FileMode.append);
+    } catch (_) {}
+    // #endregion
   }
   
   /// Generiert eine einzigartige Parent ID
@@ -97,26 +163,19 @@ class ParentChildService extends ChangeNotifier {
     
     final childId = _generateId();
     
-    // Kind in Hauptsammlung erstellen
-    await _firestore.collection('children').doc(childId).set({
+    // Kind in verschachtelter Struktur erstellen (parents/{parentId}/children/{childId})
+    await _firestore
+        .collection('parents')
+        .doc(_parentId)
+        .collection('children')
+        .doc(childId)
+        .set({
       'name': name,
       'age': age,
       'preferredLanguage': language,
       'avatarUrl': avatarUrl,
       'parentId': _parentId,
       'createdAt': FieldValue.serverTimestamp(),
-    });
-    
-    // Verknüpfung bei Parent speichern
-    await _firestore
-        .collection('parents')
-        .doc(_parentId)
-        .collection('linkedChildren')
-        .doc(childId)
-        .set({
-      'childId': childId,
-      'name': name,
-      'linkedAt': FieldValue.serverTimestamp(),
     });
     
     await _loadLinkedChildren();
@@ -133,7 +192,7 @@ class ParentChildService extends ChangeNotifier {
       final snapshot = await _firestore
           .collection('parents')
           .doc(_parentId)
-          .collection('linkedChildren')
+          .collection('children')
           .get();
       
       _linkedChildren = snapshot.docs
@@ -158,10 +217,12 @@ class ParentChildService extends ChangeNotifier {
   
   /// Holt das aktive Kind-Profil
   Future<Map<String, dynamic>?> getActiveChildProfile() async {
-    if (_activeChildId == null) return null;
+    if (_activeChildId == null || _parentId == null) return null;
     
     try {
       final doc = await _firestore
+          .collection('parents')
+          .doc(_parentId)
           .collection('children')
           .doc(_activeChildId)
           .get();
@@ -173,29 +234,28 @@ class ParentChildService extends ChangeNotifier {
   
   /// Aktualisiert Kinderprofil
   Future<void> updateChildProfile(String childId, Map<String, dynamic> data) async {
-    await _firestore.collection('children').doc(childId).update({
+    if (_parentId == null) return;
+    
+    await _firestore
+        .collection('parents')
+        .doc(_parentId)
+        .collection('children')
+        .doc(childId)
+        .update({
       ...data,
       'updatedAt': FieldValue.serverTimestamp(),
     });
-    
-    // Auch in linkedChildren aktualisieren
-    if (_parentId != null && data.containsKey('name')) {
-      await _firestore
-          .collection('parents')
-          .doc(_parentId)
-          .collection('linkedChildren')
-          .doc(childId)
-          .update({'name': data['name']});
-    }
     
     await _loadLinkedChildren();
   }
   
   /// Speichert YouTube Einstellungen für aktives Kind
   Future<void> saveYouTubeSettings(Map<String, dynamic> settings) async {
-    if (_activeChildId == null) return;
+    if (_activeChildId == null || _parentId == null) return;
     
     await _firestore
+        .collection('parents')
+        .doc(_parentId)
         .collection('children')
         .doc(_activeChildId)
         .collection('settings')
@@ -205,10 +265,12 @@ class ParentChildService extends ChangeNotifier {
   
   /// Lädt YouTube Einstellungen für aktives Kind
   Future<Map<String, dynamic>?> loadYouTubeSettings() async {
-    if (_activeChildId == null) return null;
+    if (_activeChildId == null || _parentId == null) return null;
     
     try {
       final doc = await _firestore
+          .collection('parents')
+          .doc(_parentId)
           .collection('children')
           .doc(_activeChildId)
           .collection('settings')
@@ -224,16 +286,13 @@ class ParentChildService extends ChangeNotifier {
   Future<void> deleteChildProfile(String childId) async {
     if (_parentId == null) return;
     
-    // Kind aus linkedChildren entfernen
+    // Kind-Dokument löschen (verschachtelte Struktur)
     await _firestore
         .collection('parents')
         .doc(_parentId)
-        .collection('linkedChildren')
+        .collection('children')
         .doc(childId)
         .delete();
-    
-    // Kind-Dokument löschen
-    await _firestore.collection('children').doc(childId).delete();
     
     await _loadLinkedChildren();
     

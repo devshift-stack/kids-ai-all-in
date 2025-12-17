@@ -10,6 +10,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_performance/firebase_performance.dart';
+import 'package:kids_ai_shared/kids_ai_shared.dart';
 import 'firebase_options.dart';
 
 import 'core/theme/app_theme.dart';
@@ -219,7 +220,7 @@ class _AppStartupState extends ConsumerState<AppStartup>
           ),
         ),
         child: Center(
-          child: AnimatedBuilder(
+          child: CustomAnimatedBuilder(
             listenable: _controller,
             builder: (context, child) {
               return Opacity(
@@ -229,29 +230,45 @@ class _AppStartupState extends ConsumerState<AppStartup>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Logo placeholder - replace with actual logo
+                      // App Logo
                       Container(
                         width: 150,
                         height: 150,
                         decoration: BoxDecoration(
-                          gradient: AppTheme.alanGradient,
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: AppTheme.primaryColor.withOpacity(0.3),
+                              color: AppTheme.primaryColor.withValues(alpha: 0.3),
                               blurRadius: 30,
                               offset: const Offset(0, 10),
                             ),
                           ],
                         ),
-                        child: const Center(
-                          child: Text(
-                            'A',
-                            style: TextStyle(
-                              fontSize: 72,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+                        child: ClipOval(
+                          child: Image.asset(
+                            'assets/images/logo_256.png',
+                            width: 150,
+                            height: 150,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              // Fallback falls Asset nicht gefunden
+                              return Container(
+                                decoration: BoxDecoration(
+                                  gradient: AppTheme.alanGradient,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    'A',
+                                    style: TextStyle(
+                                      fontSize: 72,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -277,7 +294,7 @@ class _AppStartupState extends ConsumerState<AppStartup>
                           height: 40,
                           child: CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              AppTheme.primaryColor.withOpacity(0.5),
+                              AppTheme.primaryColor.withValues(alpha: 0.5),
                             ),
                             strokeWidth: 3,
                           ),
@@ -294,11 +311,11 @@ class _AppStartupState extends ConsumerState<AppStartup>
   }
 }
 
-class AnimatedBuilder extends AnimatedWidget {
+class CustomAnimatedBuilder extends AnimatedWidget {
   final Widget Function(BuildContext context, Widget? child) builder;
   final Widget? child;
 
-  const AnimatedBuilder({
+  const CustomAnimatedBuilder({
     super.key,
     required super.listenable,
     required this.builder,

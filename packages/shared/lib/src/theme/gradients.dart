@@ -78,12 +78,24 @@ class KidsGradients {
   );
 
   // ============================================================
-  // BACKGROUND GRADIENTS
+  // BACKGROUND GRADIENTS (v0-kids-ai-ui Design)
   // ============================================================
+
+  /// Haupt-Hintergrund-Gradient (from-primary via-accent to-secondary)
+  /// Entspricht dem v0-kids-ai-ui Design
+  static const LinearGradient mainBackground = LinearGradient(
+    colors: [
+      Color(0xFF7B68EE), // primary
+      Color(0xFF00D4AA), // accent
+      Color(0xFFFF6B9D), // secondary
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 
   /// Hintergrund-Gradient (subtil)
   static const LinearGradient background = LinearGradient(
-    colors: [Color(0xFFF8F9FE), Color(0xFFEEF2F6)],
+    colors: [Color(0xFFFAF9FC), Color(0xFFF5F4F8)],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );

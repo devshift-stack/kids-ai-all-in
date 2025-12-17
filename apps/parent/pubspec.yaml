@@ -14,8 +14,7 @@ dependencies:
 
   # Shared Code
   kids_ai_shared:
-    git:
-      url: https://github.com/devshift-stack/Kids-AI-Shared.git
+    path: ../../packages/shared
 
   # Firebase
   firebase_core: ^3.8.1
