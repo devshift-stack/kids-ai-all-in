@@ -82,6 +82,9 @@ dev_dependencies:
   riverpod_generator: ^2.3.9
   mocktail: ^1.0.3
 
+dependency_overrides:
+  record_linux: ^1.2.1
+
 flutter:
   uses-material-design: true
 

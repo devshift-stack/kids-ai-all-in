@@ -69,6 +69,7 @@ class KidsColors {
   static const Color textLight = Color(0xFFFFFFFF);
   static const Color textOnPrimary = Color(0xFFFFFFFF);
   static const Color textOnSecondary = Color(0xFFFFFFFF);
+  static const Color textDisabled = Color(0xFFD0D4D8);
 
   /// Borders & Dividers
   static const Color border = Color(0xFFE0E6ED);
@@ -100,6 +101,27 @@ class KidsColors {
     Color(0xFFFF85A2), // Rosa
     Color(0xFFA29BFE), // Lavendel
   ];
+
+  // ============================================================
+  // AGE GROUP COLORS
+  // ============================================================
+
+  /// Vorschule (3-5)
+  static const Color preschool = Color(0xFFFF6B9D); // Pink
+  /// Frühe Schulzeit (6-8)
+  static const Color earlySchool = Color(0xFF7B68EE); // Violett
+  /// Späte Schulzeit (9-12)
+  static const Color lateSchool = Color(0xFF00D4AA); // Cyan
+
+  /// Heller Text (für dunkle Hintergründe)
+  static const Color textLight = Color(0xFFFFFFFF);
+
+  /// Gibt Farbe basierend auf Alter zurück
+  static Color getAgeColor(int age) {
+    if (age <= 5) return preschool;
+    if (age <= 8) return earlySchool;
+    return lateSchool;
+  }
 
   // ============================================================
   // DARK THEME COLORS (für Parent Dashboard)

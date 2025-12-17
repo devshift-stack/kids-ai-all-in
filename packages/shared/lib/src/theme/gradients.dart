@@ -84,6 +84,13 @@ class KidsGradients {
     end: Alignment.bottomCenter,
   );
 
+  /// Character Gradient (für Alan/Lian Avatare)
+  static const LinearGradient character = LinearGradient(
+    colors: [Color(0xFF7B68EE), Color(0xFFFF6B9D)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
   // ============================================================
   // BACKGROUND GRADIENTS (v0-kids-ai-ui Design)
   // ============================================================

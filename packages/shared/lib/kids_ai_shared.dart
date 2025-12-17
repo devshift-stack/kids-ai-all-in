@@ -31,8 +31,8 @@ export 'src/audio/stt_provider.dart';
 export 'src/theme/colors.dart';
 export 'src/theme/typography.dart';
 export 'src/theme/spacing.dart';
-export 'src/theme/gradients.dart';
 export 'src/theme/shadows.dart';
+export 'src/theme/gradients.dart';
 export 'src/theme/theme.dart';
 
 // ============================================================
