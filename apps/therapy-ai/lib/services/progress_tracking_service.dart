@@ -5,6 +5,7 @@ import '../models/therapy_session.dart';
 import '../models/exercise.dart';
 import '../models/speech_analysis_result.dart';
 import '../core/constants/app_constants.dart';
+import '../core/error_handler.dart';
 
 /// Progress Tracking Service
 /// Handles progress tracking, statistics, and Firebase integration
@@ -16,12 +17,19 @@ class ProgressTrackingService {
   /// [session] - Die Therapie-Session
   Future<void> saveSession(TherapySession session) async {
     try {
-      await _firestore
-          .collection('therapy_sessions')
-          .doc(session.id)
-          .set(session.toJson());
+      await ErrorHandler.executeWithRetry(
+        function: () async {
+          await _firestore
+              .collection('therapy_sessions')
+              .doc(session.id)
+              .set(session.toJson());
+        },
+        onRetry: (attempt, delay) {
+          debugPrint('Firebase Session Save Retry $attempt nach ${delay.inSeconds}s...');
+        },
+      );
     } catch (e) {
-      throw Exception('Fehler beim Speichern der Session: $e');
+      throw Exception('Fehler beim Speichern der Session: ${ErrorHandler.handleFirebaseError(e)}');
     }
   }
 

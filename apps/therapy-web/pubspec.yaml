@@ -1,0 +1,64 @@
+name: therapy_web
+description: Web UI für Therapy AI - Detaillierte Einstellungen und Avatar-Upload
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Shared Code
+  kids_ai_shared:
+    path: ../../packages/shared
+
+  # Firebase
+  firebase_core: ^3.8.1
+  firebase_auth: ^5.5.0
+  cloud_firestore: ^5.6.0
+  firebase_storage: ^12.3.0
+
+  # State Management
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+
+  # Localization
+  easy_localization: ^3.0.3
+
+  # UI Components
+  flutter_animate: ^4.5.0
+  file_picker: ^8.1.2
+  image_picker: ^1.1.2
+
+  # HTTP
+  dio: ^5.4.0
+  http: ^1.1.0
+
+  # Storage
+  shared_preferences: ^2.3.2
+
+  # Utils
+  uuid: ^4.5.1
+  equatable: ^2.0.5
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  build_runner: ^2.4.13
+  freezed: ^2.5.7
+  json_serializable: ^6.8.0
+  riverpod_generator: ^2.4.3
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/locales/
+

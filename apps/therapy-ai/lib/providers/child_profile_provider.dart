@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter/foundation.dart';
 import '../models/child_profile.dart';
+import '../core/error_handler.dart';
 
 /// Child Profile State
 class ChildProfileState {
@@ -56,7 +58,26 @@ class ChildProfileNotifier extends StateNotifier<ChildProfileState> {
       }
 
       // Falls nicht lokal vorhanden, lade aus Firebase
-      // TODO: Implementiere Firebase-Laden wenn nötig
+      try {
+        final profileDoc = await _firestore
+            .collection('child_profiles')
+            .limit(1)
+            .get();
+
+        if (profileDoc.docs.isNotEmpty) {
+          final profileData = profileDoc.docs.first.data();
+          final profile = ChildProfile.fromJson(profileData);
+          
+          // Speichere lokal für schnelleren Zugriff
+          await box.put('profile', profile.toJson());
+          
+          state = state.copyWith(profile: profile, isLoading: false);
+          return;
+        }
+      } catch (e) {
+        // Firebase-Fehler ignorieren, verwende lokale Daten
+        debugPrint('Fehler beim Laden aus Firebase: $e');
+      }
 
       state = state.copyWith(isLoading: false);
     } catch (e) {
@@ -72,15 +93,22 @@ class ChildProfileNotifier extends StateNotifier<ChildProfileState> {
     try {
       state = state.copyWith(isLoading: true);
 
-      // Speichere lokal in Hive
+      // Speichere lokal in Hive (immer, auch bei Firebase-Fehler)
       final box = await Hive.openBox(_hiveBoxName);
       await box.put('profile', profile.toJson());
 
-      // Speichere in Firebase
-      await _firestore
-          .collection('child_profiles')
-          .doc(profile.id)
-          .set(profile.toJson());
+      // Speichere in Firebase mit Retry-Logik
+      await ErrorHandler.executeWithRetry(
+        function: () async {
+          await _firestore
+              .collection('child_profiles')
+              .doc(profile.id)
+              .set(profile.toJson());
+        },
+        onRetry: (attempt, delay) {
+          debugPrint('Retry $attempt nach ${delay.inSeconds}s...');
+        },
+      );
 
       state = state.copyWith(
         profile: profile,
@@ -88,9 +116,13 @@ class ChildProfileNotifier extends StateNotifier<ChildProfileState> {
         error: null,
       );
     } catch (e) {
+      // Profil wurde lokal gespeichert, auch wenn Firebase fehlschlägt
+      final errorMessage = ErrorHandler.handleFirebaseError(e);
+      
       state = state.copyWith(
+        profile: profile, // Profil ist lokal gespeichert
         isLoading: false,
-        error: 'Fehler beim Speichern: $e',
+        error: 'Warnung: $errorMessage (Daten lokal gespeichert)',
       );
     }
   }
@@ -137,13 +169,18 @@ class ChildProfileNotifier extends StateNotifier<ChildProfileState> {
   /// Synchronisiert mit Firebase im Hintergrund
   Future<void> _syncWithFirebase(ChildProfile profile) async {
     try {
-      await _firestore
-          .collection('child_profiles')
-          .doc(profile.id)
-          .set(profile.toJson(), SetOptions(merge: true));
+      await ErrorHandler.executeWithRetry(
+        function: () async {
+          await _firestore
+              .collection('child_profiles')
+              .doc(profile.id)
+              .set(profile.toJson(), SetOptions(merge: true));
+        },
+        maxRetries: 2, // Weniger Retries für Hintergrund-Sync
+      );
     } catch (e) {
       // Fehler ignorieren, da es nur eine Hintergrund-Synchronisation ist
-      print('Fehler bei Firebase-Synchronisation: $e');
+      debugPrint('Fehler bei Firebase-Synchronisation: ${ErrorHandler.handleFirebaseError(e)}');
     }
   }
 

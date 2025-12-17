@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart';
 import '../core/env_config.dart';
 import '../core/config.dart';
+import '../core/error_handler.dart';
 import '../models/speech_analysis_result.dart';
 import '../core/constants/app_constants.dart';
 
@@ -65,10 +66,17 @@ class WhisperSpeechService {
         'response_format': 'json',
       });
 
-      // API Request
-      final response = await _dio.post(
-        '/audio/transcriptions',
-        data: formData,
+      // API Request mit Retry-Logik
+      final response = await ErrorHandler.executeWithRetry(
+        function: () async {
+          return await _dio.post(
+            '/audio/transcriptions',
+            data: formData,
+          );
+        },
+        onRetry: (attempt, delay) {
+          debugPrint('Whisper API Retry $attempt nach ${delay.inSeconds}s...');
+        },
       );
 
       if (response.statusCode == 200) {
@@ -78,13 +86,9 @@ class WhisperSpeechService {
         throw Exception('API Fehler: ${response.statusCode}');
       }
     } on DioException catch (e) {
-      if (e.response != null) {
-        throw Exception('API Fehler: ${e.response?.statusCode} - ${e.response?.data}');
-      } else {
-        throw Exception('Netzwerk-Fehler: ${e.message}');
-      }
+      throw ErrorHandler.handleError(e);
     } catch (e) {
-      throw Exception('Transkription fehlgeschlagen: $e');
+      throw Exception('Transkription fehlgeschlagen: ${ErrorHandler.handleError(e)}');
     }
   }
 
@@ -139,6 +143,24 @@ class WhisperSpeechService {
       analyzedAt: DateTime.now(),
       audioFilePath: audioPath,
     );
+    } catch (e) {
+      // Bei Fehler: Fallback mit Basis-Analyse
+      debugPrint('Fehler bei Speech-Analyse: $e');
+      return SpeechAnalysisResult(
+        transcription: '',
+        targetWord: targetWord,
+        pronunciationScore: 0.0,
+        volumeLevel: 0.0,
+        articulationScore: 0.0,
+        similarityScore: 0.0,
+        feedbackMessage: 'Fehler bei der Analyse. Bitte versuche es erneut.',
+        recommendations: ['Überprüfe deine Internetverbindung', 'Versuche es nochmal'],
+        isSuccessful: false,
+        needsRepetition: true,
+        analyzedAt: DateTime.now(),
+        audioFilePath: audioPath,
+      );
+    }
   }
 
   /// Berechnet Ähnlichkeit zwischen zwei Strings

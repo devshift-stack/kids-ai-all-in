@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart';
 import '../core/env_config.dart';
+import '../core/error_handler.dart';
 import '../core/constants/app_constants.dart';
 
 /// ElevenLabs Voice Service
@@ -73,10 +74,17 @@ class ElevenLabsVoiceService {
         ),
       });
 
-      // API Request
-      final response = await _dio.post(
-        '/voices/add',
-        data: formData,
+      // API Request mit Retry-Logik
+      final response = await ErrorHandler.executeWithRetry(
+        function: () async {
+          return await _dio.post(
+            '/voices/add',
+            data: formData,
+          );
+        },
+        onRetry: (attempt, delay) {
+          debugPrint('ElevenLabs API Retry $attempt nach ${delay.inSeconds}s...');
+        },
       );
 
       if (response.statusCode == 200) {
@@ -130,25 +138,32 @@ class ElevenLabsVoiceService {
     }
 
     try {
-      // API Request
-      final response = await _dio.post(
-        '/text-to-speech/$voiceId',
-        data: {
-          'text': text,
-          'model_id': modelId ?? 'eleven_multilingual_v2',
-          'voice_settings': voiceSettings ?? {
-            'stability': 0.5,
-            'similarity_boost': 0.75,
-            'style': 0.0,
-            'use_speaker_boost': true,
-          },
+      // API Request mit Retry-Logik
+      final response = await ErrorHandler.executeWithRetry(
+        function: () async {
+          return await _dio.post(
+            '/text-to-speech/$voiceId',
+            data: {
+              'text': text,
+              'model_id': modelId ?? 'eleven_multilingual_v2',
+              'voice_settings': voiceSettings ?? {
+                'stability': 0.5,
+                'similarity_boost': 0.75,
+                'style': 0.0,
+                'use_speaker_boost': true,
+              },
+            },
+            options: Options(
+              responseType: ResponseType.bytes,
+              headers: {
+                'Accept': 'audio/mpeg',
+              },
+            ),
+          );
         },
-        options: Options(
-          responseType: ResponseType.bytes,
-          headers: {
-            'Accept': 'audio/mpeg',
-          },
-        ),
+        onRetry: (attempt, delay) {
+          debugPrint('ElevenLabs TTS Retry $attempt nach ${delay.inSeconds}s...');
+        },
       );
 
       if (response.statusCode == 200) {

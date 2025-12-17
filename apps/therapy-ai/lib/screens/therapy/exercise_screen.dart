@@ -190,7 +190,11 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
 
     try {
       final whisperService = ref.read(whisperSpeechServiceProvider);
-      final result = await whisperService.transcribeAudio(audioPath);
+      final result = await whisperService.analyzeSpeech(
+        audioPath: audioPath,
+        targetWord: widget.exercise.targetWord,
+        language: ref.read(childProfileProvider).profile?.language,
+      );
 
       // Speichere Ergebnis
       final profileState = ref.read(childProfileProvider);
