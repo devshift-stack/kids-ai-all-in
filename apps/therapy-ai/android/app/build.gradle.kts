@@ -10,7 +10,7 @@ plugins {
 
 // Load keystore properties from key.properties file
 import java.util.Properties
-import java.io.FileInputStream
+        import java.io.FileInputStream
 
 val keystorePropertiesFile = rootProject.file("key.properties")
 val keystoreProperties = Properties()
@@ -44,28 +44,31 @@ android {
     signingConfigs {
         create("release") {
             if (keystorePropertiesFile.exists()) {
-                keyAlias = keystoreProperties["keyAlias"] as? String
-                keyPassword = keystoreProperties["keyPassword"] as? String
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
                 storeFile = keystoreProperties["storeFile"]?.let { file(it as String) }
-                storePassword = keystoreProperties["storePassword"] as? String
+                storePassword = keystoreProperties["storePassword"] as String
             }
         }
     }
 
     buildTypes {
         release {
-            if (keystorePropertiesFile.exists()) {
-                signingConfig = signingConfigs.getByName("release")
-            } else {
-                // Fallback to debug signing if key.properties doesn't exist
-                signingConfig = signingConfigs.getByName("debug")
-            }
-            isMinifyEnabled = false
-            isShrinkResources = false
+            // Immer den release signingConfig verwenden (wenn key.properties existiert)
+            signingConfig = signingConfigs.getByName("release")
+
+            // Production-Optimierungen aktivieren
+            isMinifyEnabled = true
+            isShrinkResources = true
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
         }
     }
 }
