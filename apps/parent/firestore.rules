@@ -30,6 +30,21 @@ service cloud.firestore {
         allow read, write: if isOwner(parentId);
         // Co-parents can only read
         allow read: if isCoParent(parentId);
+        
+        // Kinder-Apps können über parentCode verifizieren und updaten
+        allow read: if isAuthenticated() && resource.data.parentCode != null;
+        allow update: if isAuthenticated() &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['linkedDeviceIds', 'isLinked', 'lastSeen']);
+        
+        // Progress Sub-Collection (für anonyme Auth)
+        match /progress/{progressId} {
+          allow read, write: if isAuthenticated();
+        }
+        
+        // Settings Sub-Collection (für anonyme Auth)
+        match /settings/{settingId} {
+          allow read, write: if isAuthenticated();
+        }
       }
 
       // Usage stats subcollection (read-only for co-parents)

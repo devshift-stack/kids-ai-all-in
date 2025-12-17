@@ -63,29 +63,13 @@ class YouTubeRewardService extends ChangeNotifier {
   String? _childId;
   String? _parentId;
   StreamSubscription<DocumentSnapshot>? _settingsSubscription;
-  bool _isInitialized = false;
-  
-  bool get isInitialized => _isInitialized;
-  String? get childId => _childId;
-  String? get parentId => _parentId;
   
   /// Initialisiert den Service für ein Kind
   Future<void> initialize(String childId, {String? parentId}) async {
-    // Prüfe ob Re-Initialisierung nötig ist
-    // Re-initialize wenn childId ODER parentId sich ändert
-    if (_isInitialized && _childId == childId && _parentId == parentId) {
-      return; // Bereits initialisiert mit gleichen Parametern
-    }
-    
     _childId = childId;
     _parentId = parentId;
-    _isInitialized = false;
-    
     await _loadLocalState();
     _listenToSettings();
-    
-    _isInitialized = true;
-    notifyListeners();
   }
   
   /// Lädt lokalen Status aus SharedPreferences
@@ -238,36 +222,13 @@ final youtubeRewardServiceProvider = ChangeNotifierProvider<YouTubeRewardService
   final service = YouTubeRewardService();
   
   // Automatische Initialisierung wenn parentId/childId verfügbar
-  final parentChildService = ref.watch(parentChildServiceProvider);
-  final parentId = parentChildService.parentId;
-  final childId = parentChildService.activeChildId;
+  final parentId = ref.watch(parentChildServiceProvider).parentId;
+  final childId = ref.watch(parentChildServiceProvider).activeChildId;
   
-  // Initialisierung nur wenn ParentChildService bereits initialisiert ist
-  if (parentChildService.isInitialized && childId != null) {
-    // Initialisierung asynchron starten - wird im Hintergrund abgeschlossen
-    service.initialize(childId, parentId: parentId).catchError((error) {
-      debugPrint('Error initializing YouTubeRewardService: $error');
-    });
+  if (childId != null) {
+    // Initialisierung asynchron, aber nicht await (Provider kann nicht async sein)
+    service.initialize(childId, parentId: parentId);
   }
-  
-  // Listener für Änderungen an parentId/childId
-  ref.listen<ParentChildService>(
-    parentChildServiceProvider,
-    (previous, next) {
-      final newChildId = next.activeChildId;
-      final newParentId = next.parentId;
-      
-      // Re-initialize wenn childId ODER parentId sich ändert
-      // WICHTIG: Prüfe beide Werte, nicht nur childId
-      if (next.isInitialized && 
-          newChildId != null && 
-          (newChildId != service.childId || newParentId != service.parentId)) {
-        service.initialize(newChildId, parentId: newParentId).catchError((error) {
-          debugPrint('Error re-initializing YouTubeRewardService: $error');
-        });
-      }
-    },
-  );
   
   return service;
 });
