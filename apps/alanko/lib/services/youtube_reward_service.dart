@@ -63,28 +63,66 @@ class YouTubeRewardService extends ChangeNotifier {
   String? _childId;
   String? _parentId;
   StreamSubscription<DocumentSnapshot>? _settingsSubscription;
+  Completer<void>? _initializationCompleter;
+  bool _isInitializing = false;
+  
+  String? get childId => _childId;
+  String? get parentId => _parentId;
   
   /// Initialisiert den Service für ein Kind
   Future<void> initialize(String childId, {String? parentId}) async {
-    _childId = childId;
-    _parentId = parentId;
-    await _loadLocalState();
-    _listenToSettings();
+    // Prüfe ob bereits mit gleichen Parametern initialisiert
+    if (_childId == childId && _parentId == parentId && _initializationCompleter == null) {
+      return; // Bereits initialisiert mit gleichen Parametern
+    }
+    
+    // Wenn Initialisierung bereits läuft, warte auf Abschluss
+    if (_isInitializing && _initializationCompleter != null) {
+      return _initializationCompleter!.future;
+    }
+    
+    // Starte neue Initialisierung
+    _isInitializing = true;
+    _initializationCompleter = Completer<void>();
+    
+    try {
+      // Lokale Variablen verwenden, um Race Condition zu vermeiden
+      final localChildId = childId;
+      final localParentId = parentId;
+      
+      // Verwende lokale Variablen für async Operationen (BEVOR Felder gesetzt werden)
+      await _loadLocalState(localChildId);
+      
+      // Setze Felder erst NACH erfolgreichem Laden des lokalen States
+      _childId = localChildId;
+      _parentId = localParentId;
+      
+      // Jetzt Settings-Listener starten (nutzt die gesetzten Felder)
+      _listenToSettings(localChildId, localParentId);
+      
+      _initializationCompleter!.complete();
+    } catch (e) {
+      _initializationCompleter!.completeError(e);
+      rethrow;
+    } finally {
+      _isInitializing = false;
+      _initializationCompleter = null;
+    }
   }
   
   /// Lädt lokalen Status aus SharedPreferences
-  Future<void> _loadLocalState() async {
+  Future<void> _loadLocalState(String childId) async {
     final prefs = await SharedPreferences.getInstance();
     final today = DateTime.now().toIso8601String().split('T')[0];
-    final savedDate = prefs.getString('youtube_date_$_childId');
+    final savedDate = prefs.getString('youtube_date_$childId');
     
     if (savedDate == today) {
-      _watchedMinutesToday = prefs.getInt('youtube_watched_$_childId') ?? 0;
+      _watchedMinutesToday = prefs.getInt('youtube_watched_$childId') ?? 0;
     } else {
       // Neuer Tag - Reset
       _watchedMinutesToday = 0;
-      await prefs.setString('youtube_date_$_childId', today);
-      await prefs.setInt('youtube_watched_$_childId', 0);
+      await prefs.setString('youtube_date_$childId', today);
+      await prefs.setInt('youtube_watched_$childId', 0);
     }
     
     _updateCanWatch();
@@ -93,25 +131,26 @@ class YouTubeRewardService extends ChangeNotifier {
   
   /// Speichert lokalen Status
   Future<void> _saveLocalState() async {
+    if (_childId == null) return; // Kein childId gesetzt, nichts zu speichern
+    
     final prefs = await SharedPreferences.getInstance();
     final today = DateTime.now().toIso8601String().split('T')[0];
-    await prefs.setString('youtube_date_$_childId', today);
-    await prefs.setInt('youtube_watched_$_childId', _watchedMinutesToday);
+    final childId = _childId!; // Lokale Variable verwenden
+    await prefs.setString('youtube_date_$childId', today);
+    await prefs.setInt('youtube_watched_$childId', _watchedMinutesToday);
   }
   
   /// Lauscht auf Settings-Änderungen von Parent Dashboard
-  void _listenToSettings() {
-    if (_childId == null) return;
-    
+  void _listenToSettings(String childId, String? parentId) {
     _settingsSubscription?.cancel();
     
     // Wenn parentId vorhanden, verschachtelte Struktur nutzen
-    if (_parentId != null) {
+    if (parentId != null) {
       _settingsSubscription = _firestore
           .collection('parents')
-          .doc(_parentId)
+          .doc(parentId)
           .collection('children')
-          .doc(_childId)
+          .doc(childId)
           .collection('settings')
           .doc('youtube')
           .snapshots()
@@ -126,7 +165,7 @@ class YouTubeRewardService extends ChangeNotifier {
       // Fallback: flache Struktur für anonyme Nutzer (Legacy)
       _settingsSubscription = _firestore
           .collection('children')
-          .doc(_childId)
+          .doc(childId)
           .collection('settings')
           .doc('youtube')
           .snapshots()
@@ -222,13 +261,36 @@ final youtubeRewardServiceProvider = ChangeNotifierProvider<YouTubeRewardService
   final service = YouTubeRewardService();
   
   // Automatische Initialisierung wenn parentId/childId verfügbar
-  final parentId = ref.watch(parentChildServiceProvider).parentId;
-  final childId = ref.watch(parentChildServiceProvider).activeChildId;
+  final parentChildService = ref.watch(parentChildServiceProvider);
+  final parentId = parentChildService.parentId;
+  final childId = parentChildService.activeChildId;
   
-  if (childId != null) {
-    // Initialisierung asynchron, aber nicht await (Provider kann nicht async sein)
-    service.initialize(childId, parentId: parentId);
+  // Initialisierung nur wenn ParentChildService bereits initialisiert ist
+  if (parentChildService.isInitialized && childId != null) {
+    // Initialisierung asynchron starten - wird im Hintergrund abgeschlossen
+    service.initialize(childId, parentId: parentId).catchError((error) {
+      debugPrint('Error initializing YouTubeRewardService: $error');
+    });
   }
+  
+  // Listener für Änderungen an parentId/childId
+  ref.listen<ParentChildService>(
+    parentChildServiceProvider,
+    (previous, next) {
+      final newChildId = next.activeChildId;
+      final newParentId = next.parentId;
+      
+      // Re-initialize wenn childId ODER parentId sich ändert
+      // WICHTIG: Prüfe beide Werte, nicht nur childId
+      if (next.isInitialized && 
+          newChildId != null && 
+          (newChildId != service.childId || newParentId != service.parentId)) {
+        service.initialize(newChildId, parentId: newParentId).catchError((error) {
+          debugPrint('Error re-initializing YouTubeRewardService: $error');
+        });
+      }
+    },
+  );
   
   return service;
 });
