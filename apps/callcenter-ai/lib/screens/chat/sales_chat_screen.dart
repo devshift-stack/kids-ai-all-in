@@ -6,8 +6,8 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter_tts/flutter_tts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/chat_message.dart';
-import '../../services/backend_api_service.dart';
 import '../../providers/backend_api_provider.dart';
+import '../../providers/sales_agent_provider.dart';
 
 class SalesChatScreen extends ConsumerStatefulWidget {
   const SalesChatScreen({super.key});
@@ -33,6 +33,9 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
 
   // Loading state
   bool _isLoading = false;
+  
+  // Backend-Modus oder direkter Service
+  bool _useBackend = true;
 
   @override
   void initState() {
@@ -80,50 +83,51 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
   }
 
   void _greetCustomer() async {
-    // Backend-Session erstellen
+    // Versuche Backend zu verwenden
     final backendApi = ref.read(backendApiServiceProvider);
-    
-    // Prüfe ob Backend erreichbar ist
     final isHealthy = await backendApi.checkHealth();
-    if (!isHealthy) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Backend nicht erreichbar. Bitte starte den Backend-Server.'),
-            duration: Duration(seconds: 5),
-          ),
-        );
-      }
-      // Fallback: Lokale Begrüßung
-      final greeting = 'Hallo! Ich bin Lisa, Ihre Verkaufsberaterin. Schön, dass ich Sie erreiche! Wie geht es Ihnen heute? Ich rufe an, um über Solarmodule zu sprechen – haben Sie sich schon einmal Gedanken über Solarstrom gemacht?';
+    
+    if (isHealthy) {
+      // Backend-Modus: Session erstellen
       setState(() {
-        _messages.add(ChatMessage.lisa(greeting));
+        _useBackend = true;
+        _isLoading = true;
       });
-      _scrollToBottom();
-      _speak(greeting);
-      return;
-    }
-
-    // Session erstellen und Begrüßung erhalten
-    setState(() => _isLoading = true);
-    
-    final session = await backendApi.createSession();
-    
-    setState(() => _isLoading = false);
-    
-    if (session.success) {
-      setState(() {
-        _messages.add(ChatMessage.lisa(session.greeting));
-      });
-      _scrollToBottom();
-      _speak(session.greeting);
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Fehler: ${session.error ?? "Unbekannter Fehler"}')),
-        );
+      
+      final session = await backendApi.createSession();
+      setState(() => _isLoading = false);
+      
+      if (session.success) {
+        setState(() {
+          _messages.add(ChatMessage.lisa(session.greeting));
+        });
+        _scrollToBottom();
+        _speak(session.greeting);
+        return;
       }
     }
+    
+    // Fallback: Direkter Service (wie im Plan vorgesehen)
+    setState(() {
+      _useBackend = false;
+    });
+    
+    if (mounted && !isHealthy) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Backend nicht verfügbar. Verwende direkten Service.'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+    
+    // Lokale Begrüßung mit direktem Service
+    final greeting = 'Hallo! Ich bin Lisa, Ihre Verkaufsberaterin. Schön, dass ich Sie erreiche! Wie geht es Ihnen heute? Ich rufe an, um über Solarmodule zu sprechen – haben Sie sich schon einmal Gedanken über Solarstrom gemacht?';
+    setState(() {
+      _messages.add(ChatMessage.lisa(greeting));
+    });
+    _scrollToBottom();
+    _speak(greeting);
   }
 
   void _startListening() async {
@@ -159,7 +163,9 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
       listenFor: const Duration(seconds: 10),
       pauseFor: const Duration(seconds: 3),
       localeId: 'de_DE',
-      partialResults: true,
+      listenOptions: stt.SpeechListenOptions(
+        partialResults: true,
+      ),
     );
   }
 
@@ -188,19 +194,43 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
 
     _scrollToBottom();
 
-    // Get response from Backend API
-    final backendApi = ref.read(backendApiServiceProvider);
-    
     try {
-      final chatResponse = await backendApi.sendMessage(userMessage);
+      String response;
+      
+      if (_useBackend) {
+        // Backend-Modus: Verwende Backend API
+        final backendApi = ref.read(backendApiServiceProvider);
+        final chatResponse = await backendApi.sendMessage(userMessage);
+        
+        if (!chatResponse.success) {
+          // Fallback zu direktem Service bei Fehler
+          setState(() => _useBackend = false);
+          final salesAgent = ref.read(salesAgentServiceProvider);
+          if (salesAgent.isConfigured) {
+            response = await salesAgent.chat(userMessage);
+          } else {
+            response = 'Entschuldigung, der Service ist nicht konfiguriert. Bitte setzen Sie den GEMINI_API_KEY.';
+          }
+        } else {
+          response = chatResponse.response;
+        }
+      } else {
+        // Direkter Service-Modus (wie im Plan vorgesehen)
+        final salesAgent = ref.read(salesAgentServiceProvider);
+        if (!salesAgent.isConfigured) {
+          response = 'Entschuldigung, der Service ist nicht konfiguriert. Bitte setzen Sie den GEMINI_API_KEY.';
+        } else {
+          response = await salesAgent.chat(userMessage);
+        }
+      }
 
       setState(() {
-        _messages.add(ChatMessage.lisa(chatResponse.response));
+        _messages.add(ChatMessage.lisa(response));
         _isLoading = false;
       });
 
       _scrollToBottom();
-      _speak(chatResponse.response);
+      _speak(response);
     } catch (e) {
       if (kDebugMode) {
         debugPrint('Error sending message: $e');
@@ -229,9 +259,11 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
 
   @override
   void dispose() {
-    // Session beenden
-    final backendApi = ref.read(backendApiServiceProvider);
-    backendApi.endSession();
+    // Session beenden (nur wenn Backend verwendet wurde)
+    if (_useBackend) {
+      final backendApi = ref.read(backendApiServiceProvider);
+      backendApi.endSession();
+    }
     
     _textController.dispose();
     _scrollController.dispose();
@@ -338,7 +370,7 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: AppTheme.primaryColor.withOpacity(0.3),
+                    color: AppTheme.primaryColor.withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -370,7 +402,7 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -496,7 +528,7 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
         color: AppTheme.surfaceColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -549,7 +581,7 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
                   boxShadow: [
                     BoxShadow(
                       color: (_isListening ? Colors.red : AppTheme.primaryColor)
-                          .withOpacity(0.3),
+                          .withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -583,7 +615,7 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
                       color: (_textController.text.trim().isEmpty || _isLoading
                               ? AppTheme.textLight
                               : AppTheme.secondaryColor)
-                          .withOpacity(0.3),
+                          .withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
