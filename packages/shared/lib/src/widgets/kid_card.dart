@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 import '../theme/spacing.dart';
 import '../theme/gradients.dart';
+import '../theme/shadows.dart';
 
 /// Card-Varianten
 enum KidCardVariant {
@@ -156,13 +157,13 @@ class _KidCardState extends State<KidCard> with SingleTickerProviderStateMixin {
       case 0:
         return KidsShadows.none;
       case 1:
-        return KidsShadows.sm;
+        return KidsShadows.card;
       case 2:
-        return KidsShadows.md;
+        return KidsShadows.elevated;
       case 3:
-        return KidsShadows.lg;
+        return KidsShadows.elevated;
       default:
-        return KidsShadows.md;
+        return KidsShadows.elevated;
     }
   }
 

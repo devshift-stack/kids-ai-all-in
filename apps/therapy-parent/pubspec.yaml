@@ -1,0 +1,93 @@
+name: therapy_parent
+description: Parent Dashboard für Therapy AI - Verwaltung und Monitoring für Eltern
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Shared Code
+  kids_ai_shared:
+    path: ../../packages/shared
+
+  # Firebase
+  firebase_core: ^3.8.1
+  firebase_auth: ^5.5.0
+  cloud_firestore: ^5.6.0
+  firebase_analytics: ^11.4.0
+  firebase_crashlytics: ^4.3.0
+  firebase_storage: ^12.3.0
+
+  # State Management
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+
+  # Localization
+  easy_localization: ^3.0.3
+
+  # UI & Charts
+  fl_chart: ^0.69.0
+  syncfusion_flutter_charts: ^27.1.0
+  lottie: ^3.1.0
+  flutter_animate: ^4.5.0
+
+  # PDF & Export
+  pdf: ^3.11.1
+  printing: ^5.13.0
+  csv: ^5.0.2
+  share_plus: ^10.0.2
+  path_provider: ^2.1.4
+
+  # Date & Time
+  intl: ^0.19.0
+
+  # File Operations
+  file_picker: ^8.1.2
+  open_filex: ^4.5.0
+
+  # HTTP
+  dio: ^5.4.0
+  http: ^1.1.0
+
+  # Storage
+  shared_preferences: ^2.3.2
+  hive_flutter: ^1.1.0
+
+  # Utils
+  uuid: ^4.5.1
+  equatable: ^2.0.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  build_runner: ^2.4.13
+  freezed: ^2.5.7
+  json_serializable: ^6.8.0
+  riverpod_generator: ^2.4.3
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/locales/
+    - assets/animations/
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
+

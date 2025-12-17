@@ -1,0 +1,45 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# API Keys & Secrets
+**/secrets/
+**/*_key.txt
+**/*_secret.*
+
+# Audio samples (sensitive)
+assets/audio/therapist_sample.*
+assets/audio/test_samples/*.wav
+assets/audio/test_samples/*.mp3
+
+# Whisper models (large files)
+assets/models/whisper-*.bin
+assets/models/whisper-*.ggml
+
+# Build files
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+

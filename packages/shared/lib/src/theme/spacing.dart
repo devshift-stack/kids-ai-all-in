@@ -57,6 +57,12 @@ class KidsSpacing {
   static const double buttonHeightLg = 56.0;
   static const double buttonHeightXl = 64.0;
 
+  // Button Size Aliases (für Kompatibilität)
+  static const double buttonSm = buttonHeightSm;
+  static const double buttonMd = buttonHeightMd;
+  static const double buttonLg = buttonHeightLg;
+  static const double buttonXl = buttonHeightXl;
+
   // ============================================================
   // AVATAR SIZES
   // ============================================================
