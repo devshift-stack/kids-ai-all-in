@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/youtube/youtube_settings.dart';
+import 'parent_child_service.dart';
 
 /// Service zur Verwaltung des YouTube Belohnungssystems
 class YouTubeRewardService extends ChangeNotifier {
@@ -60,11 +61,13 @@ class YouTubeRewardService extends ChangeNotifier {
   List<Map<String, String>> get safeVideos => _defaultSafeVideos;
   
   String? _childId;
+  String? _parentId;
   StreamSubscription<DocumentSnapshot>? _settingsSubscription;
   
   /// Initialisiert den Service für ein Kind
-  Future<void> initialize(String childId) async {
+  Future<void> initialize(String childId, {String? parentId}) async {
     _childId = childId;
+    _parentId = parentId;
     await _loadLocalState();
     _listenToSettings();
   }
@@ -101,19 +104,40 @@ class YouTubeRewardService extends ChangeNotifier {
     if (_childId == null) return;
     
     _settingsSubscription?.cancel();
-    _settingsSubscription = _firestore
-        .collection('children')
-        .doc(_childId)
-        .collection('settings')
-        .doc('youtube')
-        .snapshots()
-        .listen((snapshot) {
-      if (snapshot.exists) {
-        _settings = YouTubeSettings.fromMap(snapshot.data()!);
-        _updateCanWatch();
-        notifyListeners();
-      }
-    });
+    
+    // Wenn parentId vorhanden, verschachtelte Struktur nutzen
+    if (_parentId != null) {
+      _settingsSubscription = _firestore
+          .collection('parents')
+          .doc(_parentId)
+          .collection('children')
+          .doc(_childId)
+          .collection('settings')
+          .doc('youtube')
+          .snapshots()
+          .listen((snapshot) {
+        if (snapshot.exists) {
+          _settings = YouTubeSettings.fromMap(snapshot.data()!);
+          _updateCanWatch();
+          notifyListeners();
+        }
+      });
+    } else {
+      // Fallback: flache Struktur für anonyme Nutzer (Legacy)
+      _settingsSubscription = _firestore
+          .collection('children')
+          .doc(_childId)
+          .collection('settings')
+          .doc('youtube')
+          .snapshots()
+          .listen((snapshot) {
+        if (snapshot.exists) {
+          _settings = YouTubeSettings.fromMap(snapshot.data()!);
+          _updateCanWatch();
+          notifyListeners();
+        }
+      });
+    }
   }
   
   /// Prüft ob Kind noch schauen darf
@@ -195,7 +219,18 @@ class YouTubeRewardService extends ChangeNotifier {
 
 // Provider
 final youtubeRewardServiceProvider = ChangeNotifierProvider<YouTubeRewardService>((ref) {
-  return YouTubeRewardService();
+  final service = YouTubeRewardService();
+  
+  // Automatische Initialisierung wenn parentId/childId verfügbar
+  final parentId = ref.watch(parentChildServiceProvider).parentId;
+  final childId = ref.watch(parentChildServiceProvider).activeChildId;
+  
+  if (childId != null) {
+    // Initialisierung asynchron, aber nicht await (Provider kann nicht async sein)
+    service.initialize(childId, parentId: parentId);
+  }
+  
+  return service;
 });
 
 // Settings Provider (für UI)

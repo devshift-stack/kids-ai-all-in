@@ -56,45 +56,89 @@ class FirebaseService {
     required int age,
     required String preferredLanguage,
     String? gender,
+    String? parentId,
+    String? childId,
   }) async {
     if (currentUser == null) {
       debugPrint('Firebase: No user signed in, cannot save profile');
       return;
     }
 
+    final effectiveChildId = childId ?? currentUser!.uid;
+
     try {
-      await _firestore
-          .collection('children')
-          .doc(currentUser!.uid)
-          .set({
-        'name': name,
-        'age': age,
-        'preferredLanguage': preferredLanguage,
-        'gender': gender,
-        'updatedAt': FieldValue.serverTimestamp(),
-        'createdAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
-      debugPrint('Firebase: Profile saved for ${currentUser!.uid}');
+      // Wenn parentId vorhanden, verschachtelte Struktur nutzen
+      if (parentId != null) {
+        await _firestore
+            .collection('parents')
+            .doc(parentId)
+            .collection('children')
+            .doc(effectiveChildId)
+            .set({
+          'name': name,
+          'age': age,
+          'preferredLanguage': preferredLanguage,
+          'gender': gender,
+          'parentId': parentId,
+          'updatedAt': FieldValue.serverTimestamp(),
+          'createdAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      } else {
+        // Fallback: flache Struktur für anonyme Nutzer (Legacy)
+        await _firestore
+            .collection('children')
+            .doc(effectiveChildId)
+            .set({
+          'name': name,
+          'age': age,
+          'preferredLanguage': preferredLanguage,
+          'gender': gender,
+          'updatedAt': FieldValue.serverTimestamp(),
+          'createdAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      }
+      debugPrint('Firebase: Profile saved for $effectiveChildId');
     } catch (e) {
       debugPrint('Firebase Save Profile Error: $e');
     }
   }
 
-  Future<Map<String, dynamic>?> getChildProfile() async {
+  Future<Map<String, dynamic>?> getChildProfile({
+    String? parentId,
+    String? childId,
+  }) async {
     if (currentUser == null) {
       debugPrint('Firebase: No user signed in, cannot get profile');
       return null;
     }
 
-    try {
-      final doc = await _firestore
-          .collection('children')
-          .doc(currentUser!.uid)
-          .get();
+    final effectiveChildId = childId ?? currentUser!.uid;
 
-      if (doc.exists) {
-        debugPrint('Firebase: Profile loaded for ${currentUser!.uid}');
-        return doc.data();
+    try {
+      // Wenn parentId vorhanden, verschachtelte Struktur nutzen
+      if (parentId != null) {
+        final doc = await _firestore
+            .collection('parents')
+            .doc(parentId)
+            .collection('children')
+            .doc(effectiveChildId)
+            .get();
+
+        if (doc.exists) {
+          debugPrint('Firebase: Profile loaded for $effectiveChildId');
+          return doc.data();
+        }
+      } else {
+        // Fallback: flache Struktur für anonyme Nutzer (Legacy)
+        final doc = await _firestore
+            .collection('children')
+            .doc(effectiveChildId)
+            .get();
+
+        if (doc.exists) {
+          debugPrint('Firebase: Profile loaded for $effectiveChildId');
+          return doc.data();
+        }
       }
       return null;
     } catch (e) {
@@ -109,22 +153,45 @@ class FirebaseService {
     required int score,
     required int totalQuestions,
     required Duration timeSpent,
+    String? parentId,
+    String? childId,
   }) async {
     if (currentUser == null) return;
 
+    final effectiveChildId = childId ?? currentUser!.uid;
+
     try {
-      await _firestore
-          .collection('children')
-          .doc(currentUser!.uid)
-          .collection('progress')
-          .add({
-        'topic': topic,
-        'score': score,
-        'totalQuestions': totalQuestions,
-        'timeSpentMs': timeSpent.inMilliseconds,
-        'accuracy': totalQuestions > 0 ? score / totalQuestions : 0,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+      // Wenn parentId vorhanden, verschachtelte Struktur nutzen
+      if (parentId != null) {
+        await _firestore
+            .collection('parents')
+            .doc(parentId)
+            .collection('children')
+            .doc(effectiveChildId)
+            .collection('progress')
+            .add({
+          'topic': topic,
+          'score': score,
+          'totalQuestions': totalQuestions,
+          'timeSpentMs': timeSpent.inMilliseconds,
+          'accuracy': totalQuestions > 0 ? score / totalQuestions : 0,
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+      } else {
+        // Fallback: flache Struktur für anonyme Nutzer (Legacy)
+        await _firestore
+            .collection('children')
+            .doc(effectiveChildId)
+            .collection('progress')
+            .add({
+          'topic': topic,
+          'score': score,
+          'totalQuestions': totalQuestions,
+          'timeSpentMs': timeSpent.inMilliseconds,
+          'accuracy': totalQuestions > 0 ? score / totalQuestions : 0,
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+      }
       debugPrint('Firebase: Progress saved for topic $topic');
     } catch (e) {
       debugPrint('Firebase Save Progress Error: $e');
@@ -134,16 +201,35 @@ class FirebaseService {
   Future<List<Map<String, dynamic>>> getLearningProgress({
     String? topic,
     int limit = 50,
+    String? parentId,
+    String? childId,
   }) async {
     if (currentUser == null) return [];
 
+    final effectiveChildId = childId ?? currentUser!.uid;
+
     try {
-      Query query = _firestore
-          .collection('children')
-          .doc(currentUser!.uid)
-          .collection('progress')
-          .orderBy('timestamp', descending: true)
-          .limit(limit);
+      Query query;
+      
+      // Wenn parentId vorhanden, verschachtelte Struktur nutzen
+      if (parentId != null) {
+        query = _firestore
+            .collection('parents')
+            .doc(parentId)
+            .collection('children')
+            .doc(effectiveChildId)
+            .collection('progress')
+            .orderBy('timestamp', descending: true)
+            .limit(limit);
+      } else {
+        // Fallback: flache Struktur für anonyme Nutzer (Legacy)
+        query = _firestore
+            .collection('children')
+            .doc(effectiveChildId)
+            .collection('progress')
+            .orderBy('timestamp', descending: true)
+            .limit(limit);
+      }
 
       if (topic != null) {
         query = query.where('topic', isEqualTo: topic);

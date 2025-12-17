@@ -26,6 +26,16 @@ service cloud.firestore {
         allow read: if request.auth != null && resource.data.parentCode != null;
         allow update: if request.auth != null &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['linkedDeviceIds', 'isLinked', 'lastSeen']);
+        
+        // Progress Sub-Collection (für anonyme Auth)
+        match /progress/{progressId} {
+          allow read, write: if request.auth != null;
+        }
+        
+        // Settings Sub-Collection (für anonyme Auth)
+        match /settings/{settingId} {
+          allow read, write: if request.auth != null;
+        }
       }
 
       // Co-Parents Sub-Collection
@@ -50,9 +60,9 @@ service cloud.firestore {
     }
 
     // ============================================
-    // LEADERBOARDS (optional)
+    // LEADERBOARD (flache Struktur für alle Apps)
     // ============================================
-    match /leaderboards/{leaderboardId} {
+    match /leaderboard/{leaderboardId} {
       allow read: if true;  // Öffentlich lesbar
       allow write: if request.auth != null;  // Nur authentifizierte User
     }

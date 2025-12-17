@@ -54,19 +54,42 @@ class FirebaseService {
     required int age,
     required String preferredLanguage,
     String? avatarUrl,
+    String? parentId,
+    String? childId,
   }) async {
     final uid = currentUserId;
     if (uid == null) return;
 
+    final effectiveChildId = childId ?? uid;
+
     try {
-      await _firestore.collection('children').doc(uid).set({
-        'name': name,
-        'age': age,
-        'preferredLanguage': preferredLanguage,
-        'avatarUrl': avatarUrl,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+      // Wenn parentId vorhanden, verschachtelte Struktur nutzen
+      if (parentId != null) {
+        await _firestore
+            .collection('parents')
+            .doc(parentId)
+            .collection('children')
+            .doc(effectiveChildId)
+            .set({
+          'name': name,
+          'age': age,
+          'preferredLanguage': preferredLanguage,
+          'avatarUrl': avatarUrl,
+          'parentId': parentId,
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      } else {
+        // Fallback: flache Struktur für anonyme Nutzer (Legacy)
+        await _firestore.collection('children').doc(effectiveChildId).set({
+          'name': name,
+          'age': age,
+          'preferredLanguage': preferredLanguage,
+          'avatarUrl': avatarUrl,
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      }
     } catch (e) {
       if (kDebugMode) {
         print('Save child profile failed: $e');
@@ -75,12 +98,31 @@ class FirebaseService {
   }
 
   /// Lädt Kinderprofil
-  Future<Map<String, dynamic>?> getChildProfile() async {
+  Future<Map<String, dynamic>?> getChildProfile({
+    String? parentId,
+    String? childId,
+  }) async {
     final uid = currentUserId;
     if (uid == null) return null;
 
+    final effectiveChildId = childId ?? uid;
+
     try {
-      final doc = await _firestore.collection('children').doc(uid).get();
+      // Wenn parentId vorhanden, verschachtelte Struktur nutzen
+      if (parentId != null) {
+        final doc = await _firestore
+            .collection('parents')
+            .doc(parentId)
+            .collection('children')
+            .doc(effectiveChildId)
+            .get();
+        if (doc.exists) {
+          return doc.data();
+        }
+      }
+      
+      // Fallback: flache Struktur für anonyme Nutzer (Legacy)
+      final doc = await _firestore.collection('children').doc(effectiveChildId).get();
       return doc.data();
     } catch (e) {
       if (kDebugMode) {
@@ -101,28 +143,51 @@ class FirebaseService {
     required int totalQuestions,
     required Duration timeSpent,
     String? difficulty,
+    String? parentId,
+    String? childId,
   }) async {
     final uid = currentUserId;
     if (uid == null) return;
 
+    final effectiveChildId = childId ?? uid;
+
     try {
-      // Einzelnen Fortschritt speichern
-      await _firestore
-          .collection('children')
-          .doc(uid)
-          .collection('progress')
-          .add({
-        'topic': topic,
-        'score': score,
-        'totalQuestions': totalQuestions,
-        'percentage': (score / totalQuestions * 100).round(),
-        'timeSpentSeconds': timeSpent.inSeconds,
-        'difficulty': difficulty,
-        'completedAt': FieldValue.serverTimestamp(),
-      });
+      // Wenn parentId vorhanden, verschachtelte Struktur nutzen
+      if (parentId != null) {
+        await _firestore
+            .collection('parents')
+            .doc(parentId)
+            .collection('children')
+            .doc(effectiveChildId)
+            .collection('progress')
+            .add({
+          'topic': topic,
+          'score': score,
+          'totalQuestions': totalQuestions,
+          'percentage': (score / totalQuestions * 100).round(),
+          'timeSpentSeconds': timeSpent.inSeconds,
+          'difficulty': difficulty,
+          'completedAt': FieldValue.serverTimestamp(),
+        });
+      } else {
+        // Fallback: flache Struktur für anonyme Nutzer (Legacy)
+        await _firestore
+            .collection('children')
+            .doc(effectiveChildId)
+            .collection('progress')
+            .add({
+          'topic': topic,
+          'score': score,
+          'totalQuestions': totalQuestions,
+          'percentage': (score / totalQuestions * 100).round(),
+          'timeSpentSeconds': timeSpent.inSeconds,
+          'difficulty': difficulty,
+          'completedAt': FieldValue.serverTimestamp(),
+        });
+      }
 
       // Gesamtstatistik aktualisieren
-      await _updateOverallStats(topic, score, totalQuestions);
+      await _updateOverallStats(topic, score, totalQuestions, parentId: parentId, childId: effectiveChildId);
     } catch (e) {
       if (kDebugMode) {
         print('Save learning progress failed: $e');
@@ -134,17 +199,35 @@ class FirebaseService {
   Future<void> _updateOverallStats(
     String topic,
     int score,
-    int totalQuestions,
-  ) async {
+    int totalQuestions, {
+    String? parentId,
+    String? childId,
+  }) async {
     final uid = currentUserId;
     if (uid == null) return;
 
+    final effectiveChildId = childId ?? uid;
+
     try {
-      final statsRef = _firestore
-          .collection('children')
-          .doc(uid)
-          .collection('stats')
-          .doc(topic);
+      DocumentReference statsRef;
+      
+      // Wenn parentId vorhanden, verschachtelte Struktur nutzen
+      if (parentId != null) {
+        statsRef = _firestore
+            .collection('parents')
+            .doc(parentId)
+            .collection('children')
+            .doc(effectiveChildId)
+            .collection('stats')
+            .doc(topic);
+      } else {
+        // Fallback: flache Struktur für anonyme Nutzer (Legacy)
+        statsRef = _firestore
+            .collection('children')
+            .doc(effectiveChildId)
+            .collection('stats')
+            .doc(topic);
+      }
 
       await _firestore.runTransaction((transaction) async {
         final snapshot = await transaction.get(statsRef);
