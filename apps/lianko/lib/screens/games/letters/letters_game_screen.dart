@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:kids_ai_shared/kids_ai_shared.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../models/games/game_item.dart';
 import '../../../services/alan_voice_service.dart';
@@ -225,11 +226,11 @@ class _LettersGameScreenState extends ConsumerState<LettersGameScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: _getDifficultyColor(summary['currentDifficulty']),
+              color: GameUtils.getDifficultyColor(summary['currentDifficulty']),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
-              _getDifficultyText(summary['currentDifficulty']),
+              GameUtils.getDifficultyText(summary['currentDifficulty']),
               style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
             ),
           ),
@@ -250,20 +251,6 @@ class _LettersGameScreenState extends ConsumerState<LettersGameScreen>
         ],
       ),
     );
-  }
-
-  Color _getDifficultyColor(double difficulty) {
-    if (difficulty < 0.8) return Colors.green;
-    if (difficulty < 1.2) return Colors.blue;
-    if (difficulty < 1.5) return Colors.orange;
-    return Colors.red;
-  }
-
-  String _getDifficultyText(double difficulty) {
-    if (difficulty < 0.8) return 'Lako';
-    if (difficulty < 1.2) return 'Normal';
-    if (difficulty < 1.5) return 'Teže';
-    return 'Teško';
   }
 
   Widget _buildScoreBar() {

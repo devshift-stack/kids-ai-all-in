@@ -51,3 +51,8 @@ export 'src/sync/offline_sync_service.dart';
 // ERROR HANDLING
 // ============================================================
 export 'src/error/error_handling_service.dart';
+
+// ============================================================
+// UTILS
+// ============================================================
+export 'src/utils/game_utils.dart';
