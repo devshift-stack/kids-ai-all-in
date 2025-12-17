@@ -44,3 +44,16 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 alan-sdk-flutter/
+
+# Environment Variables & Secrets
+.env
+.env.*
+!.env.example
+*.env
+.env.local
+.env.development
+.env.production
+
+# API Keys & Secrets
+secrets.json
+api-keys.json

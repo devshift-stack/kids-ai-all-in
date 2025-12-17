@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import '../config/api_config.dart';
 import 'user_profile_service.dart';
 
 class GeminiService {
-  // Free tier API key - 15 requests/minute, 1500/day
-  static const String _apiKey = 'AIzaSyD5jBRl-Ti0r_uSyx5JW24H3CySQ8RWrS8';
+  // API Key wird über ApiConfig verwaltet
+  // Siehe: lib/config/api_config.dart und README_API_SETUP.md
+  String get _apiKey => apiConfig.geminiApiKey;
 
   GenerativeModel? _model;
   ChatSession? _chat;
@@ -16,8 +18,13 @@ class GeminiService {
   }
 
   void _initModel() {
-    if (_apiKey == 'YOUR_GEMINI_API_KEY') {
-      debugPrint('⚠️ Gemini API Key nicht gesetzt! Hole einen kostenlosen Key von https://aistudio.google.com/apikey');
+    if (!apiConfig.hasGeminiKey) {
+      if (kDebugMode) {
+        print('⚠️ Gemini API Key nicht gesetzt!');
+        print('   Nutze: flutter run --dart-define=GEMINI_API_KEY=your_key');
+        print('   Oder siehe: README_API_SETUP.md');
+        apiConfig.printDebugInfo();
+      }
       return;
     }
 
@@ -84,7 +91,9 @@ Beispiel für gute Antworten:
       final response = await _chat!.sendMessage(Content.text(question));
       return response.text ?? 'Hmm, das weiß ich nicht. Frag mich etwas anderes!';
     } catch (e) {
-      debugPrint('Gemini Error: $e');
+      if (kDebugMode) {
+        print('Gemini Error: $e');
+      }
       if (e.toString().contains('quota')) {
         return 'Alanko braucht eine kleine Pause. Wir haben heute schon viel geredet!';
       }
@@ -114,7 +123,9 @@ Die Geschichte soll:
       final response = await _model!.generateContent([Content.text(prompt)]);
       return response.text ?? 'Es war einmal... Oh, ich habe den Faden verloren!';
     } catch (e) {
-      debugPrint('Gemini Story Error: $e');
+      if (kDebugMode) {
+        print('Gemini Story Error: $e');
+      }
       return 'Alanko ist gerade müde. Die Geschichte erzähle ich dir morgen!';
     }
   }
@@ -142,7 +153,9 @@ Richtig: [A/B/C]
       final response = await _model!.generateContent([Content.text(prompt)]);
       return response.text ?? 'Quiz konnte nicht erstellt werden.';
     } catch (e) {
-      debugPrint('Gemini Quiz Error: $e');
+      if (kDebugMode) {
+        print('Gemini Quiz Error: $e');
+      }
       return 'Quiz nicht verfügbar.';
     }
   }
