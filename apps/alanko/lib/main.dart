@@ -12,6 +12,7 @@ import 'core/theme/app_theme.dart';
 import 'services/age_adaptive_service.dart';
 import 'services/user_profile_service.dart';
 import 'services/firebase_service.dart';
+import 'services/parent_child_service.dart';
 import 'screens/language_selection/language_selection_screen.dart';
 import 'screens/profile_selection/profile_selection_screen.dart';
 
@@ -146,6 +147,11 @@ class _AppStartupState extends ConsumerState<AppStartup>
     if (!firebaseService.isSignedIn) {
       await firebaseService.signInAnonymously();
     }
+
+    // Initialize Parent-Child Service (für parentId/childId)
+    // WICHTIG: Muss vor YouTubeRewardService initialisiert werden
+    final parentChildService = ref.read(parentChildServiceProvider);
+    await parentChildService.initialize();
 
     // Simulate initialization time for splash effect
     await Future.delayed(const Duration(seconds: 2));

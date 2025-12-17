@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/youtube/youtube_settings.dart';
+import 'parent_child_service.dart';
 
 /// Service zur Verwaltung des YouTube Belohnungssystems
 class YouTubeRewardService extends ChangeNotifier {
@@ -60,13 +61,31 @@ class YouTubeRewardService extends ChangeNotifier {
   List<Map<String, String>> get safeVideos => _defaultSafeVideos;
   
   String? _childId;
+  String? _parentId;
   StreamSubscription<DocumentSnapshot>? _settingsSubscription;
+  bool _isInitialized = false;
+  
+  bool get isInitialized => _isInitialized;
+  String? get childId => _childId;
+  String? get parentId => _parentId;
   
   /// Initialisiert den Service für ein Kind
-  Future<void> initialize(String childId) async {
+  Future<void> initialize(String childId, {String? parentId}) async {
+    // Prüfe ob Re-Initialisierung nötig ist
+    // Re-initialize wenn childId ODER parentId sich ändert
+    if (_isInitialized && _childId == childId && _parentId == parentId) {
+      return; // Bereits initialisiert mit gleichen Parametern
+    }
+    
     _childId = childId;
+    _parentId = parentId;
+    _isInitialized = false;
+    
     await _loadLocalState();
     _listenToSettings();
+    
+    _isInitialized = true;
+    notifyListeners();
   }
   
   /// Lädt lokalen Status aus SharedPreferences
@@ -101,19 +120,40 @@ class YouTubeRewardService extends ChangeNotifier {
     if (_childId == null) return;
     
     _settingsSubscription?.cancel();
-    _settingsSubscription = _firestore
-        .collection('children')
-        .doc(_childId)
-        .collection('settings')
-        .doc('youtube')
-        .snapshots()
-        .listen((snapshot) {
-      if (snapshot.exists) {
-        _settings = YouTubeSettings.fromMap(snapshot.data()!);
-        _updateCanWatch();
-        notifyListeners();
-      }
-    });
+    
+    // Wenn parentId vorhanden, verschachtelte Struktur nutzen
+    if (_parentId != null) {
+      _settingsSubscription = _firestore
+          .collection('parents')
+          .doc(_parentId)
+          .collection('children')
+          .doc(_childId)
+          .collection('settings')
+          .doc('youtube')
+          .snapshots()
+          .listen((snapshot) {
+        if (snapshot.exists) {
+          _settings = YouTubeSettings.fromMap(snapshot.data()!);
+          _updateCanWatch();
+          notifyListeners();
+        }
+      });
+    } else {
+      // Fallback: flache Struktur für anonyme Nutzer (Legacy)
+      _settingsSubscription = _firestore
+          .collection('children')
+          .doc(_childId)
+          .collection('settings')
+          .doc('youtube')
+          .snapshots()
+          .listen((snapshot) {
+        if (snapshot.exists) {
+          _settings = YouTubeSettings.fromMap(snapshot.data()!);
+          _updateCanWatch();
+          notifyListeners();
+        }
+      });
+    }
   }
   
   /// Prüft ob Kind noch schauen darf
@@ -195,7 +235,41 @@ class YouTubeRewardService extends ChangeNotifier {
 
 // Provider
 final youtubeRewardServiceProvider = ChangeNotifierProvider<YouTubeRewardService>((ref) {
-  return YouTubeRewardService();
+  final service = YouTubeRewardService();
+  
+  // Automatische Initialisierung wenn parentId/childId verfügbar
+  final parentChildService = ref.watch(parentChildServiceProvider);
+  final parentId = parentChildService.parentId;
+  final childId = parentChildService.activeChildId;
+  
+  // Initialisierung nur wenn ParentChildService bereits initialisiert ist
+  if (parentChildService.isInitialized && childId != null) {
+    // Initialisierung asynchron starten - wird im Hintergrund abgeschlossen
+    service.initialize(childId, parentId: parentId).catchError((error) {
+      debugPrint('Error initializing YouTubeRewardService: $error');
+    });
+  }
+  
+  // Listener für Änderungen an parentId/childId
+  ref.listen<ParentChildService>(
+    parentChildServiceProvider,
+    (previous, next) {
+      final newChildId = next.activeChildId;
+      final newParentId = next.parentId;
+      
+      // Re-initialize wenn childId ODER parentId sich ändert
+      // WICHTIG: Prüfe beide Werte, nicht nur childId
+      if (next.isInitialized && 
+          newChildId != null && 
+          (newChildId != service.childId || newParentId != service.parentId)) {
+        service.initialize(newChildId, parentId: newParentId).catchError((error) {
+          debugPrint('Error re-initializing YouTubeRewardService: $error');
+        });
+      }
+    },
+  );
+  
+  return service;
 });
 
 // Settings Provider (für UI)
