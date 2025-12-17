@@ -9,6 +9,7 @@ import '../theme/theme.dart';
 /// - Fortschrittsanzeige (optional)
 /// - Gesperrt-Status mit Lock-Overlay
 /// - Anpassbare Farben
+/// - Konsistentes Design mit KidsTheme
 /// 
 /// Verwendung:
 /// ```dart
@@ -22,11 +23,22 @@ import '../theme/theme.dart';
 /// )
 /// ```
 class CategoryCard extends StatelessWidget {
+  /// Title displayed on the card
   final String title;
+  
+  /// Icon displayed in the card
   final IconData icon;
+  
+  /// Primary color for the icon and progress indicator
   final Color color;
+  
+  /// Callback when card is tapped (not called if locked)
   final VoidCallback onTap;
+  
+  /// Whether the card is locked (shows lock overlay)
   final bool isLocked;
+  
+  /// Optional progress percentage (0-100)
   final int? progress;
 
   const CategoryCard({
