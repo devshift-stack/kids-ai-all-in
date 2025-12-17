@@ -188,30 +188,19 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
 
     _scrollToBottom();
 
-    // Get response from Sales Agent Service
-    final salesAgent = ref.read(salesAgentServiceProvider);
+    // Get response from Backend API
+    final backendApi = ref.read(backendApiServiceProvider);
     
-    if (!salesAgent.isConfigured) {
-      setState(() {
-        _messages.add(ChatMessage.lisa(
-          'Entschuldigung, der Service ist nicht konfiguriert. Bitte setzen Sie den GEMINI_API_KEY.',
-        ));
-        _isLoading = false;
-      });
-      _scrollToBottom();
-      return;
-    }
-
     try {
-      final response = await salesAgent.chat(userMessage);
+      final chatResponse = await backendApi.sendMessage(userMessage);
 
       setState(() {
-        _messages.add(ChatMessage.lisa(response));
+        _messages.add(ChatMessage.lisa(chatResponse.response));
         _isLoading = false;
       });
 
       _scrollToBottom();
-      _speak(response);
+      _speak(chatResponse.response);
     } catch (e) {
       if (kDebugMode) {
         debugPrint('Error sending message: $e');
@@ -240,6 +229,10 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
 
   @override
   void dispose() {
+    // Session beenden
+    final backendApi = ref.read(backendApiServiceProvider);
+    backendApi.endSession();
+    
     _textController.dispose();
     _scrollController.dispose();
     _speech.stop();
