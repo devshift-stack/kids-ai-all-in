@@ -316,7 +316,7 @@ class _LettersGameScreenState extends ConsumerState<LettersGameScreen>
     return Center(
       child: GestureDetector(
         onTap: _repeatSound,
-        child: AnimatedBuilder(
+        child: KidsAnimatedBuilder(
           listenable: _bounceController,
           builder: (context, child) {
             return Transform.scale(
@@ -417,17 +417,4 @@ class _LettersGameScreenState extends ConsumerState<LettersGameScreen>
   }
 }
 
-class AnimatedBuilder extends AnimatedWidget {
-  final Widget Function(BuildContext context, Widget? child) builder;
-  final Widget? child;
-
-  const AnimatedBuilder({
-    super.key,
-    required super.listenable,
-    required this.builder,
-    this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) => builder(context, child);
-}
+// AnimatedBuilder moved to kids_ai_shared package as KidsAnimatedBuilder

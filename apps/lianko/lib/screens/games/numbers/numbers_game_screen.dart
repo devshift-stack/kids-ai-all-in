@@ -404,9 +404,9 @@ class _NumbersGameScreenState extends ConsumerState<NumbersGameScreen>
 
   Widget _buildQuestionDisplay() {
     return Center(
-      child: GestureDetector(
+        child: GestureDetector(
         onTap: _repeatSound,
-        child: AnimatedBuilder(
+        child: KidsAnimatedBuilder(
           listenable: _bounceController,
           builder: (context, child) {
             return Transform.scale(
@@ -579,17 +579,4 @@ class _NumbersGameScreenState extends ConsumerState<NumbersGameScreen>
   }
 }
 
-class AnimatedBuilder extends AnimatedWidget {
-  final Widget Function(BuildContext context, Widget? child) builder;
-  final Widget? child;
-
-  const AnimatedBuilder({
-    super.key,
-    required super.listenable,
-    required this.builder,
-    this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) => builder(context, child);
-}
+// AnimatedBuilder moved to kids_ai_shared package as KidsAnimatedBuilder

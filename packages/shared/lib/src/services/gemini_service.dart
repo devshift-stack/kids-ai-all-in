@@ -1,27 +1,59 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
-import 'user_profile_service.dart';
 
+/// Gender enum for profile personalization
+enum ProfileGender { boy, girl, other }
+
+/// User profile data for AI personalization
+class GeminiUserProfile {
+  final String id;
+  final String name;
+  final int age;
+  final ProfileGender gender;
+
+  const GeminiUserProfile({
+    required this.id,
+    required this.name,
+    required this.age,
+    required this.gender,
+  });
+}
+
+/// Shared Gemini AI Service for Kids AI apps
+/// 
+/// Provides child-friendly AI interactions using Google's Gemini API.
+/// API key must be provided via environment variable:
+/// ```bash
+/// flutter run --dart-define=GEMINI_API_KEY=your_key_here
+/// ```
 class GeminiService {
   // API Key über --dart-define=GEMINI_API_KEY=xxx setzen
   // Für Entwicklung: flutter run --dart-define=GEMINI_API_KEY=your_key_here
-  static const String _apiKey = String.fromEnvironment(
+  static const String _envApiKey = String.fromEnvironment(
     'GEMINI_API_KEY',
     defaultValue: '',
   );
 
+  final String _apiKey;
   GenerativeModel? _model;
   ChatSession? _chat;
-  UserProfile? _currentProfile;
+  GeminiUserProfile? _currentProfile;
 
-  GeminiService() {
+  /// Creates a GeminiService instance.
+  /// 
+  /// [apiKey] - Optional API key. If not provided, uses environment variable.
+  GeminiService({String? apiKey}) : _apiKey = apiKey ?? _envApiKey {
     _initModel();
   }
 
+  /// Whether the service is properly configured with an API key
+  bool get isConfigured => _apiKey.isNotEmpty;
+
   void _initModel() {
     if (_apiKey.isEmpty) {
-      debugPrint('⚠️ Gemini API Key nicht gesetzt! Nutze: flutter run --dart-define=GEMINI_API_KEY=your_key');
+      if (kDebugMode) {
+        print('⚠️ Gemini API Key nicht gesetzt! Nutze: flutter run --dart-define=GEMINI_API_KEY=your_key');
+      }
       return;
     }
 
@@ -42,7 +74,7 @@ class GeminiService {
     final profile = _currentProfile;
     final age = profile?.age ?? 6;
     final name = profile?.name ?? 'Kind';
-    final isBoy = profile?.gender == Gender.boy;
+    final isBoy = profile?.gender == ProfileGender.boy;
     final gender = isBoy ? 'Junge' : 'Mädchen';
 
     return '''
@@ -71,12 +103,14 @@ Beispiel für gute Antworten:
 ''';
   }
 
-  void setProfile(UserProfile profile) {
+  /// Sets the current user profile for personalized responses
+  void setProfile(GeminiUserProfile profile) {
     _currentProfile = profile;
     _initModel();
     _chat = null; // Reset chat for new profile
   }
 
+  /// Asks Gemini a question and returns a child-friendly response
   Future<String> ask(String question) async {
     if (_model == null) {
       return 'Alanko ist gerade müde. Frag mich später nochmal!';
@@ -88,7 +122,9 @@ Beispiel für gute Antworten:
       final response = await _chat!.sendMessage(Content.text(question));
       return response.text ?? 'Hmm, das weiß ich nicht. Frag mich etwas anderes!';
     } catch (e) {
-      debugPrint('Gemini Error: $e');
+      if (kDebugMode) {
+        print('Gemini Error: $e');
+      }
       if (e.toString().contains('quota')) {
         return 'Alanko braucht eine kleine Pause. Wir haben heute schon viel geredet!';
       }
@@ -96,6 +132,7 @@ Beispiel für gute Antworten:
     }
   }
 
+  /// Generates a short story for children
   Future<String> generateStory({
     required String theme,
     required int age,
@@ -118,11 +155,14 @@ Die Geschichte soll:
       final response = await _model!.generateContent([Content.text(prompt)]);
       return response.text ?? 'Es war einmal... Oh, ich habe den Faden verloren!';
     } catch (e) {
-      debugPrint('Gemini Story Error: $e');
+      if (kDebugMode) {
+        print('Gemini Story Error: $e');
+      }
       return 'Alanko ist gerade müde. Die Geschichte erzähle ich dir morgen!';
     }
   }
 
+  /// Generates a quiz question for children
   Future<String> generateQuiz({
     required String topic,
     required int age,
@@ -146,25 +186,42 @@ Richtig: [A/B/C]
       final response = await _model!.generateContent([Content.text(prompt)]);
       return response.text ?? 'Quiz konnte nicht erstellt werden.';
     } catch (e) {
-      debugPrint('Gemini Quiz Error: $e');
+      if (kDebugMode) {
+        print('Gemini Quiz Error: $e');
+      }
       return 'Quiz nicht verfügbar.';
     }
   }
 
+  /// Generates an age-appropriate explanation
+  Future<String> explain({
+    required String topic,
+    required int age,
+  }) async {
+    if (_model == null) {
+      return 'Erklärung nicht verfügbar.';
+    }
+
+    final prompt = '''
+Erkläre "$topic" für ein $age-jähriges Kind.
+- Benutze einfache Wörter
+- Maximal 3 kurze Sätze
+- Benutze Beispiele die Kinder kennen
+''';
+
+    try {
+      final response = await _model!.generateContent([Content.text(prompt)]);
+      return response.text ?? 'Das kann ich gerade nicht erklären.';
+    } catch (e) {
+      if (kDebugMode) {
+        print('Gemini Explain Error: $e');
+      }
+      return 'Das kann ich gerade nicht erklären.';
+    }
+  }
+
+  /// Resets the current chat session
   void resetChat() {
     _chat = null;
   }
 }
-
-// Riverpod provider
-final geminiServiceProvider = Provider<GeminiService>((ref) {
-  final service = GeminiService();
-
-  // Listen to active profile changes
-  final profile = ref.watch(activeProfileProvider);
-  if (profile != null) {
-    service.setProfile(profile);
-  }
-
-  return service;
-});

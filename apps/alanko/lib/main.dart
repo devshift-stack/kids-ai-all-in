@@ -8,6 +8,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:kids_ai_shared/kids_ai_shared.dart';
 import 'firebase_options.dart';
 
 import 'core/theme/app_theme.dart';

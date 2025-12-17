@@ -10,6 +10,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_performance/firebase_performance.dart';
+import 'package:kids_ai_shared/kids_ai_shared.dart';
 import 'firebase_options.dart';
 
 import 'core/theme/app_theme.dart';

@@ -1,13 +1,33 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_theme.dart';
 
+/// A card widget for displaying learning categories in Kids AI apps.
+/// 
+/// Used in home screens to show game categories like Letters, Numbers, Colors, etc.
+/// Supports progress indication and lock state for premium/locked content.
 class CategoryCard extends StatelessWidget {
+  /// Title displayed on the card
   final String title;
+  
+  /// Icon displayed in the card
   final IconData icon;
+  
+  /// Primary color for the icon and progress indicator
   final Color color;
+  
+  /// Callback when card is tapped (not called if locked)
   final VoidCallback onTap;
+  
+  /// Whether the card is locked (shows lock overlay)
   final bool isLocked;
+  
+  /// Optional progress percentage (0-100)
   final int? progress;
+  
+  /// Border radius for the card (default: 16)
+  final double borderRadius;
+  
+  /// Box shadow for the card
+  final List<BoxShadow>? boxShadow;
 
   const CategoryCard({
     super.key,
@@ -17,17 +37,27 @@ class CategoryCard extends StatelessWidget {
     required this.onTap,
     this.isLocked = false,
     this.progress,
+    this.borderRadius = 16,
+    this.boxShadow,
   });
 
   @override
   Widget build(BuildContext context) {
+    final effectiveShadow = boxShadow ?? [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: 0.08),
+        blurRadius: 10,
+        offset: const Offset(0, 4),
+      ),
+    ];
+
     return GestureDetector(
       onTap: isLocked ? null : onTap,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
-          boxShadow: AppTheme.cardShadow,
+          borderRadius: BorderRadius.circular(borderRadius),
+          boxShadow: effectiveShadow,
         ),
         child: Stack(
           children: [
@@ -38,8 +68,8 @@ class CategoryCard extends StatelessWidget {
                 left: 0,
                 right: 0,
                 child: ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    bottom: Radius.circular(AppTheme.radiusLarge),
+                  borderRadius: BorderRadius.vertical(
+                    bottom: Radius.circular(borderRadius),
                   ),
                   child: LinearProgressIndicator(
                     value: progress! / 100,
@@ -63,8 +93,8 @@ class CategoryCard extends StatelessWidget {
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: color.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                        color: color.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
                         icon,
@@ -82,8 +112,8 @@ class CategoryCard extends StatelessWidget {
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: isLocked
-                          ? AppTheme.textSecondary
-                          : AppTheme.textPrimary,
+                          ? Colors.grey.shade500
+                          : Colors.grey.shade800,
                     ),
                     textAlign: TextAlign.center,
                     maxLines: 2,
@@ -98,13 +128,13 @@ class CategoryCard extends StatelessWidget {
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.7),
-                    borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                    color: Colors.white.withValues(alpha: 0.7),
+                    borderRadius: BorderRadius.circular(borderRadius),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Icon(
                       Icons.lock,
-                      color: AppTheme.textSecondary,
+                      color: Colors.grey.shade500,
                       size: 24,
                     ),
                   ),
