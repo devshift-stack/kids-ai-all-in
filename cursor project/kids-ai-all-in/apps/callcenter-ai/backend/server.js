@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import rateLimit from 'express-rate-limit';
 import { getSystemPrompt } from './language_prompts.js';
 import { PremiumAgentFactory } from './premium_agents.js';
+import { synthesizeAgentSpeech, getAgentVoiceConfig } from './tts_service.js';
 
 dotenv.config();
 
@@ -348,12 +349,29 @@ app.post('/api/v1/premium/sessions/:sessionId/chat', async (req, res) => {
     
     session.lastActivity = new Date().toISOString();
     
+    // TTS generieren (optional)
+    let audioContent = null;
+    try {
+      const ttsResult = await synthesizeAgentSpeech(
+        response,
+        session.agentName,
+        session.productCategory
+      );
+      if (ttsResult) {
+        audioContent = ttsResult.audioContent.toString('base64');
+      }
+    } catch (error) {
+      console.warn('TTS generation failed:', error.message);
+    }
+
     res.json({
       sessionId: sessionId,
       response: response,
       agentName: session.agentName,
       productCategory: session.productCategory,
       timestamp: new Date().toISOString(),
+      audioContent: audioContent, // Base64 encoded MP3
+      voiceConfig: getAgentVoiceConfig(session.agentName, session.productCategory)
     });
   } catch (error) {
     console.error('Premium Agent Error:', error);
