@@ -18,36 +18,36 @@ class AppRoutes {
   static const String exerciseResult = '/exercise-result';
   static const String settings = '/settings';
 
-  static Route<dynamic> generateRoute(RouteSettings settings) {
-    switch (settings.name) {
+  static Route<dynamic> generateRoute(RouteSettings routeSettings) {
+    switch (routeSettings.name) {
       case splash:
         return _buildRoute(
           const AppStartup(),
-          settings: settings,
+          settings: routeSettings,
         );
 
       case childProfile:
         return _buildRoute(
           const ChildProfileScreen(),
-          settings: settings,
+          settings: routeSettings,
         );
 
       case voiceCloning:
         return _buildRoute(
           const VoiceCloningScreen(),
-          settings: settings,
+          settings: routeSettings,
         );
 
       case dashboard:
         return _buildRoute(
           const DashboardScreen(),
-          settings: settings,
+          settings: routeSettings,
         );
 
       case settings:
         return _buildRoute(
-          SettingsScreen(),
-          settings: settings,
+          const SettingsScreen(),
+          settings: routeSettings,
         );
 
       case exerciseResult:
@@ -60,7 +60,7 @@ class AppRoutes {
               exercise: args['exercise'] as Exercise,
               result: args['result'] as SpeechAnalysisResult,
             ),
-            settings: settings,
+            settings: routeSettings,
           );
         }
         return _errorRoute('Result arguments missing');
@@ -72,13 +72,13 @@ class AppRoutes {
             ExerciseScreen(
               exercise: args['exercise'] as Exercise,
             ),
-            settings: settings,
+            settings: routeSettings,
           );
         }
         return _errorRoute('Exercise argument missing');
 
       default:
-        return _errorRoute('Route not found: ${settings.name}');
+        return _errorRoute('Route not found: ${routeSettings.name}');
     }
   }
 

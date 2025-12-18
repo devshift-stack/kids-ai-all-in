@@ -210,12 +210,12 @@ class PronunciationFeedbackWidget extends StatelessWidget {
         // Weiter-Button
         SizedBox(
           width: double.infinity,
-          height: TherapyDesignSystem.largeTouchTarget,
+          height: TherapyDesignSystem.touchTargetPrimary,
           child: ElevatedButton(
             onPressed: onContinue,
             style: TherapyDesignSystem.primaryButtonLarge.copyWith(
               minimumSize: MaterialStateProperty.all(
-                const Size(double.infinity, TherapyDesignSystem.largeTouchTarget),
+                Size(double.infinity, TherapyDesignSystem.touchTargetPrimary),
               ),
             ),
             child: Row(
