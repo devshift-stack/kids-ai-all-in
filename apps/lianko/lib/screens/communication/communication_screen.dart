@@ -462,7 +462,7 @@ class CategorySymbolsScreen extends ConsumerWidget {
     // Push an Eltern wenn aktiviert (Placeholder - wird später implementiert)
     if (category.sendPushOnUse && kDebugMode) {
       print('📱 Push an Eltern: Kind hat "${symbol.word}" ausgewählt');
-      // TODO: Implementiere Push-Benachrichtigung an Eltern
+      // Push-Benachrichtigung wird implementiert (benötigt Parent Notification Service)
     }
   }
 }
