@@ -4,6 +4,7 @@ import '../models/therapy_session.dart';
 import '../models/exercise.dart';
 import '../models/speech_analysis_result.dart';
 import '../services/progress_tracking_service.dart';
+import '../services/adaptive_exercise_service.dart';
 import 'services_providers.dart';
 
 /// Therapy Session State

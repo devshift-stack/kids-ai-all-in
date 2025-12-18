@@ -128,8 +128,8 @@ class _SpeechRecordingWidgetState extends State<SpeechRecordingWidget>
           if (widget.duration != null)
             Text(
               _formatDuration(widget.duration!),
-              style: TherapyDesignSystem.headingMedium.copyWith(
-                color: TherapyDesignSystem.textDark,
+              style: KidsTypography.headlineMedium.copyWith(
+                color: KidsColors.textPrimary,
               ),
             ),
         ] else ...[

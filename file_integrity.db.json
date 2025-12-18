@@ -1,0 +1,22 @@
+{
+  "/etc/hosts": {
+    "hash": "c7dd0e2ed261ce76d76f852596c5b54026b9a894fa481381ffd399b556c0e2da",
+    "mtime": 1761362539.0,
+    "size": 213
+  },
+  "/etc/passwd": {
+    "hash": "482e829ad29ac6ea6eda2d47d1d93a002bf41d9d88710ba972c36e59038f78b3",
+    "mtime": 1761362539.0,
+    "size": 9196
+  },
+  "/Users/dsselmanovic/.bashrc": {
+    "hash": "2f58c92be767017f6044cadb97de72cc477e9bc088312afb81dfa96d7fc10261",
+    "mtime": 1765592736.8872921,
+    "size": 236
+  },
+  "/Users/dsselmanovic/.zshrc": {
+    "hash": "e109eff0d7f1df92b898df083363edc90b159c5a64bab455ff068877fd92b8a8",
+    "mtime": 1765876289.0668793,
+    "size": 2867
+  }
+}

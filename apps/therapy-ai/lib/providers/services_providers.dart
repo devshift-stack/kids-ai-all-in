@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 import '../services/whisper_speech_service.dart';
 import '../services/elevenlabs_voice_service.dart';
 import '../services/audio_analysis_service.dart';
@@ -28,5 +30,15 @@ final adaptiveExerciseServiceProvider = Provider<AdaptiveExerciseService>((ref) 
 /// Progress Tracking Service Provider
 final progressTrackingServiceProvider = Provider<ProgressTrackingService>((ref) {
   return ProgressTrackingService();
+});
+
+/// SharedPreferences Provider
+final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
+  throw UnimplementedError('SharedPreferences must be overridden');
+});
+
+/// Theme Mode Provider
+final themeModeProvider = StateProvider<ThemeMode>((ref) {
+  return ThemeMode.light;
 });
 

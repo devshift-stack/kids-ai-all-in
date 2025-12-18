@@ -50,21 +50,9 @@ class AppRoutes {
           settings: settings,
         );
 
-      case exercise:
-        final args = settings.arguments as Map<String, dynamic>?;
-        if (args != null && args['exercise'] != null) {
-          return _buildRoute(
-            ExerciseScreen(
-              exercise: args['exercise'] as Exercise,
-            ),
-            settings: settings,
-          );
-        }
-        return _errorRoute('Exercise argument missing');
-
       case exerciseResult:
-        final args = settings.arguments as Map<String, dynamic>?;
-        if (args != null &&
+        final args = settings.arguments;
+        if (args is Map<String, dynamic> &&
             args['exercise'] != null &&
             args['result'] != null) {
           return _buildRoute(
@@ -76,6 +64,18 @@ class AppRoutes {
           );
         }
         return _errorRoute('Result arguments missing');
+
+      case exercise:
+        final args = settings.arguments;
+        if (args is Map<String, dynamic> && args['exercise'] != null) {
+          return _buildRoute(
+            ExerciseScreen(
+              exercise: args['exercise'] as Exercise,
+            ),
+            settings: settings,
+          );
+        }
+        return _errorRoute('Exercise argument missing');
 
       default:
         return _errorRoute('Route not found: ${settings.name}');

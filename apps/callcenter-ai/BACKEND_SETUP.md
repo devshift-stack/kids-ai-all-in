@@ -24,7 +24,9 @@ cd apps/callcenter-ai/backend
 npm install
 
 # .env Datei erstellen
-echo "GEMINI_API_KEY=AIzaSyC4hhRA_tpmX-TXGBsDhfE9B4pmmr1Sfsk" > .env
+# ⚠️ WICHTIG: Ersetze YOUR_API_KEY mit deinem echten Gemini API Key
+# Du findest deinen API Key hier: https://makersuite.google.com/app/apikey
+echo "GEMINI_API_KEY=YOUR_API_KEY" > .env
 echo "PORT=3000" >> .env
 
 # Backend starten
@@ -38,7 +40,8 @@ Backend läuft jetzt auf: `http://localhost:3000`
 ```bash
 cd apps/callcenter-ai
 flutter pub get
-flutter run --dart-define=GEMINI_API_KEY=AIzaSyC4hhRA_tpmX-TXGBsDhfE9B4pmmr1Sfsk -d android
+# ⚠️ WICHTIG: Ersetze YOUR_API_KEY mit deinem echten Gemini API Key
+flutter run --dart-define=GEMINI_API_KEY=YOUR_API_KEY -d android
 ```
 
 **Wichtig:** Die Backend-URL ist in `lib/providers/backend_api_provider.dart` konfiguriert:

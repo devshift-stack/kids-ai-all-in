@@ -1,0 +1,12 @@
+{
+  "processes": [
+    "miner",
+    "crypto",
+    "bitcoin",
+    "backdoor",
+    "trojan",
+    "virus",
+    "malware",
+    "keylogger"
+  ]
+}

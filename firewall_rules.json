@@ -1,0 +1,9 @@
+{
+  "allowed_ports": [
+    3000,
+    5433,
+    11434
+  ],
+  "blocked_ips": [],
+  "allowed_ips": []
+}

@@ -80,7 +80,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 height: TherapyDesignSystem.touchTargetPrimary,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: KidsGradients.primaryGradient,
+                  gradient: KidsGradients.primary,
                 ),
                 child: Center(
                   child: Text(

@@ -7,6 +7,7 @@ import '../../../services/elevenlabs_voice_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../providers/child_profile_provider.dart';
 
 class VoiceCloningScreen extends ConsumerStatefulWidget {
   const VoiceCloningScreen({super.key});
@@ -245,7 +246,7 @@ class _VoiceCloningScreenState extends ConsumerState<VoiceCloningScreen> {
                         )
                       : Text(
                           _clonedVoiceId != null ? 'Stimme geklont ✓' : 'Stimme klonen',
-                          style: KidsTypography.button.copyWith(
+                          style: KidsTypography.labelLarge.copyWith(
                             color: Colors.white,
                           ),
                         ),

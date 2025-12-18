@@ -30,17 +30,19 @@ flutter pub get
 
 2. **App mit API-Key starten:**
 ```bash
-flutter run --dart-define=GEMINI_API_KEY=AIzaSyC4hhRA_tpmX-TXGBsDhfE9B4pmmr1Sfsk
+# ⚠️ WICHTIG: Ersetze YOUR_API_KEY mit deinem echten Gemini API Key
+# Du findest deinen API Key hier: https://makersuite.google.com/app/apikey
+flutter run --dart-define=GEMINI_API_KEY=YOUR_API_KEY
 ```
 
 Oder für Android:
 ```bash
-flutter run --dart-define=GEMINI_API_KEY=AIzaSyC4hhRA_tpmX-TXGBsDhfE9B4pmmr1Sfsk -d android
+flutter run --dart-define=GEMINI_API_KEY=YOUR_API_KEY -d android
 ```
 
 Oder für iOS:
 ```bash
-flutter run --dart-define=GEMINI_API_KEY=AIzaSyC4hhRA_tpmX-TXGBsDhfE9B4pmmr1Sfsk -d ios
+flutter run --dart-define=GEMINI_API_KEY=YOUR_API_KEY -d ios
 ```
 
 ### Permissions
@@ -112,14 +114,15 @@ Die App ist aktuell auf Google Gemini ausgelegt. Um andere APIs zu verwenden:
 ## Entwicklung
 
 ```bash
+# ⚠️ WICHTIG: Ersetze YOUR_API_KEY mit deinem echten Gemini API Key
 # App im Debug-Modus starten
-flutter run --dart-define=GEMINI_API_KEY=AIzaSyC4hhRA_tpmX-TXGBsDhfE9B4pmmr1Sfsk
+flutter run --dart-define=GEMINI_API_KEY=YOUR_API_KEY
 
 # Build für Android
-flutter build apk --dart-define=GEMINI_API_KEY=AIzaSyC4hhRA_tpmX-TXGBsDhfE9B4pmmr1Sfsk
+flutter build apk --dart-define=GEMINI_API_KEY=YOUR_API_KEY
 
 # Build für iOS
-flutter build ios --dart-define=GEMINI_API_KEY=AIzaSyC4hhRA_tpmX-TXGBsDhfE9B4pmmr1Sfsk
+flutter build ios --dart-define=GEMINI_API_KEY=YOUR_API_KEY
 ```
 
 ## Lizenz

@@ -9,6 +9,19 @@ class ApiConfig {
     defaultValue: '',
   );
 
+  // Google Cloud TTS API Key (optional - für Premium Stimmen)
+  // Falls nicht gesetzt, wird flutter_tts als Fallback verwendet
+  static const String googleCloudTtsApiKey = String.fromEnvironment(
+    'GOOGLE_CLOUD_TTS_API_KEY',
+    defaultValue: '',
+  );
+
+  // Google Cloud Speech-to-Text API Key (optional - für bessere STT)
+  static const String googleCloudSttApiKey = String.fromEnvironment(
+    'GOOGLE_CLOUD_STT_API_KEY',
+    defaultValue: '',
+  );
+
   // Modell-Konfiguration
   static const String model = 'gemini-1.5-flash'; // Free tier model
   
@@ -20,5 +33,8 @@ class ApiConfig {
 
   /// Prüft ob API Key gesetzt ist
   static bool get isConfigured => geminiApiKey.isNotEmpty;
+  
+  /// Prüft ob Premium TTS verfügbar ist
+  static bool get isPremiumTtsAvailable => googleCloudTtsApiKey.isNotEmpty;
 }
 
