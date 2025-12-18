@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kids_ai_shared/kids_ai_shared.dart';
 import '../core/design_system.dart';
 import '../models/exercise.dart';
 
@@ -27,13 +28,13 @@ class ExerciseCardWidget extends StatelessWidget {
         padding: const EdgeInsets.all(TherapyDesignSystem.spacingLG),
         decoration: BoxDecoration(
           color: isActive
-              ? TherapyDesignSystem.primaryBlue.withValues(alpha: 0.1)
-              : TherapyDesignSystem.surfaceWhite,
+              ? KidsColors.primary.withValues(alpha: 0.1)
+              : KidsColors.surface,
           borderRadius: BorderRadius.circular(TherapyDesignSystem.radiusLarge),
           border: Border.all(
             color: isActive
-                ? TherapyDesignSystem.primaryBlue
-                : TherapyDesignSystem.surfaceGray,
+                ? KidsColors.primary
+                : KidsColors.gray300,
             width: isActive ? 3 : 1,
           ),
           boxShadow: [
@@ -58,14 +59,14 @@ class ExerciseCardWidget extends StatelessWidget {
                     children: [
                       Text(
                         _getExerciseTypeLabel(),
-                        style: TherapyDesignSystem.bodyMedium.copyWith(
-                          color: TherapyDesignSystem.textSecondary,
+                        style: TherapyDesignSystem.bodyMediumStyle.copyWith(
+                          color: KidsColors.textSecondary,
                         ),
                       ),
                       const SizedBox(height: TherapyDesignSystem.spacingXS),
                       Text(
                         exercise.targetWord,
-                        style: TherapyDesignSystem.headingMedium,
+                        style: TherapyDesignSystem.h2Style,
                       ),
                     ],
                   ),
@@ -74,7 +75,7 @@ class ExerciseCardWidget extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(TherapyDesignSystem.spacingSM),
                     decoration: BoxDecoration(
-                      color: TherapyDesignSystem.successGreen,
+                      color: KidsColors.success,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(

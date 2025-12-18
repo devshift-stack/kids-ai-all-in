@@ -31,7 +31,7 @@ Future<void> main() async {
   await Hive.initFlutter();
 
   // Initialize SharedPreferences
-  await SharedPreferences.getInstance();
+  final prefs = await SharedPreferences.getInstance();
 
   // Set preferred orientations for children
   await SystemChrome.setPreferredOrientations([
