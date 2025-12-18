@@ -251,7 +251,7 @@ class ProgressRingWidget extends StatelessWidget {
                 children: [
                   Text(
                     '${(value * 100).toInt()}%',
-                    style: TherapyDesignSystem.headingMedium.copyWith(
+                    style: TherapyDesignSystem.h2Style.copyWith(
                       color: progressColor,
                     ),
                   ),

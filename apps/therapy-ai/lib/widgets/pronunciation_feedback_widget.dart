@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kids_ai_shared/kids_ai_shared.dart';
 import '../core/design_system.dart';
 import '../models/speech_analysis_result.dart';
 
@@ -58,10 +59,10 @@ class PronunciationFeedbackWidget extends StatelessWidget {
         const SizedBox(height: TherapyDesignSystem.spacingMD),
         Text(
           message,
-          style: TherapyDesignSystem.headingMedium.copyWith(
+          style: TherapyDesignSystem.h2Style.copyWith(
             color: isSuccess
-                ? TherapyDesignSystem.successGreen
-                : TherapyDesignSystem.warningYellow,
+                ? KidsColors.success
+                : KidsColors.warning,
           ),
           textAlign: TextAlign.center,
         ),
@@ -73,7 +74,7 @@ class PronunciationFeedbackWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(TherapyDesignSystem.spacingLG),
       decoration: BoxDecoration(
-        color: TherapyDesignSystem.surfaceWhite,
+        color: KidsColors.surface,
         borderRadius: BorderRadius.circular(TherapyDesignSystem.radiusLarge),
         boxShadow: [
           BoxShadow(
@@ -100,8 +101,8 @@ class PronunciationFeedbackWidget extends StatelessWidget {
                 'Du hast gesagt',
                 result.transcription,
                 result.isSuccessful
-                    ? TherapyDesignSystem.successGreen
-                    : TherapyDesignSystem.warningYellow,
+                    ? KidsColors.success
+                    : KidsColors.warning,
               ),
             ],
           ),
@@ -115,8 +116,8 @@ class PronunciationFeedbackWidget extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TherapyDesignSystem.bodyMedium.copyWith(
-            color: TherapyDesignSystem.textSecondary,
+          style: TherapyDesignSystem.bodyMediumStyle.copyWith(
+            color: KidsColors.textSecondary,
           ),
         ),
         const SizedBox(height: TherapyDesignSystem.spacingSM),
@@ -132,7 +133,7 @@ class PronunciationFeedbackWidget extends StatelessWidget {
           ),
           child: Text(
             word,
-            style: TherapyDesignSystem.headingSmall.copyWith(
+            style: TherapyDesignSystem.h3Style.copyWith(
               color: color,
             ),
           ),
@@ -154,8 +155,8 @@ class PronunciationFeedbackWidget extends StatelessWidget {
           'Glasnoća',
           result.volumeLevel,
           result.isVolumeAppropriate
-              ? TherapyDesignSystem.successGreen
-              : TherapyDesignSystem.warningYellow,
+              ? KidsColors.success
+              : KidsColors.warning,
         ),
         const SizedBox(height: TherapyDesignSystem.spacingMD),
         _buildMetricBar(
@@ -176,13 +177,13 @@ class PronunciationFeedbackWidget extends StatelessWidget {
           children: [
             Text(
               label,
-              style: TherapyDesignSystem.bodyLarge.copyWith(
+              style: TherapyDesignSystem.bodyLargeStyle.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
             Text(
               '${value.toInt()}%',
-              style: TherapyDesignSystem.bodyLarge.copyWith(
+              style: TherapyDesignSystem.bodyLargeStyle.copyWith(
                 color: color,
                 fontWeight: FontWeight.bold,
               ),
@@ -195,7 +196,7 @@ class PronunciationFeedbackWidget extends StatelessWidget {
           child: LinearProgressIndicator(
             value: value / 100,
             minHeight: 16,
-            backgroundColor: TherapyDesignSystem.surfaceGray,
+            backgroundColor: KidsColors.gray300,
             valueColor: AlwaysStoppedAnimation<Color>(color),
           ),
         ),
@@ -236,7 +237,7 @@ class PronunciationFeedbackWidget extends StatelessWidget {
             onPressed: onRetry,
             style: OutlinedButton.styleFrom(
               side: BorderSide(
-                color: TherapyDesignSystem.primaryBlue,
+                color: KidsColors.primary,
                 width: 2,
               ),
               shape: RoundedRectangleBorder(
