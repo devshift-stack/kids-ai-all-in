@@ -162,7 +162,7 @@ export function createPremiumAgent(productCategory = 'solar', language = 'german
   const agentName = getRandomAgentName(productCategory);
   
   const model = genAI.getGenerativeModel({
-    model: 'gemini-pro', // Fallback zu gemini-pro wenn gemini-1.5-flash nicht verfügbar
+    model: 'gemini-2.5-flash', // Verfügbares Modell für diese API-Version
     generationConfig: {
       temperature: 0.9, // Höher für mehr Variation
       topK: 40,
