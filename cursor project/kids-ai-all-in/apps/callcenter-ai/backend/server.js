@@ -377,12 +377,21 @@ app.post('/api/v1/premium/sessions/:sessionId/chat', async (req, res) => {
     console.error('Premium Agent Error:', error);
     
     let errorMessage = 'Entschuldigung, ähm, ich hab Sie nicht ganz verstanden. Können Sie das nochmal sagen?';
+    let statusCode = 500;
     
-    if (error.message?.includes('quota') || error.message?.includes('429')) {
+    // API-Key Fehler
+    if (error.message?.includes('API key not valid') || error.message?.includes('API_KEY_INVALID')) {
+      errorMessage = 'Entschuldigung, ich habe gerade technische Probleme. Bitte versuchen Sie es später erneut.';
+      console.error('❌ GEMINI_API_KEY ist ungültig oder fehlt!');
+      statusCode = 503; // Service Unavailable
+    }
+    // Quota/Rate Limit Fehler
+    else if (error.message?.includes('quota') || error.message?.includes('429')) {
       errorMessage = 'Oh, tut mir leid, ich habe gerade technische Probleme. Können Sie es in ein paar Minuten nochmal versuchen?';
+      statusCode = 429;
     }
     
-    res.status(500).json({
+    res.status(statusCode).json({
       error: errorMessage,
       sessionId: sessionId,
     });
