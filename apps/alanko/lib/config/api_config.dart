@@ -137,7 +137,7 @@ class ApiConfig {
   // Future: Firebase Remote Config Integration
   // ═══════════════════════════════════════════════════════════════
 
-  /// TODO: Lade Konfiguration aus Firebase Remote Config
+  /// Lade Konfiguration aus Firebase Remote Config (Placeholder - wird später implementiert)
   /// 
   /// Ermöglicht:
   /// - Keys ohne App-Update ändern
