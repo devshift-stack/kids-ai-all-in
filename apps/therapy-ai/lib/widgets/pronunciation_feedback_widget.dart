@@ -148,7 +148,7 @@ class PronunciationFeedbackWidget extends StatelessWidget {
         _buildMetricBar(
           'Aussprache',
           result.pronunciationScore,
-          TherapyDesignSystem.getFeedbackColor(result.pronunciationScore),
+          _getFeedbackColor(result.pronunciationScore),
         ),
         const SizedBox(height: TherapyDesignSystem.spacingMD),
         _buildMetricBar(
@@ -162,7 +162,7 @@ class PronunciationFeedbackWidget extends StatelessWidget {
         _buildMetricBar(
           'Artikulacija',
           result.articulationScore,
-          TherapyDesignSystem.getFeedbackColor(result.articulationScore),
+          _getFeedbackColor(result.articulationScore),
         ),
       ],
     );
@@ -192,7 +192,7 @@ class PronunciationFeedbackWidget extends StatelessWidget {
         ),
         const SizedBox(height: TherapyDesignSystem.spacingSM),
         ClipRRect(
-          borderRadius: BorderRadius.circular(TherapyDesignSystem.radiusRound),
+          borderRadius: BorderRadius.circular(TherapyDesignSystem.radiusXLarge),
           child: LinearProgressIndicator(
             value: value / 100,
             minHeight: 16,
@@ -257,6 +257,13 @@ class PronunciationFeedbackWidget extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  /// Helper: Get Feedback Color
+  Color _getFeedbackColor(double score) {
+    if (score >= 80) return KidsColors.success;
+    if (score >= 60) return KidsColors.warning;
+    return KidsColors.error;
   }
 }
 
