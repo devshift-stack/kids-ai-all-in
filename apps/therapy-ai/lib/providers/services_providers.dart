@@ -1,12 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 import '../services/whisper_speech_service.dart';
 import '../services/elevenlabs_voice_service.dart';
 import '../services/audio_analysis_service.dart';
 import '../services/adaptive_exercise_service.dart';
 import '../services/progress_tracking_service.dart';
-import '../services/firebase_service.dart';
 
 /// Whisper Speech Service Provider
 final whisperSpeechServiceProvider = Provider<WhisperSpeechService>((ref) {
@@ -33,22 +32,13 @@ final progressTrackingServiceProvider = Provider<ProgressTrackingService>((ref) 
   return ProgressTrackingService();
 });
 
-// ============================================================
-// ADDITIONAL PROVIDERS (für main.dart)
-// ============================================================
-
-/// Shared Preferences Provider
-final sharedPreferencesProvider = FutureProvider<SharedPreferences>((ref) async {
-  return await SharedPreferences.getInstance();
+/// SharedPreferences Provider
+final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
+  throw UnimplementedError('SharedPreferences must be overridden');
 });
 
 /// Theme Mode Provider
 final themeModeProvider = StateProvider<ThemeMode>((ref) {
-  return ThemeMode.system;
-});
-
-/// Firebase Service Provider
-final firebaseServiceProvider = Provider<FirebaseService>((ref) {
-  return FirebaseService();
+  return ThemeMode.light;
 });
 

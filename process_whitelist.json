@@ -1,0 +1,17 @@
+{
+  "processes": [
+    "Cursor",
+    "Safari",
+    "Chrome",
+    "Firefox",
+    "Terminal",
+    "iTerm",
+    "VS Code",
+    "Kaspersky",
+    "System Preferences",
+    "Flutter",
+    "Dart",
+    "Node",
+    "Python"
+  ]
+}

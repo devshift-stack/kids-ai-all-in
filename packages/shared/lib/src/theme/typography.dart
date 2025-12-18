@@ -190,23 +190,20 @@ class KidsTypography {
   );
 
   // ============================================================
-  // COMPATIBILITY ALIASES (für bestehenden Code)
+  // COMPATIBILITY GETTERS (für bestehenden Code)
   // ============================================================
 
-  /// H1 - Große Überschrift
-  static const TextStyle h1 = displayLarge;
+  /// H1 Style (Alias für displayMedium)
+  static const TextStyle h1 = displayMedium;
 
-  /// H2 - Mittlere Überschrift
-  static const TextStyle h2 = displayMedium;
+  /// H2 Style (Alias für headlineLarge)
+  static const TextStyle h2 = headlineLarge;
 
-  /// H3 - Kleine Überschrift
-  static const TextStyle h3 = headlineLarge;
+  /// H3 Style (Alias für headlineMedium)
+  static const TextStyle h3 = headlineMedium;
 
-  /// Caption - Kleine Beschriftung
+  /// Caption Style (Alias für bodySmall)
   static const TextStyle caption = bodySmall;
-
-  /// Button - Button-Text
-  static const TextStyle button = labelLarge;
 
   // ============================================================
   // TEXT THEME (für ThemeData)

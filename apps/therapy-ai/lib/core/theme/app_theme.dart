@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kids_ai_shared/kids_ai_shared.dart';
-import 'package:kids_ai_shared/src/theme/shadows.dart';
 import 'package:kids_ai_shared/src/theme/theme.dart';
 
 /// Therapy AI App Theme
@@ -49,7 +48,6 @@ class AppTheme {
         primary: primaryColor,
         secondary: secondaryColor,
         surface: surfaceColor,
-        background: backgroundColor,
         error: errorColor,
       ),
       scaffoldBackgroundColor: backgroundColor,
@@ -107,7 +105,6 @@ class AppTheme {
         primary: primaryColor,
         secondary: secondaryColor,
         surface: surfaceColor,
-        background: backgroundColor,
         error: errorColor,
       ),
       scaffoldBackgroundColor: backgroundColor,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:kids_ai_shared/kids_ai_shared.dart';
 import '../core/design_system.dart';
 
 /// Progress Chart Widget
@@ -21,7 +22,7 @@ class ProgressChartWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(TherapyDesignSystem.spacingLG),
       decoration: BoxDecoration(
-        color: TherapyDesignSystem.surfaceWhite,
+        color: KidsColors.surface,
         borderRadius: BorderRadius.circular(TherapyDesignSystem.radiusLarge),
         boxShadow: [
           BoxShadow(
@@ -37,7 +38,7 @@ class ProgressChartWidget extends StatelessWidget {
           if (title != null) ...[
             Text(
               title!,
-              style: TherapyDesignSystem.headingSmall,
+              style: TherapyDesignSystem.h3Style,
             ),
             const SizedBox(height: TherapyDesignSystem.spacingLG),
           ],
@@ -60,10 +61,10 @@ class ProgressChartWidget extends StatelessWidget {
   BarChartData _buildBarChartData() {
     final entries = data.entries.toList();
     final colors = [
-      TherapyDesignSystem.primaryBlue,
-      TherapyDesignSystem.secondaryOrange,
-      TherapyDesignSystem.successGreen,
-      TherapyDesignSystem.warningYellow,
+      KidsColors.primary,
+      KidsColors.secondary,
+      KidsColors.success,
+      KidsColors.warning,
     ];
 
     return BarChartData(
@@ -83,7 +84,7 @@ class ProgressChartWidget extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 8),
                   child: Text(
                     entries[value.toInt()].key,
-                    style: TherapyDesignSystem.bodyMedium.copyWith(
+                    style: TherapyDesignSystem.bodyMediumStyle.copyWith(
                       fontSize: 12,
                     ),
                     maxLines: 2,
@@ -103,7 +104,7 @@ class ProgressChartWidget extends StatelessWidget {
             getTitlesWidget: (value, meta) {
               return Text(
                 '${value.toInt()}%',
-                style: TherapyDesignSystem.bodyMedium.copyWith(
+                style: TherapyDesignSystem.bodyMediumStyle.copyWith(
                   fontSize: 12,
                 ),
               );
@@ -123,7 +124,7 @@ class ProgressChartWidget extends StatelessWidget {
         horizontalInterval: 25,
         getDrawingHorizontalLine: (value) {
           return FlLine(
-            color: TherapyDesignSystem.surfaceGray,
+            color: KidsColors.gray300,
             strokeWidth: 1,
           );
         },
@@ -131,7 +132,7 @@ class ProgressChartWidget extends StatelessWidget {
       borderData: FlBorderData(
         show: true,
         border: Border.all(
-          color: TherapyDesignSystem.surfaceGray,
+          color: KidsColors.gray300,
           width: 1,
         ),
       ),
@@ -158,10 +159,10 @@ class ProgressChartWidget extends StatelessWidget {
   Widget _buildLegend() {
     final entries = data.entries.toList();
     final colors = [
-      TherapyDesignSystem.primaryBlue,
-      TherapyDesignSystem.secondaryOrange,
-      TherapyDesignSystem.successGreen,
-      TherapyDesignSystem.warningYellow,
+      KidsColors.primary,
+      KidsColors.secondary,
+      KidsColors.success,
+      KidsColors.warning,
     ];
 
     return Wrap(
@@ -184,7 +185,7 @@ class ProgressChartWidget extends StatelessWidget {
             const SizedBox(width: TherapyDesignSystem.spacingSM),
             Text(
               '${dataEntry.key}: ${dataEntry.value.toInt()}%',
-              style: TherapyDesignSystem.bodyMedium,
+              style: TherapyDesignSystem.bodyMediumStyle,
             ),
           ],
         );
@@ -210,7 +211,7 @@ class ProgressRingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final progressColor = color ?? TherapyDesignSystem.primaryBlue;
+    final progressColor = color ?? KidsColors.primary;
 
     return Column(
       children: [
@@ -227,9 +228,9 @@ class ProgressRingWidget extends StatelessWidget {
                 child: CircularProgressIndicator(
                   value: 1.0,
                   strokeWidth: 12,
-                  backgroundColor: TherapyDesignSystem.surfaceGray,
+                  backgroundColor: KidsColors.gray300,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    TherapyDesignSystem.surfaceGray,
+                    KidsColors.gray300,
                   ),
                 ),
               ),
@@ -250,13 +251,13 @@ class ProgressRingWidget extends StatelessWidget {
                 children: [
                   Text(
                     '${(value * 100).toInt()}%',
-                    style: TherapyDesignSystem.headingMedium.copyWith(
+                    style: TherapyDesignSystem.h2Style.copyWith(
                       color: progressColor,
                     ),
                   ),
                   Text(
                     label,
-                    style: TherapyDesignSystem.bodyMedium.copyWith(
+                    style: TherapyDesignSystem.bodyMediumStyle.copyWith(
                       fontSize: 12,
                     ),
                     textAlign: TextAlign.center,

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 
 /// Error Handler für API-Calls
 /// Bietet Retry-Logik und Error-Kategorisierung

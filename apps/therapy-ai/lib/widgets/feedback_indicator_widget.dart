@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:kids_ai_shared/kids_ai_shared.dart';
 import '../core/design_system.dart';
+
+/// Feedback Status Enum
+enum FeedbackStatus {
+  success,
+  warning,
+  error,
+  info,
+}
 
 /// Feedback Indicator Widget
 /// Große, visuelle Status-Anzeige für Kinder
@@ -11,33 +20,31 @@ class FeedbackIndicatorWidget extends StatelessWidget {
     this.animation = true,
   });
 
-  final String status; // 'success', 'warning', 'error', 'info'
+  final FeedbackStatus status;
   final String message;
   final bool animation;
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = TherapyDesignSystem.getStatusColorByString(status);
-    
     return Container(
       padding: const EdgeInsets.all(TherapyDesignSystem.spacingXL),
       decoration: BoxDecoration(
-        color: statusColor.withValues(alpha: 0.1),
+        color: _getStatusColor(status).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(TherapyDesignSystem.radiusLarge),
         border: Border.all(
-          color: statusColor,
+          color: _getStatusColor(status),
           width: 3,
         ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildIcon(statusColor),
+          _buildIcon(),
           const SizedBox(height: TherapyDesignSystem.spacingMD),
           Text(
             message,
-            style: TherapyDesignSystem.headingSmall.copyWith(
-              color: statusColor,
+            style: TherapyDesignSystem.h3Style.copyWith(
+              color: _getStatusColor(status),
             ),
             textAlign: TextAlign.center,
           ),
@@ -46,25 +53,24 @@ class FeedbackIndicatorWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildIcon(Color statusColor) {
+  Widget _buildIcon() {
     IconData iconData;
     String emoji;
 
-    switch (status.toLowerCase()) {
-      case 'success':
+    switch (status) {
+      case FeedbackStatus.success:
         iconData = Icons.check_circle;
         emoji = '🎉';
         break;
-      case 'warning':
+      case FeedbackStatus.warning:
         iconData = Icons.info;
         emoji = '👍';
         break;
-      case 'error':
+      case FeedbackStatus.error:
         iconData = Icons.error;
         emoji = '💪';
         break;
-      case 'info':
-      default:
+      case FeedbackStatus.info:
         iconData = Icons.info_outline;
         emoji = 'ℹ️';
         break;
@@ -81,10 +87,24 @@ class FeedbackIndicatorWidget extends StatelessWidget {
         Icon(
           iconData,
           size: 64,
-          color: statusColor,
+          color: _getStatusColor(status),
         ),
       ],
     );
+  }
+
+  /// Helper: Get Status Color
+  Color _getStatusColor(FeedbackStatus status) {
+    switch (status) {
+      case FeedbackStatus.success:
+        return TherapyDesignSystem.statusSuccess;
+      case FeedbackStatus.warning:
+        return TherapyDesignSystem.statusWarning;
+      case FeedbackStatus.error:
+        return TherapyDesignSystem.statusError;
+      case FeedbackStatus.info:
+        return TherapyDesignSystem.statusActive;
+    }
   }
 }
 
@@ -95,7 +115,7 @@ class LargeTherapyButton extends StatelessWidget {
     required this.text,
     required this.onPressed,
     this.icon,
-    this.size = 100.0,
+    this.size = ButtonSize.large,
     this.variant = ButtonVariant.primary,
     this.isLoading = false,
   });
@@ -103,13 +123,13 @@ class LargeTherapyButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
   final IconData? icon;
-  final double size;
+  final ButtonSize size;
   final ButtonVariant variant;
   final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
-    final buttonSize = size;
+    final buttonSize = size.size;
     final isPrimary = variant == ButtonVariant.primary;
 
     return SizedBox(
@@ -147,7 +167,17 @@ class LargeTherapyButton extends StatelessWidget {
   }
 }
 
+enum ButtonSize {
+  small(56.0),
+  medium(80.0),
+  large(100.0);
+
+  final double size;
+  const ButtonSize(this.size);
+}
+
 enum ButtonVariant {
   primary,
   secondary,
 }
+

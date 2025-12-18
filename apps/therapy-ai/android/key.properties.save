@@ -1,0 +1,4 @@
+storePassword=Helikopter6432!!
+keyPassword=DEIN_KEY_PASSWORT
+keyAlias=upload
+storeFile=/Users/dsselmanovic/keystores/meine-app-upload-keystore.jks

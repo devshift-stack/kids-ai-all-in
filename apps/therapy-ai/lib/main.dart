@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,7 +6,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:kids_ai_shared/kids_ai_shared.dart';
 import 'firebase_options.dart';
 
 import 'core/theme/app_theme.dart';
@@ -66,7 +64,7 @@ Future<void> main() async {
       startLocale: const Locale('bs'),
       child: ProviderScope(
         overrides: [
-          // sharedPreferencesProvider wird nicht mehr benötigt, da es ein FutureProvider ist
+          sharedPreferencesProvider.overrideWithValue(prefs),
         ],
         child: const TherapyAIApp(),
       ),
@@ -141,12 +139,12 @@ class _AppStartupState extends ConsumerState<AppStartup>
     // Initialize Environment Configuration
     await EnvConfig.initialize();
     
-    // Initialize Firebase services
-    final firebaseService = ref.read(firebaseServiceProvider);
-    await firebaseService.enableOfflineMode();
-    if (!firebaseService.isSignedIn) {
-      await firebaseService.signInAnonymously();
-    }
+    // TODO: Firebase Service implementieren
+    // final firebaseService = ref.read(firebaseServiceProvider);
+    // await firebaseService.enableOfflineMode();
+    // if (!firebaseService.isSignedIn) {
+    //   await firebaseService.signInAnonymously();
+    // }
 
     // Simulate initialization time for splash effect
     await Future.delayed(const Duration(seconds: 2));

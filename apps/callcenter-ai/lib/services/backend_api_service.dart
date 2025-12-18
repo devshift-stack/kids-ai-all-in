@@ -34,11 +34,12 @@ class BackendApiService {
   }
 
   /// Erstellt eine neue Chat-Session
-  Future<SessionResponse> createSession() async {
+  Future<SessionResponse> createSession({String language = 'german'}) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/api/v1/sessions'),
         headers: {'Content-Type': 'application/json'},
+        body: json.encode({'language': language}),
       ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
@@ -49,6 +50,7 @@ class BackendApiService {
           sessionId: _currentSessionId!,
           greeting: data['greeting'] as String,
           success: true,
+          language: data['language'] as String? ?? language,
         );
       } else {
         throw Exception('Session-Erstellung fehlgeschlagen: ${response.statusCode}');
@@ -62,6 +64,7 @@ class BackendApiService {
         greeting: '',
         success: false,
         error: e.toString(),
+        language: language,
       );
     }
   }
@@ -138,12 +141,14 @@ class SessionResponse {
   final String greeting;
   final bool success;
   final String? error;
+  final String language;
 
   SessionResponse({
     required this.sessionId,
     required this.greeting,
     required this.success,
     this.error,
+    this.language = 'german',
   });
 }
 

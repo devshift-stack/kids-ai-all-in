@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import 'package:kids_ai_shared/kids_ai_shared.dart';
-import '../../models/child_profile.dart';
-import '../../core/theme/app_theme.dart';
-import '../../core/constants/app_constants.dart';
-import '../../core/routes/app_routes.dart';
-import '../../providers/child_profile_provider.dart';
+import '../../../models/child_profile.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/constants/app_constants.dart';
+import '../../../core/routes/app_routes.dart';
+import '../../../providers/child_profile_provider.dart';
 
 class ChildProfileScreen extends ConsumerStatefulWidget {
   const ChildProfileScreen({super.key});
@@ -511,7 +511,7 @@ class _ChildProfileScreenState extends ConsumerState<ChildProfileScreen> {
                 ),
                 child: Text(
                   'Zurück',
-                  style: KidsTypography.button,
+                  style: KidsTypography.labelLarge,
                 ),
               ),
             ),
@@ -529,7 +529,7 @@ class _ChildProfileScreenState extends ConsumerState<ChildProfileScreen> {
               ),
               child: Text(
                 _currentStep == 2 ? 'Speichern' : 'Weiter',
-                style: KidsTypography.button.copyWith(
+                style: KidsTypography.labelLarge.copyWith(
                   color: Colors.white,
                 ),
               ),

@@ -18,53 +18,41 @@ class AppRoutes {
   static const String exerciseResult = '/exercise-result';
   static const String settings = '/settings';
 
-  static Route<dynamic> generateRoute(RouteSettings settings) {
-    switch (settings.name) {
+  static Route<dynamic> generateRoute(RouteSettings routeSettings) {
+    switch (routeSettings.name) {
       case splash:
         return _buildRoute(
           const AppStartup(),
-          settings: settings,
+          settings: routeSettings,
         );
 
       case childProfile:
         return _buildRoute(
           const ChildProfileScreen(),
-          settings: settings,
+          settings: routeSettings,
         );
 
       case voiceCloning:
         return _buildRoute(
           const VoiceCloningScreen(),
-          settings: settings,
+          settings: routeSettings,
         );
 
       case dashboard:
         return _buildRoute(
           const DashboardScreen(),
-          settings: settings,
+          settings: routeSettings,
         );
 
       case AppRoutes.settings:
         return _buildRoute(
           const SettingsScreen(),
-          settings: settings,
+          settings: routeSettings,
         );
 
-      case exercise:
-        final args = settings.arguments as Map<String, dynamic>?;
-        if (args != null && args['exercise'] != null) {
-          return _buildRoute(
-            ExerciseScreen(
-              exercise: args['exercise'] as Exercise,
-            ),
-            settings: settings,
-          );
-        }
-        return _errorRoute('Exercise argument missing');
-
       case exerciseResult:
-        final args = settings.arguments as Map<String, dynamic>?;
-        if (args != null &&
+        final args = routeSettings.arguments;
+        if (args is Map<String, dynamic> &&
             args['exercise'] != null &&
             args['result'] != null) {
           return _buildRoute(
@@ -72,13 +60,25 @@ class AppRoutes {
               exercise: args['exercise'] as Exercise,
               result: args['result'] as SpeechAnalysisResult,
             ),
-            settings: settings,
+            settings: routeSettings,
           );
         }
         return _errorRoute('Result arguments missing');
 
+      case exercise:
+        final args = routeSettings.arguments;
+        if (args is Map<String, dynamic> && args['exercise'] != null) {
+          return _buildRoute(
+            ExerciseScreen(
+              exercise: args['exercise'] as Exercise,
+            ),
+            settings: routeSettings,
+          );
+        }
+        return _errorRoute('Exercise argument missing');
+
       default:
-        return _errorRoute('Route not found: ${settings.name}');
+        return _errorRoute('Route not found: ${routeSettings.name}');
     }
   }
 

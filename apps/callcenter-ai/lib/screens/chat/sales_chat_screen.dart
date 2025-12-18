@@ -3,11 +3,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-import 'package:flutter_tts/flutter_tts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/chat_message.dart';
-import '../../services/sales_agent_service.dart';
+import '../../providers/backend_api_provider.dart';
 import '../../providers/sales_agent_provider.dart';
+import '../../providers/language_provider.dart';
+import '../../providers/premium_tts_provider.dart';
+import '../dashboard/settings_screen.dart';
 
 class SalesChatScreen extends ConsumerStatefulWidget {
   const SalesChatScreen({super.key});
@@ -27,18 +29,20 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
   bool _speechAvailable = false;
   String _currentWords = '';
 
-  // Text to Speech
-  final FlutterTts _flutterTts = FlutterTts();
+  // Text to Speech (Premium)
   bool _isSpeaking = false;
 
   // Loading state
   bool _isLoading = false;
+  
+  // Backend-Modus oder direkter Service
+  bool _useBackend = true;
 
   @override
   void initState() {
     super.initState();
     _initSpeech();
-    _initTts();
+    _initPremiumTts();
     _greetCustomer();
   }
 
@@ -61,17 +65,17 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
     setState(() {});
   }
 
-  Future<void> _initTts() async {
-    await _flutterTts.setLanguage('de-DE');
-    await _flutterTts.setSpeechRate(0.5);
-    await _flutterTts.setVolume(1.0);
-    await _flutterTts.setPitch(1.0);
-
-    _flutterTts.setCompletionHandler(() {
+  Future<void> _initPremiumTts() async {
+    final ttsService = ref.read(premiumTtsServiceProvider);
+    final currentLanguage = ref.read(languageProvider);
+    
+    await ttsService.setLanguage(currentLanguage);
+    
+    ttsService.setCompletionHandler(() {
       setState(() => _isSpeaking = false);
     });
 
-    _flutterTts.setErrorHandler((msg) {
+    ttsService.setErrorHandler((msg) {
       setState(() => _isSpeaking = false);
       if (kDebugMode) {
         debugPrint('TTS Error: $msg');
@@ -79,13 +83,54 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
     });
   }
 
-  void _greetCustomer() {
-    final greeting = 'Hallo! Ich bin Lisa, Ihre Verkaufsberaterin. Schön, dass ich Sie erreiche! Wie geht es Ihnen heute? Ich rufe an, um über Solarmodule zu sprechen – haben Sie sich schon einmal Gedanken über Solarstrom gemacht?';
-
+  void _greetCustomer() async {
+    final currentLanguage = ref.read(languageProvider);
+    final languageSettings = ref.read(languageProvider.notifier).settings;
+    
+    // Versuche Backend zu verwenden
+    final backendApi = ref.read(backendApiServiceProvider);
+    final isHealthy = await backendApi.checkHealth();
+    
+    if (isHealthy) {
+      // Backend-Modus: Session erstellen mit aktueller Sprache
+      setState(() {
+        _useBackend = true;
+        _isLoading = true;
+      });
+      
+      final languageCode = currentLanguage.name; // 'german', 'bosnian', 'serbian'
+      final session = await backendApi.createSession(language: languageCode);
+      setState(() => _isLoading = false);
+      
+      if (session.success) {
+        setState(() {
+          _messages.add(ChatMessage.lisa(session.greeting));
+        });
+        _scrollToBottom();
+        _speak(session.greeting);
+        return;
+      }
+    }
+    
+    // Fallback: Direkter Service (wie im Plan vorgesehen)
+    setState(() {
+      _useBackend = false;
+    });
+    
+    if (mounted && !isHealthy) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Backend nicht verfügbar. Verwende direkten Service.'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+    
+    // Lokale Begrüßung mit direktem Service (sprachabhängig)
+    final greeting = languageSettings.greeting;
     setState(() {
       _messages.add(ChatMessage.lisa(greeting));
     });
-
     _scrollToBottom();
     _speak(greeting);
   }
@@ -100,8 +145,11 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
       return;
     }
 
-    await _flutterTts.stop();
+    final ttsService = ref.read(premiumTtsServiceProvider);
+    await ttsService.stop();
     setState(() => _isSpeaking = false);
+
+    final currentLanguage = ref.read(languageProvider);
 
     setState(() {
       _isListening = true;
@@ -122,8 +170,10 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
       },
       listenFor: const Duration(seconds: 10),
       pauseFor: const Duration(seconds: 3),
-      localeId: 'de_DE',
-      partialResults: true,
+      localeId: currentLanguage.sttCode, // Sprachabhängige STT
+      listenOptions: stt.SpeechListenOptions(
+        partialResults: true,
+      ),
     );
   }
 
@@ -135,8 +185,9 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
   Future<void> _speak(String text) async {
     if (text.isEmpty) return;
 
+    final ttsService = ref.read(premiumTtsServiceProvider);
     setState(() => _isSpeaking = true);
-    await _flutterTts.speak(text);
+    await ttsService.speak(text);
   }
 
   Future<void> _sendMessage(String text) async {
@@ -152,22 +203,35 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
 
     _scrollToBottom();
 
-    // Get response from Sales Agent Service
-    final salesAgent = ref.read(salesAgentServiceProvider);
-    
-    if (!salesAgent.isConfigured) {
-      setState(() {
-        _messages.add(ChatMessage.lisa(
-          'Entschuldigung, der Service ist nicht konfiguriert. Bitte setzen Sie den GEMINI_API_KEY.',
-        ));
-        _isLoading = false;
-      });
-      _scrollToBottom();
-      return;
-    }
-
     try {
-      final response = await salesAgent.chat(userMessage);
+      String response;
+      
+      if (_useBackend) {
+        // Backend-Modus: Verwende Backend API
+        final backendApi = ref.read(backendApiServiceProvider);
+        final chatResponse = await backendApi.sendMessage(userMessage);
+        
+        if (!chatResponse.success) {
+          // Fallback zu direktem Service bei Fehler
+          setState(() => _useBackend = false);
+          final salesAgent = ref.read(salesAgentServiceProvider);
+          if (salesAgent.isConfigured) {
+            response = await salesAgent.chat(userMessage);
+          } else {
+            response = 'Entschuldigung, der Service ist nicht konfiguriert. Bitte setzen Sie den GEMINI_API_KEY.';
+          }
+        } else {
+          response = chatResponse.response;
+        }
+      } else {
+        // Direkter Service-Modus (wie im Plan vorgesehen)
+        final salesAgent = ref.read(salesAgentServiceProvider);
+        if (!salesAgent.isConfigured) {
+          response = 'Entschuldigung, der Service ist nicht konfiguriert. Bitte setzen Sie den GEMINI_API_KEY.';
+        } else {
+          response = await salesAgent.chat(userMessage);
+        }
+      }
 
       setState(() {
         _messages.add(ChatMessage.lisa(response));
@@ -204,10 +268,18 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
 
   @override
   void dispose() {
+    // Session beenden (nur wenn Backend verwendet wurde)
+    if (_useBackend) {
+      final backendApi = ref.read(backendApiServiceProvider);
+      backendApi.endSession();
+    }
+    
+    final ttsService = ref.read(premiumTtsServiceProvider);
+    
     _textController.dispose();
     _scrollController.dispose();
     _speech.stop();
-    _flutterTts.stop();
+    ttsService.stop();
     super.dispose();
   }
 
@@ -228,6 +300,18 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
           ],
         ),
         actions: [
+          // Einstellungen Button
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingsScreen(),
+                ),
+              );
+            },
+          ),
           Container(
             margin: const EdgeInsets.only(right: 16),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -309,7 +393,7 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: AppTheme.primaryColor.withOpacity(0.3),
+                    color: AppTheme.primaryColor.withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -341,7 +425,7 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -467,7 +551,7 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
         color: AppTheme.surfaceColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -520,7 +604,7 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
                   boxShadow: [
                     BoxShadow(
                       color: (_isListening ? Colors.red : AppTheme.primaryColor)
-                          .withOpacity(0.3),
+                          .withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -554,7 +638,7 @@ class _SalesChatScreenState extends ConsumerState<SalesChatScreen> {
                       color: (_textController.text.trim().isEmpty || _isLoading
                               ? AppTheme.textLight
                               : AppTheme.secondaryColor)
-                          .withOpacity(0.3),
+                          .withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),

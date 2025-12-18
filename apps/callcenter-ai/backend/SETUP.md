@@ -20,8 +20,9 @@ cp .env.example .env
 Bearbeite `.env` und setze deinen Gemini API Key:
 
 ```
-# ⚠️ SECRET: Ersetze YOUR_SECRET_API_KEY mit deinem echten Gemini API Key
-GEMINI_API_KEY=YOUR_SECRET_API_KEY
+# ⚠️ WICHTIG: Ersetze YOUR_API_KEY mit deinem echten Gemini API Key
+# Du findest deinen API Key hier: https://makersuite.google.com/app/apikey
+GEMINI_API_KEY=YOUR_API_KEY
 PORT=3000
 NODE_ENV=development
 ```

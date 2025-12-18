@@ -298,7 +298,7 @@ class ProgressTrackingService {
 
       final snapshot = await query.get();
       return snapshot.docs.map((doc) {
-        final data = doc.data();
+        final data = doc.data() as Map<String, dynamic>;
         return {
           'id': doc.id,
           'exerciseId': (data as Map<String, dynamic>)['exerciseId'],

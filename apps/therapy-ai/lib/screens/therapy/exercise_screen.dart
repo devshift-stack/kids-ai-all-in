@@ -318,7 +318,7 @@ class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
     return Container(
       padding: EdgeInsets.all(TherapyDesignSystem.spacingXXL),
       decoration: BoxDecoration(
-        gradient: KidsGradients.primaryGradient,
+        gradient: KidsGradients.primary,
         borderRadius: BorderRadius.circular(TherapyDesignSystem.radiusXLarge),
         boxShadow: [
           BoxShadow(

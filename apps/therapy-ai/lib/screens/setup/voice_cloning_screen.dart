@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:kids_ai_shared/kids_ai_shared.dart';
-import '../../services/elevenlabs_voice_service.dart';
-import '../../core/theme/app_theme.dart';
-import '../../core/constants/app_constants.dart';
-import '../../core/routes/app_routes.dart';
-import '../../providers/child_profile_provider.dart';
+import '../../../services/elevenlabs_voice_service.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/constants/app_constants.dart';
+import '../../../core/routes/app_routes.dart';
+import '../../../providers/child_profile_provider.dart';
 
 class VoiceCloningScreen extends ConsumerStatefulWidget {
   const VoiceCloningScreen({super.key});
@@ -246,7 +246,7 @@ class _VoiceCloningScreenState extends ConsumerState<VoiceCloningScreen> {
                         )
                       : Text(
                           _clonedVoiceId != null ? 'Stimme geklont ✓' : 'Stimme klonen',
-                          style: KidsTypography.button.copyWith(
+                          style: KidsTypography.labelLarge.copyWith(
                             color: Colors.white,
                           ),
                         ),
