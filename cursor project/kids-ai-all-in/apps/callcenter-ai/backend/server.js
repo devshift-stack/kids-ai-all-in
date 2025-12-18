@@ -38,7 +38,7 @@ const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 // Factory-Funktion für Model mit Sprache
 function createModel(language = 'german') {
   return genAI.getGenerativeModel({ 
-    model: 'gemini-1.5-flash',
+    model: 'gemini-pro', // Fallback zu gemini-pro wenn gemini-1.5-flash nicht verfügbar
     generationConfig: {
       temperature: 0.8,
       topK: 40,
