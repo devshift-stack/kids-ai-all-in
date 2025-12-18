@@ -51,7 +51,7 @@ class AppRoutes {
         );
 
       case exerciseResult:
-        final args = settings.arguments;
+        final args = routeSettings.arguments;
         if (args is Map<String, dynamic> &&
             args['exercise'] != null &&
             args['result'] != null) {
@@ -66,7 +66,7 @@ class AppRoutes {
         return _errorRoute('Result arguments missing');
 
       case exercise:
-        final args = settings.arguments;
+        final args = routeSettings.arguments;
         if (args is Map<String, dynamic> && args['exercise'] != null) {
           return _buildRoute(
             ExerciseScreen(

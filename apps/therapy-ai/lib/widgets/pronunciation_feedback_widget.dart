@@ -232,7 +232,7 @@ class PronunciationFeedbackWidget extends StatelessWidget {
         // Wiederholen-Button
         SizedBox(
           width: double.infinity,
-          height: TherapyDesignSystem.minTouchTarget,
+          height: TherapyDesignSystem.touchTargetSmall,
           child: OutlinedButton(
             onPressed: onRetry,
             style: OutlinedButton.styleFrom(
