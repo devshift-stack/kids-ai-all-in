@@ -4,6 +4,7 @@ import 'package:kids_ai_shared/kids_ai_shared.dart';
 import '../../core/design_system.dart';
 import '../../core/routes/app_routes.dart';
 import '../../providers/child_profile_provider.dart';
+import '../../providers/services_providers.dart';
 import '../../core/constants/app_constants.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -241,7 +242,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: 'Benachrichtigungen',
             subtitle: 'Erinnerungen für Übungen',
             onTap: () {
-              // TODO: Notification Settings
+              // Navigate to notification settings (placeholder)
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Benachrichtigungs-Einstellungen kommen bald')),
+              );
             },
           ),
           Divider(height: TherapyDesignSystem.spacingXL),
@@ -250,7 +254,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: 'Dark Mode',
             subtitle: 'Automatisch bei niedrigem Licht',
             onTap: () {
-              // TODO: Dark Mode Toggle
+              // Toggle dark mode
+              final themeMode = ref.read(themeModeProvider);
+              ref.read(themeModeProvider.notifier).state = 
+                themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
             },
           ),
           Divider(height: TherapyDesignSystem.spacingXL),
@@ -259,7 +266,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: 'Hilfe & Support',
             subtitle: 'FAQ und Kontakt',
             onTap: () {
-              // TODO: Help Screen
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Hilfe & Support'),
+                  content: const Text('Bei Fragen oder Problemen kontaktieren Sie bitte den Support.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('OK'),
+                    ),
+                  ],
+                ),
+              );
             },
           ),
         ],

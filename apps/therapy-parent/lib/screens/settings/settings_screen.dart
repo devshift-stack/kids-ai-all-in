@@ -18,7 +18,9 @@ class SettingsScreen extends StatelessWidget {
             title: const Text('Benachrichtigungen'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              // TODO: Navigate to Notifications Settings
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Benachrichtigungs-Einstellungen kommen bald')),
+              );
             },
           ),
           ListTile(
@@ -26,7 +28,9 @@ class SettingsScreen extends StatelessWidget {
             title: const Text('Voice-Cloning verwalten'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              // TODO: Navigate to Voice Management
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Voice-Management kommt bald')),
+              );
             },
           ),
           ListTile(
@@ -34,7 +38,9 @@ class SettingsScreen extends StatelessWidget {
             title: const Text('Sprache'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              // TODO: Navigate to Language Settings
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Sprach-Einstellungen kommen bald')),
+              );
             },
           ),
           const Divider(),
@@ -43,7 +49,19 @@ class SettingsScreen extends StatelessWidget {
             title: const Text('Über'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              // TODO: Show About Dialog
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Über Therapy Parent'),
+                  content: const Text('Version 1.0.0\n\nApp für Eltern zur Überwachung der Therapie-Fortschritte ihrer Kinder.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('OK'),
+                    ),
+                  ],
+                ),
+              );
             },
           ),
         ],

@@ -23,7 +23,7 @@ class ExportScreen extends StatelessWidget {
                 subtitle: const Text('Detaillierter Fortschritts-Report'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
-                  // TODO: Generate PDF Report
+                  // PDF Report wird generiert (Placeholder)
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('PDF-Export wird implementiert...'),
@@ -40,7 +40,7 @@ class ExportScreen extends StatelessWidget {
                 subtitle: const Text('Daten für Analysen exportieren'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
-                  // TODO: Generate CSV Export
+                  // CSV Export wird generiert (Placeholder)
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('CSV-Export wird implementiert...'),

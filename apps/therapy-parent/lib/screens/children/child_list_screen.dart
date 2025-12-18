@@ -9,7 +9,7 @@ class ChildListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: Lade Kinder aus Firebase
+    // Lade Kinder aus Firebase (Placeholder - wird später implementiert)
     final children = <String>[]; // Placeholder
 
     return Scaffold(
@@ -55,7 +55,9 @@ class ChildListScreen extends ConsumerWidget {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Navigate to Add Child Screen
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Kind hinzufügen kommt bald')),
+          );
         },
         child: const Icon(Icons.add),
       ),

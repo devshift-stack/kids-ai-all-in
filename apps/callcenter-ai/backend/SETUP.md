@@ -20,7 +20,8 @@ cp .env.example .env
 Bearbeite `.env` und setze deinen Gemini API Key:
 
 ```
-GEMINI_API_KEY=AIzaSyC4hhRA_tpmX-TXGBsDhfE9B4pmmr1Sfsk
+# ⚠️ SECRET: Ersetze YOUR_SECRET_API_KEY mit deinem echten Gemini API Key
+GEMINI_API_KEY=YOUR_SECRET_API_KEY
 PORT=3000
 NODE_ENV=development
 ```

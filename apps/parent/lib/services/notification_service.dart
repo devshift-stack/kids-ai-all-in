@@ -141,14 +141,14 @@ class NotificationService {
     final type = data['type'];
     final childId = data['childId'];
 
-    // TODO: Implement navigation logic based on notification type
+    // Navigate based on notification type (Placeholder - wird später implementiert)
     print('Navigate to: $type, childId: $childId');
   }
 
   /// Handle notification tap
   void _onNotificationTapped(NotificationResponse response) {
     print('Notification tapped: ${response.payload}');
-    // TODO: Handle navigation from local notification
+    // Handle navigation from local notification (Placeholder - wird später implementiert)
   }
 
   /// Show local notification

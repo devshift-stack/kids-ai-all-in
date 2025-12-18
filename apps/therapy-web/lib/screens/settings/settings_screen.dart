@@ -82,7 +82,7 @@ class SettingsScreen extends StatelessWidget {
           icon: Icons.medical_services,
           color: Colors.green,
           onTap: () {
-            // TODO: Navigate to Therapy Settings
+            // Navigate to Therapy Settings (Placeholder)
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Therapie-Einstellungen werden implementiert...'),

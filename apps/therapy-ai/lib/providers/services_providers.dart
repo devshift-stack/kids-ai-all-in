@@ -6,6 +6,7 @@ import '../services/elevenlabs_voice_service.dart';
 import '../services/audio_analysis_service.dart';
 import '../services/adaptive_exercise_service.dart';
 import '../services/progress_tracking_service.dart';
+import '../services/firebase_service.dart';
 
 /// Whisper Speech Service Provider
 final whisperSpeechServiceProvider = Provider<WhisperSpeechService>((ref) {
@@ -46,9 +47,8 @@ final themeModeProvider = StateProvider<ThemeMode>((ref) {
   return ThemeMode.system;
 });
 
-/// Firebase Service Provider (Placeholder - muss implementiert werden)
-final firebaseServiceProvider = Provider<dynamic>((ref) {
-  // TODO: Implementiere Firebase Service
-  return null;
+/// Firebase Service Provider
+final firebaseServiceProvider = Provider<FirebaseService>((ref) {
+  return FirebaseService();
 });
 

@@ -1,16 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/stories/story_model.dart';
 import '../../widgets/stories/story_card.dart';
 import '../../widgets/stories/story_reader.dart';
 
 /// Screen zur Auswahl einer Geschichte
-class StoriesScreen extends ConsumerWidget {
+class StoriesScreen extends ConsumerStatefulWidget {
   const StoriesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final stories = SampleStories.getAll();
+  ConsumerState<StoriesScreen> createState() => _StoriesScreenState();
+}
+
+class _StoriesScreenState extends ConsumerState<StoriesScreen> {
+  String? _selectedCategory;
+
+  List<Story> get _filteredStories {
+    final allStories = SampleStories.getAll();
+    if (_selectedCategory == null) return allStories;
+    return allStories.where((s) => s.category == _selectedCategory).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final stories = _filteredStories;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
@@ -54,11 +68,11 @@ class StoriesScreen extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                _buildCategoryChip('Alle', null, true),
-                _buildCategoryChip('Tiere', 'tiere', false),
-                _buildCategoryChip('Familie', 'familie', false),
-                _buildCategoryChip('Abenteuer', 'abenteuer', false),
-                _buildCategoryChip('Alltag', 'alltag', false),
+                _buildCategoryChip('Alle', null, _selectedCategory == null),
+                _buildCategoryChip('Tiere', 'tiere', _selectedCategory == 'tiere'),
+                _buildCategoryChip('Familie', 'familie', _selectedCategory == 'familie'),
+                _buildCategoryChip('Abenteuer', 'abenteuer', _selectedCategory == 'abenteuer'),
+                _buildCategoryChip('Alltag', 'alltag', _selectedCategory == 'alltag'),
               ],
             ),
           ),
@@ -94,7 +108,9 @@ class StoriesScreen extends ConsumerWidget {
         label: Text(label),
         selected: isSelected,
         onSelected: (_) {
-          // TODO: Filter implementieren
+          setState(() {
+            _selectedCategory = category;
+          });
         },
         backgroundColor: Colors.white,
         selectedColor: const Color(0xFF4CAF50).withOpacity(0.2),
@@ -132,7 +148,8 @@ class StoriesScreen extends ConsumerWidget {
         builder: (_) => StoryReader(
           story: story,
           onComplete: () {
-            // TODO: Belohnung geben
+            // Belohnung geben
+            HapticFeedback.mediumImpact();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Geschichte geschafft! 🌟'),

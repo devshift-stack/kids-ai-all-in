@@ -142,12 +142,11 @@ class _AppStartupState extends ConsumerState<AppStartup>
     await EnvConfig.initialize();
     
     // Initialize Firebase services
-    // TODO: Firebase Service implementieren
-    // final firebaseService = ref.read(firebaseServiceProvider);
-    // await firebaseService.enableOfflineMode();
-    // if (!firebaseService.isSignedIn) {
-    //   await firebaseService.signInAnonymously();
-    // }
+    final firebaseService = ref.read(firebaseServiceProvider);
+    await firebaseService.enableOfflineMode();
+    if (!firebaseService.isSignedIn) {
+      await firebaseService.signInAnonymously();
+    }
 
     // Simulate initialization time for splash effect
     await Future.delayed(const Duration(seconds: 2));
