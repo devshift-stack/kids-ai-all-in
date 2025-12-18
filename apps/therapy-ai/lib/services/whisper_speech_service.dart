@@ -104,45 +104,46 @@ class WhisperSpeechService {
     required String targetWord,
     String? language,
   }) async {
-    // 1. Transkription
-    final transcription = await transcribeAudio(
-      audioPath: audioPath,
-      language: language,
-    );
+    try {
+      // 1. Transkription
+      final transcription = await transcribeAudio(
+        audioPath: audioPath,
+        language: language,
+      );
 
-    // 2. Basis-Analyse
-    final similarity = _calculateSimilarity(targetWord.toLowerCase(), transcription.toLowerCase());
-    final pronunciationScore = similarity * 100;
+      // 2. Basis-Analyse
+      final similarity = _calculateSimilarity(targetWord.toLowerCase(), transcription.toLowerCase());
+      final pronunciationScore = similarity * 100;
 
-    // 3. Audio-Features analysieren (Volume, etc.)
-    final audioFeatures = await _analyzeAudioFeatures(audioPath);
+      // 3. Audio-Features analysieren (Volume, etc.)
+      final audioFeatures = await _analyzeAudioFeatures(audioPath);
 
-    // 4. Phoneme-Analyse (vereinfacht)
-    final phonemeBreakdown = _analyzePhonemes(targetWord, transcription);
+      // 4. Phoneme-Analyse (vereinfacht)
+      final phonemeBreakdown = _analyzePhonemes(targetWord, transcription);
 
-    // 5. Feedback generieren
-    final feedback = _generateFeedback(pronunciationScore, similarity);
-    final recommendations = _generateRecommendations(pronunciationScore, audioFeatures);
+      // 5. Feedback generieren
+      final feedback = _generateFeedback(pronunciationScore, similarity);
+      final recommendations = _generateRecommendations(pronunciationScore, audioFeatures);
 
-    return SpeechAnalysisResult(
-      transcription: transcription,
-      targetWord: targetWord,
-      pronunciationScore: pronunciationScore,
-      volumeLevel: audioFeatures['volume'] ?? 70.0,
-      articulationScore: pronunciationScore * 0.9, // Vereinfacht
-      similarityScore: similarity,
-      phonemeBreakdown: phonemeBreakdown,
-      averageVolume: audioFeatures['volume'] ?? 70.0,
-      peakVolume: audioFeatures['peakVolume'] ?? 80.0,
-      volumeConsistency: audioFeatures['consistency'] ?? 0.8,
-      speechDuration: audioFeatures['duration'],
-      feedbackMessage: feedback,
-      recommendations: recommendations,
-      isSuccessful: pronunciationScore >= 70.0,
-      needsRepetition: pronunciationScore < 60.0,
-      analyzedAt: DateTime.now(),
-      audioFilePath: audioPath,
-    );
+      return SpeechAnalysisResult(
+        transcription: transcription,
+        targetWord: targetWord,
+        pronunciationScore: pronunciationScore,
+        volumeLevel: audioFeatures['volume'] ?? 70.0,
+        articulationScore: pronunciationScore * 0.9, // Vereinfacht
+        similarityScore: similarity,
+        phonemeBreakdown: phonemeBreakdown,
+        averageVolume: audioFeatures['volume'] ?? 70.0,
+        peakVolume: audioFeatures['peakVolume'] ?? 80.0,
+        volumeConsistency: audioFeatures['consistency'] ?? 0.8,
+        speechDuration: audioFeatures['duration'],
+        feedbackMessage: feedback,
+        recommendations: recommendations,
+        isSuccessful: pronunciationScore >= 70.0,
+        needsRepetition: pronunciationScore < 60.0,
+        analyzedAt: DateTime.now(),
+        audioFilePath: audioPath,
+      );
     } catch (e) {
       // Bei Fehler: Fallback mit Basis-Analyse
       debugPrint('Fehler bei Speech-Analyse: $e');

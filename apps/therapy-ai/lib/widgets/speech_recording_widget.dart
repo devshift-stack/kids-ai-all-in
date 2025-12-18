@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kids_ai_shared/kids_ai_shared.dart';
+import 'dart:math' as math;
 import '../core/design_system.dart';
 
 /// Speech Recording Widget für Kinder
@@ -199,7 +201,7 @@ class WaveformPainter extends CustomPainter {
     for (int i = 0; i < barCount; i++) {
       final x = i * barWidth + barWidth / 2;
       final phase = (i / barCount + animationValue) * 2 * 3.14159;
-      final amplitude = (0.3 + volumeLevel * 0.7) * (0.5 + 0.5 * (1 + (phase.sin)) / 2);
+      final amplitude = (0.3 + volumeLevel * 0.7) * (0.5 + 0.5 * (1 + math.sin(phase * 2 * math.pi)) / 2);
       final barHeight = maxHeight * amplitude;
 
       canvas.drawLine(
@@ -217,7 +219,4 @@ class WaveformPainter extends CustomPainter {
   }
 }
 
-extension on double {
-  double sin() => (this * 3.14159 * 2).sin();
-}
 

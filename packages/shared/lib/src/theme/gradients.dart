@@ -129,6 +129,13 @@ class KidsGradients {
   );
 
   // ============================================================
+  // COMPATIBILITY ALIASES (für bestehenden Code)
+  // ============================================================
+
+  /// Primary Gradient (Alias für primary)
+  static const LinearGradient primaryGradient = primary;
+
+  // ============================================================
   // RADIAL GRADIENTS
   // ============================================================
 

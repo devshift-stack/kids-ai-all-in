@@ -11,31 +11,33 @@ class FeedbackIndicatorWidget extends StatelessWidget {
     this.animation = true,
   });
 
-  final FeedbackStatus status;
+  final String status; // 'success', 'warning', 'error', 'info'
   final String message;
   final bool animation;
 
   @override
   Widget build(BuildContext context) {
+    final statusColor = TherapyDesignSystem.getStatusColorByString(status);
+    
     return Container(
       padding: const EdgeInsets.all(TherapyDesignSystem.spacingXL),
       decoration: BoxDecoration(
-        color: TherapyDesignSystem.getStatusColor(status).withValues(alpha: 0.1),
+        color: statusColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(TherapyDesignSystem.radiusLarge),
         border: Border.all(
-          color: TherapyDesignSystem.getStatusColor(status),
+          color: statusColor,
           width: 3,
         ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildIcon(),
+          _buildIcon(statusColor),
           const SizedBox(height: TherapyDesignSystem.spacingMD),
           Text(
             message,
             style: TherapyDesignSystem.headingSmall.copyWith(
-              color: TherapyDesignSystem.getStatusColor(status),
+              color: statusColor,
             ),
             textAlign: TextAlign.center,
           ),
@@ -44,24 +46,25 @@ class FeedbackIndicatorWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildIcon() {
+  Widget _buildIcon(Color statusColor) {
     IconData iconData;
     String emoji;
 
-    switch (status) {
-      case FeedbackStatus.success:
+    switch (status.toLowerCase()) {
+      case 'success':
         iconData = Icons.check_circle;
         emoji = '🎉';
         break;
-      case FeedbackStatus.warning:
+      case 'warning':
         iconData = Icons.info;
         emoji = '👍';
         break;
-      case FeedbackStatus.error:
+      case 'error':
         iconData = Icons.error;
         emoji = '💪';
         break;
-      case FeedbackStatus.info:
+      case 'info':
+      default:
         iconData = Icons.info_outline;
         emoji = 'ℹ️';
         break;
@@ -78,7 +81,7 @@ class FeedbackIndicatorWidget extends StatelessWidget {
         Icon(
           iconData,
           size: 64,
-          color: TherapyDesignSystem.getStatusColor(status),
+          color: statusColor,
         ),
       ],
     );
@@ -92,7 +95,7 @@ class LargeTherapyButton extends StatelessWidget {
     required this.text,
     required this.onPressed,
     this.icon,
-    this.size = ButtonSize.large,
+    this.size = 100.0,
     this.variant = ButtonVariant.primary,
     this.isLoading = false,
   });
@@ -100,13 +103,13 @@ class LargeTherapyButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
   final IconData? icon;
-  final ButtonSize size;
+  final double size;
   final ButtonVariant variant;
   final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
-    final buttonSize = size.size;
+    final buttonSize = size;
     final isPrimary = variant == ButtonVariant.primary;
 
     return SizedBox(
@@ -135,7 +138,7 @@ class LargeTherapyButton extends StatelessWidget {
                   ],
                   Text(
                     text,
-                    style: TherapyDesignSystem.buttonText,
+                    style: TherapyDesignSystem.buttonStyle,
                   ),
                 ],
               ),
@@ -148,4 +151,3 @@ enum ButtonVariant {
   primary,
   secondary,
 }
-

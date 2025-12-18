@@ -46,9 +46,9 @@ class TherapySessionState {
 /// Therapy Session Notifier
 class TherapySessionNotifier extends StateNotifier<TherapySessionState> {
   final ProgressTrackingService _progressService;
-  final AdaptiveExerciseService _adaptiveService;
+  // final AdaptiveExerciseService _adaptiveService; // Temporär deaktiviert
 
-  TherapySessionNotifier(this._progressService, this._adaptiveService)
+  TherapySessionNotifier(this._progressService) // , this._adaptiveService)
       : super(const TherapySessionState());
 
   /// Startet eine neue Therapie-Session
@@ -195,7 +195,7 @@ class TherapySessionNotifier extends StateNotifier<TherapySessionState> {
 final therapySessionProvider =
     StateNotifierProvider<TherapySessionNotifier, TherapySessionState>((ref) {
   final progressService = ref.watch(progressTrackingServiceProvider);
-  final adaptiveService = ref.watch(adaptiveExerciseServiceProvider);
-  return TherapySessionNotifier(progressService, adaptiveService);
+  // final adaptiveService = ref.watch(adaptiveExerciseServiceProvider);
+  return TherapySessionNotifier(progressService); // , adaptiveService);
 });
 

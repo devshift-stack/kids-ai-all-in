@@ -13,6 +13,7 @@ import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'core/env_config.dart';
 import 'core/routes/app_routes.dart';
+import 'providers/services_providers.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -65,7 +66,7 @@ Future<void> main() async {
       startLocale: const Locale('bs'),
       child: ProviderScope(
         overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
+          // sharedPreferencesProvider wird nicht mehr benötigt, da es ein FutureProvider ist
         ],
         child: const TherapyAIApp(),
       ),
@@ -141,15 +142,12 @@ class _AppStartupState extends ConsumerState<AppStartup>
     await EnvConfig.initialize();
     
     // Initialize Firebase services
-    final firebaseService = ref.read(firebaseServiceProvider);
-
-    // Enable offline mode
-    await firebaseService.enableOfflineMode();
-
-    // Sign in anonymously to Firebase
-    if (!firebaseService.isSignedIn) {
-      await firebaseService.signInAnonymously();
-    }
+    // TODO: Firebase Service implementieren
+    // final firebaseService = ref.read(firebaseServiceProvider);
+    // await firebaseService.enableOfflineMode();
+    // if (!firebaseService.isSignedIn) {
+    //   await firebaseService.signInAnonymously();
+    // }
 
     // Simulate initialization time for splash effect
     await Future.delayed(const Duration(seconds: 2));

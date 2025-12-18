@@ -44,7 +44,7 @@ class AppRoutes {
           settings: settings,
         );
 
-      case settings:
+      case AppRoutes.settings:
         return _buildRoute(
           const SettingsScreen(),
           settings: settings,

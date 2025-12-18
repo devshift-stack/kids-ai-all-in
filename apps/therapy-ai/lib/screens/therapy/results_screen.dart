@@ -47,7 +47,6 @@ class ResultsScreen extends ConsumerWidget {
               // Pronunciation Feedback Widget
               PronunciationFeedbackWidget(
                 result: result,
-                targetWord: exercise.targetWord,
               ),
               SizedBox(height: TherapyDesignSystem.spacingXL),
 

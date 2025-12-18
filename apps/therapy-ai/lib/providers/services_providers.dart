@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/whisper_speech_service.dart';
 import '../services/elevenlabs_voice_service.dart';
 import '../services/audio_analysis_service.dart';
@@ -28,5 +30,25 @@ final adaptiveExerciseServiceProvider = Provider<AdaptiveExerciseService>((ref) 
 /// Progress Tracking Service Provider
 final progressTrackingServiceProvider = Provider<ProgressTrackingService>((ref) {
   return ProgressTrackingService();
+});
+
+// ============================================================
+// ADDITIONAL PROVIDERS (für main.dart)
+// ============================================================
+
+/// Shared Preferences Provider
+final sharedPreferencesProvider = FutureProvider<SharedPreferences>((ref) async {
+  return await SharedPreferences.getInstance();
+});
+
+/// Theme Mode Provider
+final themeModeProvider = StateProvider<ThemeMode>((ref) {
+  return ThemeMode.system;
+});
+
+/// Firebase Service Provider (Placeholder - muss implementiert werden)
+final firebaseServiceProvider = Provider<dynamic>((ref) {
+  // TODO: Implementiere Firebase Service
+  return null;
 });
 

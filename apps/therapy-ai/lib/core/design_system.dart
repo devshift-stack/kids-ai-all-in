@@ -162,6 +162,58 @@ class TherapyDesignSystem {
   static const Color statusErrorLight = Color(0xFFFF9999);
   static const Color statusErrorBg = Color(0xFFFFECEC);
 
+  // ============================================================
+  // COMPATIBILITY ALIASES (für bestehenden Code)
+  // ============================================================
+
+  /// Primary Blue (Alias für statusActive)
+  static const Color primaryBlue = statusActive;
+
+  /// Success Green (Alias für statusSuccess)
+  static const Color successGreen = statusSuccess;
+
+  /// Warning Yellow (Alias für statusWarning)
+  static const Color warningYellow = statusWarning;
+
+  /// Error Red (Alias für statusError)
+  static const Color errorRed = statusError;
+
+  /// Secondary Orange (für Kompatibilität)
+  static const Color secondaryOrange = Color(0xFFFF6B35);
+
+  /// Surface White (Alias)
+  static const Color surfaceWhite = Colors.white;
+
+  /// Surface Gray (Alias für statusInactiveBg)
+  static const Color surfaceGray = statusInactiveBg;
+
+  /// Text Dark (Alias für KidsColors.textPrimary)
+  static const Color textDark = KidsColors.textPrimary;
+
+  /// Text Secondary (Alias)
+  static const Color textSecondary = KidsColors.textSecondary;
+
+  /// Heading Medium (Alias für h3Style)
+  static const TextStyle headingMedium = h3Style;
+
+  /// Heading Small (Alias für h3Style)
+  static const TextStyle headingSmall = h3Style;
+
+  /// Body Large (Alias)
+  static const TextStyle bodyLarge = bodyLargeStyle;
+
+  /// Body Medium (Alias)
+  static const TextStyle bodyMedium = bodyMediumStyle;
+
+  /// Min Touch Target (Alias für touchTargetSmall)
+  static const double minTouchTarget = touchTargetSmall;
+
+  /// Large Touch Target (Alias für touchTargetPrimary)
+  static const double largeTouchTarget = touchTargetPrimary;
+
+  /// Radius Round (Alias für radiusXLarge)
+  static const double radiusRound = radiusXLarge;
+
   /// Helper: Get Status Color by Status String
   static Color getStatusColorByString(String status) {
     switch (status.toLowerCase()) {
@@ -214,6 +266,13 @@ class TherapyDesignSystem {
       default:
         return statusInactiveBg;
     }
+  }
+
+  /// Helper: Get Feedback Color by Score (0-100)
+  static Color getFeedbackColor(double score) {
+    if (score >= 80) return statusSuccess;
+    if (score >= 60) return statusWarning;
+    return statusError;
   }
 
   // ============================================================

@@ -18,7 +18,6 @@ Eine Flutter-App mit einem KI-gestützten Verkaufsagenten (Lisa), der Solarmodul
 - Flutter SDK 3.10.1 oder höher
 - Dart SDK
 - Android Studio / Xcode für Plattform-spezifische Entwicklung
-- Google Gemini API Key
 
 ### Installation
 
@@ -28,19 +27,19 @@ cd apps/callcenter-ai
 flutter pub get
 ```
 
-2. **App mit API-Key starten:**
+2. **API-Key konfigurieren:**
 ```bash
-flutter run --dart-define=GEMINI_API_KEY=AIzaSyC4hhRA_tpmX-TXGBsDhfE9B4pmmr1Sfsk
+flutter run --dart-define=GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
 Oder für Android:
 ```bash
-flutter run --dart-define=GEMINI_API_KEY=AIzaSyC4hhRA_tpmX-TXGBsDhfE9B4pmmr1Sfsk -d android
+flutter run --dart-define=GEMINI_API_KEY=your_key -d android
 ```
 
 Oder für iOS:
 ```bash
-flutter run --dart-define=GEMINI_API_KEY=AIzaSyC4hhRA_tpmX-TXGBsDhfE9B4pmmr1Sfsk -d ios
+flutter run --dart-define=GEMINI_API_KEY=your_key -d ios
 ```
 
 ### Permissions
@@ -113,13 +112,13 @@ Die App ist aktuell auf Google Gemini ausgelegt. Um andere APIs zu verwenden:
 
 ```bash
 # App im Debug-Modus starten
-flutter run --dart-define=GEMINI_API_KEY=AIzaSyC4hhRA_tpmX-TXGBsDhfE9B4pmmr1Sfsk
+flutter run --dart-define=GEMINI_API_KEY=your_key
 
 # Build für Android
-flutter build apk --dart-define=GEMINI_API_KEY=AIzaSyC4hhRA_tpmX-TXGBsDhfE9B4pmmr1Sfsk
+flutter build apk --dart-define=GEMINI_API_KEY=your_key
 
 # Build für iOS
-flutter build ios --dart-define=GEMINI_API_KEY=AIzaSyC4hhRA_tpmX-TXGBsDhfE9B4pmmr1Sfsk
+flutter build ios --dart-define=GEMINI_API_KEY=your_key
 ```
 
 ## Lizenz

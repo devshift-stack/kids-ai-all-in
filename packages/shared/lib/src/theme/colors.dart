@@ -54,7 +54,14 @@ class KidsColors {
 
   /// Hintergrund - OKLCH(0.98 0.01 280) - Sehr helles Lila-Weiß
   static const Color background = Color(0xFFFAF9FC); // ~oklch(0.98 0.01 280)
+  static const Color backgroundLight = Color(0xFFFAF9FC); // Alias für background
   static const Color backgroundAlt = Color(0xFFFFFFFF);
+  
+  /// Grau-Töne (für Kompatibilität)
+  static const Color gray100 = Color(0xFFF5F5F5);
+  static const Color gray200 = Color(0xFFEEEEEE);
+  static const Color gray300 = Color(0xFFE0E0E0);
+  static const Color gray400 = Color(0xFFBDBDBD);
 
   /// Oberflächen - Weiß mit Transparenz für Backdrop Blur
   static const Color surface = Color(0xFFFFFFFF);
