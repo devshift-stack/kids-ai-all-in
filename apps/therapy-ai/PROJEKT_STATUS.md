@@ -298,6 +298,8 @@
 
 ## 📈 Statistiken
 
+**Hinweis:** Gesamtzahl wurde von 19 auf 18 reduziert durch Entfernung eines duplizierten "Testing & Optimization" Eintrags.
+
 | Kategorie | Abgeschlossen | In Arbeit | Ausstehend | Gesamt |
 |-----------|---------------|-----------|------------|--------|
 | **Setup** | 1 | 0 | 0 | 1 |

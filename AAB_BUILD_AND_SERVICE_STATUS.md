@@ -81,9 +81,10 @@ Error: Execution failed for task ':app:bundleReleaseResources'
 ### Lösung
 
 ```bash
+# Navigiere zum Android-Verzeichnis
 cd apps/therapy-ai/android
 
-# Stoppe alle Gradle-Daemons
+# Stoppe alle Gradle-Daemons (muss im android/ Verzeichnis ausgeführt werden)
 ./gradlew --stop
 
 # Lösche den spezifischen Cache (falls vorhanden)
