@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -106,8 +105,9 @@ class PremiumTtsService {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      final audioContent = data['audioContent'] as String;
-      final audioBytes = base64Decode(audioContent);
+      // audioContent wird später für Audio-Playback verwendet
+      // final audioContent = data['audioContent'] as String;
+      // final audioBytes = base64Decode(audioContent);
       
       // Speichere temporär und spiele ab
       // Für Flutter: Verwende audioplayers Package oder ähnlich
@@ -147,7 +147,7 @@ class PremiumTtsService {
   }
 
   /// Setzt Error Handler
-  void setErrorHandler(Function(String) callback) {
+  void setErrorHandler(dynamic callback) {
     _flutterTts.setErrorHandler(callback);
   }
 }

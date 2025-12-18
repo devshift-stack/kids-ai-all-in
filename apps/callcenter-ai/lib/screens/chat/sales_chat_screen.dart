@@ -9,7 +9,6 @@ import '../../providers/backend_api_provider.dart';
 import '../../providers/sales_agent_provider.dart';
 import '../../providers/language_provider.dart';
 import '../../providers/premium_tts_provider.dart';
-import '../../services/premium_tts_service.dart';
 import '../dashboard/settings_screen.dart';
 
 class SalesChatScreen extends ConsumerStatefulWidget {

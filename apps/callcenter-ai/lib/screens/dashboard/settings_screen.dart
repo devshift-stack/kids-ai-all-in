@@ -76,7 +76,6 @@ class SettingsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: AppTheme.spacingMd),
             ...SupportedLanguage.values.map((language) {
-              final isSelected = language == currentLanguage;
               return RadioListTile<SupportedLanguage>(
                 title: Text(_getLanguageName(language)),
                 subtitle: Text(_getLanguageSubtitle(language)),
