@@ -92,7 +92,7 @@ class ExerciseCardWidget extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(TherapyDesignSystem.spacingMD),
                 decoration: BoxDecoration(
-                  color: TherapyDesignSystem.primaryBlue.withValues(alpha: 0.1),
+                  color: KidsColors.primary.withValues(alpha: 0.1),
                   borderRadius:
                       BorderRadius.circular(TherapyDesignSystem.radiusMedium),
                 ),
@@ -100,14 +100,14 @@ class ExerciseCardWidget extends StatelessWidget {
                   children: [
                     const Icon(
                       Icons.chat_bubble_outline,
-                      color: TherapyDesignSystem.primaryBlue,
+                      color: KidsColors.primary,
                     ),
                     const SizedBox(width: TherapyDesignSystem.spacingSM),
                     Expanded(
                       child: Text(
                         exercise.targetPhrase!,
-                        style: TherapyDesignSystem.bodyLarge.copyWith(
-                          color: TherapyDesignSystem.primaryBlue,
+                        style: TherapyDesignSystem.bodyLargeStyle.copyWith(
+                          color: KidsColors.primary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -132,8 +132,8 @@ class ExerciseCardWidget extends StatelessWidget {
               const SizedBox(height: TherapyDesignSystem.spacingMD),
               Text(
                 exercise.instructions!,
-                style: TherapyDesignSystem.bodyMedium.copyWith(
-                  color: TherapyDesignSystem.textSecondary,
+                style: TherapyDesignSystem.bodyMediumStyle.copyWith(
+                  color: KidsColors.textSecondary,
                 ),
               ),
             ],
@@ -150,27 +150,27 @@ class ExerciseCardWidget extends StatelessWidget {
     switch (exercise.type) {
       case ExerciseType.wordRepetition:
         iconData = Icons.mic;
-        iconColor = TherapyDesignSystem.primaryBlue;
+        iconColor = KidsColors.primary;
         break;
       case ExerciseType.sentencePractice:
         iconData = Icons.chat;
-        iconColor = TherapyDesignSystem.secondaryOrange;
+        iconColor = KidsColors.secondary;
         break;
       case ExerciseType.phonemeFocus:
         iconData = Icons.record_voice_over;
-        iconColor = TherapyDesignSystem.successGreen;
+        iconColor = KidsColors.success;
         break;
       case ExerciseType.volumeControl:
         iconData = Icons.volume_up;
-        iconColor = TherapyDesignSystem.warningYellow;
+        iconColor = KidsColors.warning;
         break;
       case ExerciseType.articulation:
         iconData = Icons.speaker;
-        iconColor = TherapyDesignSystem.primaryBlue;
+        iconColor = KidsColors.primary;
         break;
       case ExerciseType.conversation:
         iconData = Icons.forum;
-        iconColor = TherapyDesignSystem.secondaryOrange;
+        iconColor = KidsColors.secondary;
         break;
     }
 
@@ -208,10 +208,10 @@ class ExerciseCardWidget extends StatelessWidget {
 
   Widget _buildDifficultyBadge() {
     final difficultyColors = [
-      TherapyDesignSystem.successGreen, // 1-2
-      TherapyDesignSystem.warningYellow, // 3-5
-      TherapyDesignSystem.secondaryOrange, // 6-8
-      TherapyDesignSystem.errorRed, // 9-10
+      KidsColors.success, // 1-2
+      KidsColors.warning, // 3-5
+      KidsColors.secondary, // 6-8
+      KidsColors.error, // 9-10
     ];
 
     final colorIndex = (exercise.difficultyLevel / 3).floor().clamp(0, 3);
@@ -234,7 +234,7 @@ class ExerciseCardWidget extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             'Nivo ${exercise.difficultyLevel}',
-            style: TherapyDesignSystem.bodyMedium.copyWith(
+            style: TherapyDesignSystem.bodyMediumStyle.copyWith(
               color: color,
               fontWeight: FontWeight.w600,
             ),
@@ -257,18 +257,18 @@ class ExerciseCardWidget extends StatelessWidget {
         vertical: TherapyDesignSystem.spacingXS,
       ),
       decoration: BoxDecoration(
-        color: TherapyDesignSystem.surfaceGray,
+        color: KidsColors.gray300,
         borderRadius: BorderRadius.circular(TherapyDesignSystem.radiusSmall),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.timer, size: 16, color: TherapyDesignSystem.textSecondary),
+          Icon(Icons.timer, size: 16, color: KidsColors.textSecondary),
           const SizedBox(width: 4),
           Text(
             durationText,
-            style: TherapyDesignSystem.bodyMedium.copyWith(
-              color: TherapyDesignSystem.textSecondary,
+            style: TherapyDesignSystem.bodyMediumStyle.copyWith(
+              color: KidsColors.textSecondary,
             ),
           ),
         ],
