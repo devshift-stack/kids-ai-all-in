@@ -1,0 +1,223 @@
+name: Kids AI Monorepo CI/CD
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-alanko:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: "3.38.5"
+        channel: stable
+        cache: true
+
+    - name: Install dependencies (shared package)
+      run: |
+        cd packages/shared
+        flutter pub get
+
+    - name: Get dependencies (alanko)
+      run: |
+        cd apps/alanko
+        flutter pub get
+
+    - name: Analyze code
+      run: |
+        cd apps/alanko
+        flutter analyze --no-fatal-infos
+      continue-on-error: true
+
+    - name: Run tests
+      run: |
+        cd apps/alanko
+        flutter test
+      continue-on-error: true
+
+    - name: Build APK
+      run: |
+        cd apps/alanko
+        flutter build apk --release --no-tree-shake-icons
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || '' }}
+
+    - name: Upload Alanko APK
+      uses: actions/upload-artifact@v4
+      if: success()
+      with:
+        name: alanko-apk
+        path: apps/alanko/build/app/outputs/flutter-apk/app-release.apk
+        retention-days: 7
+
+  build-lianko:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: "3.38.5"
+        channel: stable
+        cache: true
+
+    - name: Install dependencies (shared package)
+      run: |
+        cd packages/shared
+        flutter pub get
+
+    - name: Get dependencies (lianko)
+      run: |
+        cd apps/lianko
+        flutter pub get
+
+    - name: Analyze code
+      run: |
+        cd apps/lianko
+        flutter analyze --no-fatal-infos
+      continue-on-error: true
+
+    - name: Run tests
+      run: |
+        cd apps/lianko
+        flutter test
+      continue-on-error: true
+
+    - name: Build APK
+      run: |
+        cd apps/lianko
+        flutter build apk --release --no-tree-shake-icons
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || '' }}
+
+    - name: Upload Lianko APK
+      uses: actions/upload-artifact@v4
+      if: success()
+      with:
+        name: lianko-apk
+        path: apps/lianko/build/app/outputs/flutter-apk/app-release.apk
+        retention-days: 7
+
+  build-parent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: "3.38.5"
+        channel: stable
+        cache: true
+
+    - name: Install dependencies (shared package)
+      run: |
+        cd packages/shared
+        flutter pub get
+
+    - name: Get dependencies (parent)
+      run: |
+        cd apps/parent
+        flutter pub get
+
+    - name: Analyze code
+      run: |
+        cd apps/parent
+        flutter analyze --no-fatal-infos
+      continue-on-error: true
+
+    - name: Run tests
+      run: |
+        cd apps/parent
+        flutter test
+      continue-on-error: true
+
+    - name: Build APK
+      run: |
+        cd apps/parent
+        flutter build apk --release --no-tree-shake-icons
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || '' }}
+
+    - name: Upload Parent APK
+      uses: actions/upload-artifact@v4
+      if: success()
+      with:
+        name: parent-apk
+        path: apps/parent/build/app/outputs/flutter-apk/app-release.apk
+        retention-days: 7
+
+  deploy:
+    needs: [build-alanko, build-lianko, build-parent]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    timeout-minutes: 15
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download all APKs
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Deploy Alanko to Firebase
+      uses: wzieba/Firebase-Distribution-Github-Action@v1
+      if: always()
+      with:
+        appId: ${{ secrets.FIREBASE_APP_ID_ALANKO }}
+        serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        groups: testers
+        file: artifacts/alanko-apk/app-release.apk
+      continue-on-error: true
+
+    - name: Deploy Lianko to Firebase
+      uses: wzieba/Firebase-Distribution-Github-Action@v1
+      if: always()
+      with:
+        appId: ${{ secrets.FIREBASE_APP_ID_LIANKO }}
+        serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        groups: testers
+        file: artifacts/lianko-apk/app-release.apk
+      continue-on-error: true
+
+    - name: Deploy Parent to Firebase
+      uses: wzieba/Firebase-Distribution-Github-Action@v1
+      if: always()
+      with:
+        appId: ${{ secrets.FIREBASE_APP_ID_PARENT }}
+        serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        groups: testers
+        file: artifacts/parent-apk/app-release.apk
+      continue-on-error: true
