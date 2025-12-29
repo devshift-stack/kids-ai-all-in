@@ -7,7 +7,7 @@
       "type": "dart",
       "program": "lib/main.dart",
       "args": [
-        "--dart-define=GEMINI_API_KEY=AIzaSyD5jBRl-Ti0r_uSyx5JW24H3CySQ8RWrS8"
+        "--dart-define=GEMINI_API_KEY=${env:GEMINI_API_KEY}"
       ],
       "cwd": "${workspaceFolder}/apps/alanko"
     },
@@ -48,7 +48,7 @@
       "type": "dart",
       "program": "lib/main.dart",
       "args": [
-        "--dart-define=GEMINI_API_KEY=AIzaSyD5jBRl-Ti0r_uSyx5JW24H3CySQ8RWrS8",
+        "--dart-define=GEMINI_API_KEY=${env:GEMINI_API_KEY}",
         "--profile"
       ],
       "cwd": "${workspaceFolder}/apps/alanko"
