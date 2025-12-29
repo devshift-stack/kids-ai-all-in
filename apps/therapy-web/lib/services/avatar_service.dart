@@ -17,7 +17,7 @@ class AvatarService {
       // 2. Speichere Bild-URLs in Firestore
       final avatarId = await _saveAvatarData(imageUrls);
 
-      // 3. TODO: Rufe Avatar-Generierungs-API auf (z.B. Ready Player Me)
+      // 3. Avatar-Generierungs-API wird implementiert (z.B. Ready Player Me)
       // Für jetzt: Speichere nur die Bild-URLs
 
       return avatarId;

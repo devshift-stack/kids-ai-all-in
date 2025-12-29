@@ -7,9 +7,47 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:153773777928:android:1307434ba8dbca9310ddbd",
+        "android_client_info": {
+          "package_name": "com.alanko.io"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0klStcKs2GgBeFNiS12qqFmXz_XJLVt0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:153773777928:android:c86bec49038b775f10ddbd",
         "android_client_info": {
           "package_name": "com.kidsai.parent.kids_ai_parent"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0klStcKs2GgBeFNiS12qqFmXz_XJLVt0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:153773777928:android:f85c87ed5d20cb2810ddbd",
+        "android_client_info": {
+          "package_name": "com.lianko.io"
         }
       },
       "oauth_client": [],

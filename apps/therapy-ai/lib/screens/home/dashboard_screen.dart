@@ -5,11 +5,7 @@ import '../../models/exercise.dart';
 import '../../models/child_profile.dart';
 import '../../providers/child_profile_provider.dart';
 import '../../providers/services_providers.dart';
-import '../../services/adaptive_exercise_service.dart';
-import '../../services/progress_tracking_service.dart';
 import '../../widgets/exercise_card_widget.dart';
-import '../../widgets/progress_chart_widget.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/design_system.dart';
 
@@ -177,7 +173,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: KidsGradients.primaryGradient,
+        gradient: KidsGradients.primary,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(

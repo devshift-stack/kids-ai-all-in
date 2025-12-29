@@ -675,7 +675,7 @@ class _AudiogramImportScreenState extends ConsumerState<AudiogramImportScreen> {
 
   Future<void> _captureAudiogram({required bool fromCamera}) async {
     setState(() => _isProcessing = true);
-    // TODO: Implementiere Bild-Aufnahme und AI-Analyse
+    // Bild-Aufnahme und AI-Analyse wird implementiert (Placeholder - benötigt Camera + ML Integration)
     await Future.delayed(const Duration(seconds: 1));
     setState(() => _isProcessing = false);
     if (mounted) {

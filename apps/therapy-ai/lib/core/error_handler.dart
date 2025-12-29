@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 
 /// Error Handler für API-Calls
 /// Bietet Retry-Logik und Error-Kategorisierung
@@ -37,7 +36,7 @@ class ErrorHandler {
 
         // Prüfe ob Retry sinnvoll ist
         if (!_shouldRetry(e) || attempt >= maxRetries) {
-          throw handleDioError(e);
+          throw _handleDioError(e);
         }
 
         // Exponential Backoff
@@ -127,8 +126,6 @@ class ErrorHandler {
     }
   }
 
-  /// Behandelt DioException und gibt benutzerfreundliche Fehlermeldung (für interne Verwendung)
-  static Exception _handleDioError(DioException error) => handleDioError(error);
 
   /// Behandelt Firebase-Fehler
   static String handleFirebaseError(dynamic error) {

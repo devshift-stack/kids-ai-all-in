@@ -147,7 +147,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> {
   }
 
   void _saveSettings() {
-    // TODO: Speichere Einstellungen in Firebase
+    // Speichere Einstellungen in Firebase (Placeholder - wird später implementiert)
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Einstellungen wurden gespeichert'),

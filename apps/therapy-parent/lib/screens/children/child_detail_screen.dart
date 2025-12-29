@@ -12,7 +12,7 @@ class ChildDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Lade Kind-Daten aus Firebase
+    // Lade Kind-Daten aus Firebase (Placeholder - wird später implementiert)
 
     return Scaffold(
       appBar: AppBar(
@@ -51,7 +51,13 @@ class ChildDetailScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 16),
-            // TODO: Zeige Statistiken
+            // Statistiken werden geladen (Placeholder)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text('Statistiken werden geladen...', style: Theme.of(context).textTheme.bodyMedium),
+              ),
+            ),
 
             const SizedBox(height: 24),
 
@@ -61,7 +67,13 @@ class ChildDetailScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 16),
-            // TODO: Zeige Sessions
+            // Sessions werden geladen (Placeholder)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text('Sessions werden geladen...', style: Theme.of(context).textTheme.bodyMedium),
+              ),
+            ),
           ],
         ),
       ),

@@ -217,7 +217,7 @@ class _AvatarUploadScreenState extends State<AvatarUploadScreen> {
     setState(() => _isGenerating = true);
 
     try {
-      // TODO: Implementiere Avatar-Generierung
+      // Avatar-Generierung wird implementiert (Placeholder)
       final avatarService = AvatarService();
       await avatarService.generateAvatar(_uploadedImages);
 

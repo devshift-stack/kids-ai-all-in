@@ -190,6 +190,22 @@ class KidsTypography {
   );
 
   // ============================================================
+  // COMPATIBILITY GETTERS (für bestehenden Code)
+  // ============================================================
+
+  /// H1 Style (Alias für displayMedium)
+  static const TextStyle h1 = displayMedium;
+
+  /// H2 Style (Alias für headlineLarge)
+  static const TextStyle h2 = headlineLarge;
+
+  /// H3 Style (Alias für headlineMedium)
+  static const TextStyle h3 = headlineMedium;
+
+  /// Caption Style (Alias für bodySmall)
+  static const TextStyle caption = bodySmall;
+
+  // ============================================================
   // TEXT THEME (für ThemeData)
   // ============================================================
 

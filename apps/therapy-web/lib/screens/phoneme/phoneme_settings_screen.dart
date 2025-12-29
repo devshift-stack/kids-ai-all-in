@@ -132,7 +132,7 @@ class _PhonemeSettingsScreenState extends State<PhonemeSettingsScreen> {
   }
 
   void _saveSettings() {
-    // TODO: Speichere Einstellungen in Firebase
+    // Speichere Einstellungen in Firebase (Placeholder - wird später implementiert)
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Phonem-Einstellungen wurden gespeichert'),

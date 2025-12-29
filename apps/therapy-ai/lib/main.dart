@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,12 +6,12 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:kids_ai_shared/kids_ai_shared.dart';
 import 'firebase_options.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/env_config.dart';
 import 'core/routes/app_routes.dart';
+import 'providers/services_providers.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -140,16 +139,12 @@ class _AppStartupState extends ConsumerState<AppStartup>
     // Initialize Environment Configuration
     await EnvConfig.initialize();
     
-    // Initialize Firebase services
-    final firebaseService = ref.read(firebaseServiceProvider);
-
-    // Enable offline mode
-    await firebaseService.enableOfflineMode();
-
-    // Sign in anonymously to Firebase
-    if (!firebaseService.isSignedIn) {
-      await firebaseService.signInAnonymously();
-    }
+    // TODO: Firebase Service implementieren
+    // final firebaseService = ref.read(firebaseServiceProvider);
+    // await firebaseService.enableOfflineMode();
+    // if (!firebaseService.isSignedIn) {
+    //   await firebaseService.signInAnonymously();
+    // }
 
     // Simulate initialization time for splash effect
     await Future.delayed(const Duration(seconds: 2));

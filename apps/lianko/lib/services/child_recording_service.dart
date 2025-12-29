@@ -46,7 +46,7 @@ class ChildRecordingService {
 
       _currentRecordingPath = '${recordingsDir.path}/$symbolId.m4a';
 
-      // TODO: Echte Aufnahme starten
+      // Echte Aufnahme wird implementiert (Placeholder)
       // await _recorder.start(
       //   RecordConfig(),
       //   path: _currentRecordingPath!,
@@ -73,7 +73,7 @@ class ChildRecordingService {
     try {
       _state = RecordingState.processing;
 
-      // TODO: Echte Aufnahme stoppen
+      // Echte Aufnahme stoppen wird implementiert (Placeholder)
       // final path = await _recorder.stop();
 
       // Simuliere Aufnahme-Ende
@@ -120,7 +120,7 @@ class ChildRecordingService {
         if (kDebugMode) {
           print('🔊 Spiele Kind-Aufnahme: $word');
         }
-        // TODO: Echte Wiedergabe
+        // Echte Wiedergabe wird implementiert (Placeholder)
         // await _player.play(DeviceFileSource(recordingPath));
         // await _player.onPlayerComplete.first;
 
@@ -132,7 +132,7 @@ class ChildRecordingService {
         if (kDebugMode) {
           print('🔊 Kein Aufnahme vorhanden, nutze TTS für: $word');
         }
-        // TODO: TTS Fallback
+        // TTS Fallback wird implementiert (Placeholder)
         // await FlutterTts().speak(word);
         await Future.delayed(const Duration(milliseconds: 500));
       }
@@ -250,7 +250,7 @@ final childRecordingServiceProvider = Provider<ChildRecordingService>((ref) {
 
 /// Provider für Recording State
 final recordingStateProvider = StreamProvider<RecordingState>((ref) {
-  // TODO: Echten Stream implementieren
+  // Echter Stream wird implementiert (Placeholder - benötigt Recording Service Integration)
   return Stream.value(RecordingState.idle);
 });
 

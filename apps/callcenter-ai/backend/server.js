@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { v4 as uuidv4 } from 'uuid';
 import rateLimit from 'express-rate-limit';
+import { getSystemPrompt } from './language_prompts.js';
+import { AgentFactory, AGENT_TYPES, PRODUCT_CATEGORIES } from './premium_agents.js';
 
 dotenv.config();
 
@@ -31,38 +33,25 @@ if (!GEMINI_API_KEY) {
 }
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ 
-  model: 'gemini-1.5-flash',
-  generationConfig: {
-    temperature: 0.8,
-    topK: 40,
-    topP: 0.95,
-    maxOutputTokens: 512,
-  },
-  systemInstruction: getSystemPrompt(),
-});
+
+// Factory-Funktion für Model mit Sprache
+function createModel(language = 'german') {
+  return genAI.getGenerativeModel({ 
+    model: 'gemini-1.5-flash',
+    generationConfig: {
+      temperature: 0.8,
+      topK: 40,
+      topP: 0.95,
+      maxOutputTokens: 512,
+    },
+    systemInstruction: getSystemPrompt(language),
+  });
+}
 
 // Session Storage (In-Memory - für Production: Datenbank verwenden)
 const sessions = new Map();
 
-// System-Prompt für Lisa
-function getSystemPrompt() {
-  return `You are Lisa, the best sales agent in a call center specializing in selling solar panels (Solarmodule) over the phone. You are charming, empathetic, and professional – like a friendly expert who genuinely cares about helping the customer save money, improve their life, and solve problems.
-
-**Your Personality and Style:**
-- **Charming and Persistent but Not Pushy:** Be warm, engaging, and enthusiastic. Use compliments and positive language to build rapport (e.g., "That's a great question!"). Never give up easily if the customer shows interest, but respect "no" – suggest alternatives or follow up politely without overwhelming.
-- **Keep It Simple:** Don't overload the customer with technical jargon or too much expert knowledge. Explain only what's important in simple terms (e.g., instead of detailed specs on solar panels, say: "This could cut your electricity bill by 30% and help the environment – sounds good, right?").
-- **Lead with Questions:** Remember the rule: "Who asks, leads." Guide the conversation by asking open-ended questions to uncover the customer's goals, desires, emotions, and fears.
-- **Build Trust and Emotional Connection:** Listen actively, reflect back what they say, and tie products to their personal story.
-- **Sales Structure:** Follow this flow naturally:
-  1. **Greeting and Rapport:** Start friendly, confirm identity, and ask how they're doing.
-  2. **Qualify Needs:** Ask questions to understand their situation.
-  3. **Present Value:** Highlight key benefits tailored to their answers.
-  4. **Handle Objections:** Address fears empathetically.
-  5. **Close Gently:** Ask for commitment with questions like "Would you like to get a free quote today and start saving?"
-  6. **End Positively:** Thank them, even if no sale – offer follow-up.
-- **Rules:** Stay ethical – no false promises. Keep responses concise (under 100 words per turn). End turns with a question to keep dialogue going. Always respond in the customer's language (German if they speak German, English if they speak English).`;
-}
+// System-Prompts sind jetzt in language_prompts.js
 
 // API Routes
 
@@ -75,14 +64,17 @@ app.get('/api/v1/health', (req, res) => {
   });
 });
 
-// Neue Session erstellen
+// Neue Session erstellen (Legacy - mit language_prompts.js)
 app.post('/api/v1/sessions', (req, res) => {
+  const { language = 'german' } = req.body;
   const sessionId = uuidv4();
-  const chat = model.startChat();
+  const modelInstance = createModel(language);
+  const chat = modelInstance.startChat();
   
   const session = {
     id: sessionId,
     chat: chat,
+    language: language,
     messages: [],
     createdAt: new Date().toISOString(),
     lastActivity: new Date().toISOString(),
@@ -90,8 +82,14 @@ app.post('/api/v1/sessions', (req, res) => {
   
   sessions.set(sessionId, session);
   
-  // Begrüßung von Lisa
-  const greeting = 'Hallo! Ich bin Lisa, Ihre Verkaufsberaterin. Schön, dass ich Sie erreiche! Wie geht es Ihnen heute? Ich rufe an, um über Solarmodule zu sprechen – haben Sie sich schon einmal Gedanken über Solarstrom gemacht?';
+  // Begrüßung von Lisa (sprachabhängig)
+  const greetings = {
+    german: 'Hallo! Ich bin Lisa, Ihre Verkaufsberaterin. Schön, dass ich Sie erreiche! Wie geht es Ihnen heute? Ich rufe an, um über Solarmodule zu sprechen – haben Sie sich schon einmal Gedanken über Solarstrom gemacht?',
+    bosnian: 'Zdravo! Ja sam Lisa, vaša prodajna savjetnica. Drago mi je što vas mogu kontaktirati! Kako ste danas? Zovem vas da razgovorimo o solarnim panelima – da li ste ikada razmišljali o solarnoj energiji?',
+    serbian: 'Zdravo! Ja sam Lisa, vaša prodajna savetnica. Drago mi je što vas mogu kontaktirati! Kako ste danas? Zovem vas da razgovorimo o solarnim panelima – da li ste ikada razmišljali o solarnoj energiji?',
+  };
+  
+  const greeting = greetings[language] || greetings.german;
   
   session.messages.push({
     role: 'assistant',
@@ -102,11 +100,113 @@ app.post('/api/v1/sessions', (req, res) => {
   res.json({
     sessionId: sessionId,
     greeting: greeting,
+    language: language,
     createdAt: session.createdAt,
   });
 });
 
-// Nachricht an Session senden
+// Premium Agent Session erstellen (NEU)
+app.post('/api/v1/premium/sessions', (req, res) => {
+  const { 
+    agentType = 'sales', 
+    productCategory = 'solar', 
+    language = 'german' 
+  } = req.body;
+  
+  const sessionId = uuidv4();
+  
+  // Erstelle Premium Agent
+  let agent;
+  try {
+    if (agentType === 'sales') {
+      agent = AgentFactory.createSalesAgent(productCategory, language);
+    } else if (agentType === 'vertrieb') {
+      agent = AgentFactory.createVertriebAgent(productCategory, language);
+    } else if (agentType === 'kundendienst') {
+      agent = AgentFactory.createKundendienstAgent(productCategory, language);
+    } else if (agentType === 'innendienst') {
+      agent = AgentFactory.createInnendienstAgent(productCategory, language);
+    } else {
+      return res.status(400).json({ error: `Unbekannter Agent-Typ: ${agentType}` });
+    }
+    
+    const chat = agent.startChat();
+    
+    const session = {
+      id: sessionId,
+      agent: agent,
+      chat: chat,
+      agentType: agentType,
+      productCategory: productCategory,
+      language: language,
+      agentName: agent.name,
+      messages: [],
+      createdAt: new Date().toISOString(),
+      lastActivity: new Date().toISOString(),
+    };
+    
+    sessions.set(sessionId, session);
+    
+    // Begrüßung basierend auf Agent und Produkt
+    const greeting = getPremiumGreeting(agentType, productCategory, language, agent.name);
+    
+    session.messages.push({
+      role: 'assistant',
+      text: greeting,
+      timestamp: new Date().toISOString(),
+    });
+    
+    res.json({
+      sessionId: sessionId,
+      greeting: greeting,
+      agentType: agentType,
+      productCategory: productCategory,
+      language: language,
+      agentName: agent.name,
+      createdAt: session.createdAt,
+    });
+  } catch (error) {
+    console.error('Premium Agent Error:', error);
+    res.status(500).json({ error: 'Fehler beim Erstellen des Premium Agents' });
+  }
+});
+
+// Premium Agent Begrüßungen
+function getPremiumGreeting(agentType, productCategory, language, agentName) {
+  const greetings = {
+    sales: {
+      solar: {
+        german: `Hallo! Ich bin ${agentName}, Ihre Verkaufsberaterin für Solarmodule. Schön, dass ich Sie erreiche! Wie geht es Ihnen heute? Ich rufe an, um über Solarmodule zu sprechen – haben Sie sich schon einmal Gedanken über Solarstrom gemacht?`,
+      },
+      strom: {
+        german: `Hallo! Ich bin ${agentName}, Ihr Berater für Stromverträge. Schön, dass ich Sie erreiche! Ich rufe an, um Ihnen zu helfen, Ihre Stromkosten zu senken. Wie hoch sind denn aktuell Ihre monatlichen Stromkosten?`,
+      },
+      handy: {
+        german: `Hallo! Ich bin ${agentName}, Ihr Berater für Handyverträge. Schön, dass ich Sie erreiche! Ich rufe an, um Ihnen passende Handyverträge und Smartphones anzubieten. Welches Gerät nutzen Sie aktuell?`,
+      }
+    },
+    vertrieb: {
+      solar: {
+        german: `Guten Tag! Ich bin ${agentName} vom Vertrieb. Ich rufe an, um über größere Solarprojekte für Ihr Unternehmen zu sprechen. Haben Sie bereits Erfahrung mit Solarenergie?`,
+      }
+    },
+    kundendienst: {
+      solar: {
+        german: `Hallo! Ich bin ${agentName} vom Kundendienst. Wie kann ich Ihnen heute helfen?`,
+      }
+    },
+    innendienst: {
+      solar: {
+        german: `Guten Tag! Ich bin ${agentName} vom Innendienst. Wie kann ich Sie unterstützen?`,
+      }
+    }
+  };
+  
+  return greetings[agentType]?.[productCategory]?.[language] || 
+         `Hallo! Ich bin ${agentName}. Wie kann ich Ihnen helfen?`;
+}
+
+// Nachricht an Session senden (Legacy)
 app.post('/api/v1/sessions/:sessionId/chat', async (req, res) => {
   const { sessionId } = req.params;
   const { message } = req.body;
@@ -162,6 +262,69 @@ app.post('/api/v1/sessions/:sessionId/chat', async (req, res) => {
   }
 });
 
+// Premium Agent Chat (NEU)
+app.post('/api/v1/premium/sessions/:sessionId/chat', async (req, res) => {
+  const { sessionId } = req.params;
+  const { message } = req.body;
+  
+  if (!message || typeof message !== 'string') {
+    return res.status(400).json({ error: 'Message ist erforderlich' });
+  }
+  
+  const session = sessions.get(sessionId);
+  if (!session) {
+    return res.status(404).json({ error: 'Session nicht gefunden' });
+  }
+  
+  // Prüfe ob Premium Agent Session
+  if (!session.agent) {
+    return res.status(400).json({ error: 'Keine Premium Agent Session' });
+  }
+  
+  try {
+    // User-Nachricht speichern
+    session.messages.push({
+      role: 'user',
+      text: message,
+      timestamp: new Date().toISOString(),
+    });
+    
+    // Premium Agent verwenden
+    const response = await session.agent.sendMessage(message);
+    
+    // Assistant-Antwort speichern
+    session.messages.push({
+      role: 'assistant',
+      text: response,
+      timestamp: new Date().toISOString(),
+    });
+    
+    session.lastActivity = new Date().toISOString();
+    
+    res.json({
+      sessionId: sessionId,
+      response: response,
+      agentName: session.agentName,
+      agentType: session.agentType,
+      productCategory: session.productCategory,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error('Premium Agent Error:', error);
+    
+    let errorMessage = 'Entschuldigung, es ist ein Fehler aufgetreten. Können Sie Ihre Frage bitte wiederholen?';
+    
+    if (error.message?.includes('quota') || error.message?.includes('429')) {
+      errorMessage = 'Entschuldigung, ich habe momentan zu viele Anfragen. Bitte versuchen Sie es in ein paar Minuten erneut.';
+    }
+    
+    res.status(500).json({
+      error: errorMessage,
+      sessionId: sessionId,
+    });
+  }
+});
+
 // Session-Status abrufen
 app.get('/api/v1/sessions/:sessionId', (req, res) => {
   const { sessionId } = req.params;
@@ -199,6 +362,7 @@ app.delete('/api/v1/sessions/:sessionId', (req, res) => {
 app.get('/api/v1/sessions', (req, res) => {
   const sessionList = Array.from(sessions.values()).map(session => ({
     sessionId: session.id,
+    language: session.language || 'german',
     messageCount: session.messages.length,
     createdAt: session.createdAt,
     lastActivity: session.lastActivity,
@@ -207,6 +371,37 @@ app.get('/api/v1/sessions', (req, res) => {
   res.json({
     total: sessionList.length,
     sessions: sessionList,
+  });
+});
+
+// Monitoring & Statistiken
+app.get('/api/v1/stats', (req, res) => {
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  
+  let totalMessages = 0;
+  let messagesToday = 0;
+  const languageStats = {};
+  
+  for (const session of sessions.values()) {
+    totalMessages += session.messages.length;
+    
+    const sessionMessages = session.messages.filter(msg => {
+      const msgDate = new Date(msg.timestamp);
+      return msgDate >= todayStart;
+    });
+    messagesToday += sessionMessages.length;
+    
+    const lang = session.language || 'german';
+    languageStats[lang] = (languageStats[lang] || 0) + 1;
+  }
+  
+  res.json({
+    activeSessions: sessions.size,
+    totalMessages: totalMessages,
+    messagesToday: messagesToday,
+    languageDistribution: languageStats,
+    timestamp: now.toISOString(),
   });
 });
 

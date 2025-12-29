@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../models/communication/communication_model.dart';
@@ -118,9 +119,11 @@ class _QuizGameScreenState extends ConsumerState<QuizGameScreen> {
 
     // Feedback Sound/Vibration
     if (correct) {
-      // TODO: Erfolgs-Sound
+      // Erfolgs-Sound via Vibration
+      HapticFeedback.mediumImpact();
     } else {
-      // TODO: Fehler-Sound
+      // Fehler-Sound via Vibration
+      HapticFeedback.heavyImpact();
     }
 
     // Nächste Frage nach Verzögerung

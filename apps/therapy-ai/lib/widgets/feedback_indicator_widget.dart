@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:kids_ai_shared/kids_ai_shared.dart';
 import '../core/design_system.dart';
+
+/// Feedback Status Enum
+enum FeedbackStatus {
+  success,
+  warning,
+  error,
+  info,
+}
 
 /// Feedback Indicator Widget
 /// Große, visuelle Status-Anzeige für Kinder
@@ -20,10 +29,10 @@ class FeedbackIndicatorWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(TherapyDesignSystem.spacingXL),
       decoration: BoxDecoration(
-        color: TherapyDesignSystem.getStatusColor(status).withValues(alpha: 0.1),
+        color: _getStatusColor(status).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(TherapyDesignSystem.radiusLarge),
         border: Border.all(
-          color: TherapyDesignSystem.getStatusColor(status),
+          color: _getStatusColor(status),
           width: 3,
         ),
       ),
@@ -34,8 +43,8 @@ class FeedbackIndicatorWidget extends StatelessWidget {
           const SizedBox(height: TherapyDesignSystem.spacingMD),
           Text(
             message,
-            style: TherapyDesignSystem.headingSmall.copyWith(
-              color: TherapyDesignSystem.getStatusColor(status),
+            style: TherapyDesignSystem.h3Style.copyWith(
+              color: _getStatusColor(status),
             ),
             textAlign: TextAlign.center,
           ),
@@ -78,10 +87,24 @@ class FeedbackIndicatorWidget extends StatelessWidget {
         Icon(
           iconData,
           size: 64,
-          color: TherapyDesignSystem.getStatusColor(status),
+          color: _getStatusColor(status),
         ),
       ],
     );
+  }
+
+  /// Helper: Get Status Color
+  Color _getStatusColor(FeedbackStatus status) {
+    switch (status) {
+      case FeedbackStatus.success:
+        return TherapyDesignSystem.statusSuccess;
+      case FeedbackStatus.warning:
+        return TherapyDesignSystem.statusWarning;
+      case FeedbackStatus.error:
+        return TherapyDesignSystem.statusError;
+      case FeedbackStatus.info:
+        return TherapyDesignSystem.statusActive;
+    }
   }
 }
 
@@ -135,13 +158,22 @@ class LargeTherapyButton extends StatelessWidget {
                   ],
                   Text(
                     text,
-                    style: TherapyDesignSystem.buttonText,
+                    style: TherapyDesignSystem.buttonStyle,
                   ),
                 ],
               ),
       ),
     );
   }
+}
+
+enum ButtonSize {
+  small(56.0),
+  medium(80.0),
+  large(100.0);
+
+  final double size;
+  const ButtonSize(this.size);
 }
 
 enum ButtonVariant {
