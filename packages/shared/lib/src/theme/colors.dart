@@ -76,7 +76,6 @@ class KidsColors {
   static const Color textLight = Color(0xFFFFFFFF);
   static const Color textOnPrimary = Color(0xFFFFFFFF);
   static const Color textOnSecondary = Color(0xFFFFFFFF);
-  static const Color textDisabled = Color(0xFFD0D4D8);
 
   /// Borders & Dividers
   static const Color border = Color(0xFFE0E6ED);
@@ -120,9 +119,6 @@ class KidsColors {
   /// Späte Schulzeit (9-12)
   static const Color lateSchool = Color(0xFF00D4AA); // Cyan
 
-  /// Heller Text (für dunkle Hintergründe)
-  static const Color textLight = Color(0xFFFFFFFF);
-
   /// Gibt Farbe basierend auf Alter zurück
   static Color getAgeColor(int age) {
     if (age <= 5) return preschool;
@@ -142,19 +138,6 @@ class KidsColors {
   static const Color darkTextMuted = Color(0xFF6E6E80);
 
   // ============================================================
-  // AGE GROUP COLORS
-  // ============================================================
-
-  /// Vorschule (3-5 Jahre) - Warmes Orange
-  static const Color preschool = Color(0xFFFF6B6B);
-  
-  /// Frühe Schulzeit (6-8 Jahre) - Fröhliches Gelb
-  static const Color earlySchool = Color(0xFFFFC312);
-  
-  /// Späte Schulzeit (9-12 Jahre) - Kreatives Violett
-  static const Color lateSchool = Color(0xFF6C5CE7);
-
-  // ============================================================
   // HELPER METHODS
   // ============================================================
 
@@ -166,13 +149,6 @@ class KidsColors {
   /// Gibt Avatar-Farbe basierend auf Index zurück
   static Color avatarColorAt(int index) {
     return avatarColors[index % avatarColors.length];
-  }
-
-  /// Gibt Farbe basierend auf Alter zurück
-  static Color getAgeColor(int age) {
-    if (age <= 5) return preschool;
-    if (age <= 8) return earlySchool;
-    return lateSchool;
   }
 
   /// Erzeugt MaterialColor aus einer Farbe
